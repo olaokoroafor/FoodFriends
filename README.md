@@ -74,8 +74,10 @@ This is an app that allows you to see your friends' favourite restaurants nearby
 * Search Stream
     * User can search for a restaurant
     * User can search for someone to follow
-* Bookmark Stream
+* Profile Stream
     * User can see bookmarked restaurants
+    * See liked restaurants
+    * Personal info 
 
 OPTIONAL:
 * Map Screen
@@ -96,7 +98,7 @@ OPTIONAL:
 
 * Explore Tab -> Restaurant Stream
 * Search Tab -> Search Stream
-* Bookmarks Tab -> -> Bookmark Stream
+* Profile Tab -> Profile Stream
 
 **Flow Navigation** (Screen to Screen)
 
@@ -107,8 +109,8 @@ OPTIONAL:
 * Restaurant Stream
     * Restaurant Detail
 * Search Stream
-    * Restaurant Detail
-* Bookmark Stream
+* Restaurant Detail
+* Profile Stream
     * Restaurant Detail
 
 OPTIONAL:
@@ -118,7 +120,7 @@ OPTIONAL:
 * Map Tab ->Map Screen
 * Explore Tab -> Restaurant Stream
 * Search Tab -> Search Stream
-* Bookmarks Tab -> Bookmark Stream
+* Profile Tab -> Profile Stream
 
 **Flow Navigation** (Screen to Screen)
 
@@ -134,14 +136,18 @@ OPTIONAL:
     * Comment Creation
 * Search Stream
     * Restaurant Detail
-* Bookmark Stream
+* Profile Stream
     * Restaurant Detail
 * Map Screen
     * Restaurant Detail
 
+##Technologies
+* Yelp API
+* Parse Database
+* Google Maps API
 
 ## Wireframes
-[Add picture of your hand sketched wireframes in this section]
+![IMG-3507](https://user-images.githubusercontent.com/51707797/173666231-92c69ecb-a4d8-4d0f-ac01-b251f67edb9b.jpg)
 <img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
 
 ### [BONUS] Digital Wireframes & Mockups
@@ -155,4 +161,5 @@ OPTIONAL:
 ### Networking
 - [Add list of network requests by screen ]
 - [Create basic snippets for each Parse network request]
+
 - [OPTIONAL: List endpoints if using existing API such as Yelp]
