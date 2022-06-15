@@ -149,7 +149,8 @@ OPTIONAL:
 ## Wireframes
 ![IMG-3507](https://user-images.githubusercontent.com/51707797/173666231-92c69ecb-a4d8-4d0f-ac01-b251f67edb9b.jpg)
 <img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
-
+### USEFUL LINKS
+https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS1008US1008&oq=database+first+android&aqs=chrome.1.69i57j33i160l2.5701j0j1&sourceid=chrome&ie=UTF-8
 ### [BONUS] Digital Wireframes & Mockups
 
 ### [BONUS] Interactive Prototype
