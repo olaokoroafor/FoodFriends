@@ -185,7 +185,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * user (User Pointer)
     * restaurant (Restaurant Pointer)
 
-* UserTogo
+* UserToGo
     * user (User Pointer)
     * restaurant (Restaurant Pointer)
 
@@ -205,3 +205,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
 - [Create basic snippets for each Parse network request]
 
 - [OPTIONAL: List endpoints if using existing API such as Yelp]
+ - Yelp API
+     - GET https://api.yelp.com/v3/businesses/search 
+ - Google Maps API
+    - ImplicitIntent "http://maps.google.com/maps?saddr=long,lat&daddr=long,lat"
