@@ -148,13 +148,57 @@ OPTIONAL:
 
 ## Wireframes
 ![IMG-3507](https://user-images.githubusercontent.com/51707797/173666231-92c69ecb-a4d8-4d0f-ac01-b251f67edb9b.jpg)
-<img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
 ### USEFUL LINKS
 https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS1008US1008&oq=database+first+android&aqs=chrome.1.69i57j33i160l2.5701j0j1&sourceid=chrome&ie=UTF-8
 
 ## Schema 
-[This section will be completed in Unit 9]
+ * Restaurant
+ * Comment
+ * User
+ * Friends
+ * UserLike
+ * UserToGo
+
+
 ### Models
+ * Restaurant
+    * id (string)
+    * name (string)
+    * imageUrl (string)
+    * city (string)
+    * state (string)
+    * zip code (number/string)
+    * latitude (float)
+    * longitude (float)
+    * price (string)
+    * address (string)
+
+* User
+    * id (string)
+    * name (string)
+    * username (string)
+    * city (string)
+    * state (string)
+    * profilePhoto (ParseFile)
+
+* UserLike
+    * user (User Pointer)
+    * restaurant (Restaurant Pointer)
+
+* UserTogo
+    * user (User Pointer)
+    * restaurant (Restaurant Pointer)
+
+* Friends
+    * user1 (User Pointer)
+    * user2 (User Pointer)
+
+* Comment
+    * user (User Pointer)
+    * restaurant (Restaurant Pointer)
+    * text (String)
+
+
 [Add table of models]
 ### Networking
 - [Add list of network requests by screen ]
