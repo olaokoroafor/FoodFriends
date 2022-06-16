@@ -151,9 +151,6 @@ OPTIONAL:
 <img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
 ### USEFUL LINKS
 https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS1008US1008&oq=database+first+android&aqs=chrome.1.69i57j33i160l2.5701j0j1&sourceid=chrome&ie=UTF-8
-### [BONUS] Digital Wireframes & Mockups
-
-### [BONUS] Interactive Prototype
 
 ## Schema 
 [This section will be completed in Unit 9]
