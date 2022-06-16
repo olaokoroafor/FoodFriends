@@ -90,6 +90,7 @@ OPTIONAL:
     * User can see restaurant comments 
 * Comment Creation
     * User can comment on a restaurant (pictures possible)
+* User will be able to accept or decline friend requests
 
 
 ### 3. Navigation (Required Features)
