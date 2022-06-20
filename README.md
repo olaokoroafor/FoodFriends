@@ -198,6 +198,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * user (User Pointer)
     * restaurant (Restaurant Pointer)
     * text (String)
+    * image (ParseFile)
 
 
 [Add table of models]
