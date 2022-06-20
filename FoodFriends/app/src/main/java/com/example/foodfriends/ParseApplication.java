@@ -4,6 +4,7 @@ import android.app.Application;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import com.parse.Parse;
 
 public class ParseApplication extends Application {
 
@@ -25,8 +26,9 @@ public class ParseApplication extends Application {
         // set applicationId, and server server based on the values in the back4app settings.
         // any network interceptors must be added with the Configuration Builder given this syntax
         Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId("myAppId") // should correspond to Application Id env variable
-                .clientKey("yourClientKey")  // should correspond to Client key env variable
-                .server("https://parseapi.back4app.com").build());
+                .applicationId(getString(R.string.back4app_app_id))
+                .clientKey(getString(R.string.back4app_client_key))
+                .server(getString(R.string.back4app_server_url))
+                .build());
     }
 }
