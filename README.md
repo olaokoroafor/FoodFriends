@@ -191,8 +191,8 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * restaurant (Restaurant Pointer)
 
 * Friends
-    * user1 (User Pointer)
-    * user2 (User Pointer)
+    * user (User Pointer)
+    * requested (User Pointer)
 
 * Comment
     * user (User Pointer)
