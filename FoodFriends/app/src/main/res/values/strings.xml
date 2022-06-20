@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FoodFriends</string>
+    <string name="sign_up_hyperlink">Don\'t have an account? Click here to sign up</string>
 </resources>
