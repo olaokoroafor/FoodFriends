@@ -133,13 +133,13 @@ public class ExploreFragment extends Fragment {
         OkHttpClient client = new OkHttpClient();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
         urlBuilder.addQueryParameter("term", "restaurant");
-        urlBuilder.addQueryParameter("limit", "20");
-        urlBuilder.addQueryParameter("offset", String.valueOf(offset));
+        //urlBuilder.addQueryParameter("limit", "20");
+        //urlBuilder.addQueryParameter("offset", String.valueOf(offset));
         urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city"));
         String url = urlBuilder.build().toString();
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + R.string.yelp_api_key)
+                .addHeader("Authorization", "Bearer " + getResources().getString(R.string.yelp_api_key))
                 .addHeader("Accept", "application/json")
                 .build();
 
@@ -158,6 +158,7 @@ public class ExploreFragment extends Fragment {
                     String responseData = response.body().toString();
                     //JSONObject json = new JSONObject(responseData);
                    // offset += new JSONArray().length();
+                    String jsonObject = "stuff";
                 } else {
                     Log.i(TAG, response.toString());
                     //Toast.makeText(getActivity(), "Connection failed", Toast.LENGTH_LONG).show();

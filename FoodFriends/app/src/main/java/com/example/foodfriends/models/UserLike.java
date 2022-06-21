@@ -22,5 +22,7 @@ public class UserLike extends ParseObject {
     public void setRestaurant(Restaurant restaurant){
         put(RESTAURANT_KEY, restaurant);
     }
+
+
 }
 

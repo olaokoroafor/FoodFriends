@@ -64,6 +64,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
         private ImageView ivLike;
         private ImageView ivToGo;
         private boolean liked;
+        private boolean going;
 
 
         public ViewHolder(@NonNull View itemView){
@@ -81,11 +82,84 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
             tvRName.setText(restaurant.getName());
             tvAddress.setText(restaurant.getAddress());
-            tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
-            tvToGoCount.setText(String.valueOf(restaurant.getToGos()));
+            int num_likes = restaurant.getLikes();
+            tvLikeCount.setText(String.valueOf(num_likes));
+            int num_togo = restaurant.getToGos();
+            tvToGoCount.setText(String.valueOf(num_togo));
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
             Glide.with(context).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivRPic);
+            liked = restaurant.user_like();
+            if(liked){
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_red_heart_24)
+                        .into(ivLike);
+            }
+            else{
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_heart_24)
+                        .into(ivLike);
+            }
+
+
+            going = restaurant.user_to_go();
+            if(going){
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_active_go_24)
+                        .into(ivToGo);
+            }
+
+            else{
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_call_missed_outgoing_24)
+                        .into(ivToGo);
+            }
+
+            ivLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!liked){
+                        restaurant.incrementLikes();
+                        tvLikeCount.setText(new Integer(num_likes+1).toString());
+                        liked = true;
+                        Glide.with(context)
+                                .load(R.drawable.ic_baseline_red_heart_24)
+                                .into(ivLike);
+                    }
+
+                    else{
+                        restaurant.decrementLikes();
+                        tvLikeCount.setText(new Integer(num_likes-1).toString());
+                        liked = false;
+                        Glide.with(context)
+                                .load(R.drawable.ic_baseline_heart_24)
+                                .into(ivLike);
+                    }
+                }
+            });
+
+            ivToGo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!going){
+                        restaurant.incrementToGos();
+                        tvToGoCount.setText(new Integer(num_togo+1).toString());
+                        going = true;
+                        Glide.with(context)
+                                .load(R.drawable.ic_baseline_active_go_24)
+                                .into(ivToGo);
+                    }
+
+                    else{
+                        restaurant.decrementToGos();
+                        tvToGoCount.setText(new Integer(num_togo-1).toString());
+                        going = false;
+                        Glide.with(context)
+                                .load(R.drawable.ic_baseline_call_missed_outgoing_24)
+                                .into(ivToGo);
+                    }
+                }
+            });
 
             /*
             ivPostPic.setOnClickListener(new View.OnClickListener() {
