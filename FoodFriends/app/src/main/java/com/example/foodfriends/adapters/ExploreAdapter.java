@@ -2,6 +2,7 @@ package com.example.foodfriends.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHolder>{
     private Context context;
@@ -161,6 +163,17 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                 }
             });
 
+            tvAddress.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ParseUser user = ParseUser.getCurrentUser();
+                    //String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f (%s)", user.getDouble("latitude"), user.getDouble("longitude"), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
+                    String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLatitude().toString() + " (" + restaurant.getName() + ")";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    intent.setPackage("com.google.android.apps.maps");
+                    context.startActivity(intent);
+                }
+            });
             /*
             ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override
