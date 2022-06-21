@@ -2,7 +2,9 @@ package com.example.foodfriends.models;
 
 import android.util.Log;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -110,6 +112,37 @@ public class Restaurant extends ParseObject {
         like.saveInBackground();
     }
 
+    public void decrementLikes(){
+        ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        query.whereEqualTo("restaurant", this);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<UserLike>() {
+            public void done(List<UserLike> likes, ParseException e) {
+                ParseObject.deleteAllInBackground(likes, new DeleteCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Log.d("deleted", "success");
+                    }
+                });
+            }
+        });
+    }
+
+    public boolean user_like(){
+        final boolean[] liked = {false};
+        ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        query.whereEqualTo("restaurant", this);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<UserLike>() {
+            public void done(List<UserLike> likes, ParseException e) {
+                if(likes.size() > 0){
+                    liked[0] =true;
+                }
+            }
+        });
+        return liked[0];
+    }
+
     public int getToGos(){
         final int[] toGoCount= {0};
         // specify what type of data we want to query - Post.class
@@ -137,5 +170,35 @@ public class Restaurant extends ParseObject {
         togo.saveInBackground();
     }
 
+    public void decrementToGos(){
+        ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        query.whereEqualTo("restaurant", this);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<UserToGo>() {
+            public void done(List<UserToGo> togos, ParseException e) {
+                ParseObject.deleteAllInBackground(togos, new DeleteCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Log.d("deleted", "success");
+                    }
+                });
+            }
+        });
+    }
+
+    public boolean user_to_go(){
+        final boolean[] going = {false};
+        ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        query.whereEqualTo("restaurant", this);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<UserToGo>() {
+            public void done(List<UserToGo> togos, ParseException e) {
+                if(togos.size() > 0){
+                    going[0] =true;
+                }
+            }
+        });
+        return going[0];
+    }
 
 }
