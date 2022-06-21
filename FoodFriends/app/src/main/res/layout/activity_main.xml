@@ -46,6 +46,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="FoodFriends"
+        android:textColor="@color/rust"
         android:textSize="34sp"
         android:textStyle="bold|italic"
         app:layout_constraintStart_toStartOf="parent"

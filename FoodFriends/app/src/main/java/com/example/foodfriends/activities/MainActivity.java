@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.foodfriends.R;
+import com.example.foodfriends.fragments.ExploreFragment;
+import com.example.foodfriends.fragments.ProfileFragment;
+import com.example.foodfriends.fragments.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.parse.ParseUser;
@@ -31,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         // define your fragments here
-        //final Fragment timelineFragment = new TimelineFragment();
-        //final Fragment composeFragment = new ComposeFragment();
-        //final Fragment profileFragment = new ProfileFragment();
+        final Fragment exploreFragment = new ExploreFragment();
+        final Fragment searchFragment = new SearchFragment();
+        final Fragment profileFragment = new ProfileFragment();
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         btnLogOut = findViewById(R.id.btnLogOut);
@@ -51,31 +54,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.i(TAG, "Menu item selected");
-                //Fragment fragment = timelineFragment;
+                Fragment fragment = exploreFragment;
                 if (item.getItemId() == R.id.menu_explore){
                     Log.i(TAG, "Explore Fragment");
-                    //fragment = timelineFragment;
+                    fragment = exploreFragment;
                 }
                 if (item.getItemId() == R.id.menu_search){
                     Log.i(TAG, "Search selected");
-                    //fragment = composeFragment;
+                    fragment = searchFragment;
                 }
                 if (item.getItemId() == R.id.menu_profile){
-                    //compose action has been selected
-                    //showComposeFragment("");
                     Log.i(TAG, "profile selected");
-                    //fragment = profileFragment;
+                    fragment = profileFragment;
                     /*
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("user", ParseUser.getCurrentUser());
                     fragment.setArguments(bundle);
                     */
                 }
-                /*
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.tvPlaceholder, fragment);
                 transaction.addToBackStack(null).commit();
-                */
                 return true;
             }
         });
