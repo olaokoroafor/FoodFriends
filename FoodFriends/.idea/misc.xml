@@ -8,6 +8,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12409420289855072" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.2578125" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.20208333333333334" />
       </map>
     </option>
