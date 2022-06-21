@@ -11,6 +11,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 
@@ -27,6 +28,7 @@ public class Restaurant extends ParseObject {
     public static final String LONGITUDE_KEY = "longitude";
     public static final String PRICE_KEY = "price";
     public static final String ADDRESS_KEY = "address";
+    private static final String TAG = "Restaurant Model";
 
     public String getName(){
         return getString(NAME_KEY);
@@ -109,7 +111,13 @@ public class Restaurant extends ParseObject {
         UserLike like = new UserLike();
         like.setRestaurant(this);
         like.setUser(ParseUser.getCurrentUser());
-        like.saveInBackground();
+        like.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null)
+                    Log.i(TAG, e.toString());
+            }
+        });
     }
 
     public void decrementLikes(){
@@ -121,7 +129,7 @@ public class Restaurant extends ParseObject {
                 ParseObject.deleteAllInBackground(likes, new DeleteCallback() {
                     @Override
                     public void done(ParseException e) {
-                        Log.d("deleted", "success");
+                        Log.d(TAG, "deleted successfully");
                     }
                 });
             }
@@ -135,6 +143,7 @@ public class Restaurant extends ParseObject {
         query.whereEqualTo("user", ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<UserLike>() {
             public void done(List<UserLike> likes, ParseException e) {
+                Log.i(TAG, String.valueOf(likes.size()));
                 if(likes.size() > 0){
                     liked[0] =true;
                 }
@@ -154,6 +163,7 @@ public class Restaurant extends ParseObject {
             public void done(List<UserToGo> togos, ParseException e) {
                 // check for errors
                 if (e != null) {
+                    Log.i(TAG, e.toString());
                     return;
                 }
                 toGoCount[0] = togos.size();
@@ -167,7 +177,13 @@ public class Restaurant extends ParseObject {
         UserToGo togo = new UserToGo();
         togo.setRestaurant(this);
         togo.setUser(ParseUser.getCurrentUser());
-        togo.saveInBackground();
+        togo.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null)
+                    Log.i(TAG, e.toString());
+            }
+        });
     }
 
     public void decrementToGos(){
@@ -179,7 +195,7 @@ public class Restaurant extends ParseObject {
                 ParseObject.deleteAllInBackground(togos, new DeleteCallback() {
                     @Override
                     public void done(ParseException e) {
-                        Log.d("deleted", "success");
+                        Log.d(TAG, "deleted successfully");
                     }
                 });
             }
@@ -193,6 +209,7 @@ public class Restaurant extends ParseObject {
         query.whereEqualTo("user", ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<UserToGo>() {
             public void done(List<UserToGo> togos, ParseException e) {
+                Log.i(TAG, String.valueOf(togos.size()));
                 if(togos.size() > 0){
                     going[0] =true;
                 }
