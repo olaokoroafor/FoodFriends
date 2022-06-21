@@ -12,6 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.models.Restaurant;
 import com.parse.ParseFile;
@@ -51,37 +55,48 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        /*
-        private TextView tvUsername;
+
+        private TextView tvRName;
         private TextView tvLikeCount;
-        private TextView tvCaptionUsername;
-        private TextView tvCaption;
-        private TextView tvPostedAt;
-        private ImageView ivProfilePic;
-        private ImageView ivPostPic;
+        private TextView tvToGoCount;
+        private TextView tvAddress;
+        private ImageView ivRPic;
         private ImageView ivLike;
-        private ImageView ivComment;
-        private TextView tvComments;
+        private ImageView ivToGo;
         private boolean liked;
-        */
+
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
-            /*
-            tvUsername = itemView.findViewById(R.id.tvTimelineUsername);
-            tvLikeCount = itemView.findViewById(R.id.tvTimelineLikes);
-            tvCaptionUsername = itemView.findViewById(R.id.tvTimelineCaptionUsername);
-            tvCaption = itemView.findViewById(R.id.tvTimelineCaption);
-            tvPostedAt = itemView.findViewById(R.id.tvTimelinePostedAt);
-            ivProfilePic = itemView.findViewById(R.id.ivTimelinePfp);
-            ivPostPic = itemView.findViewById(R.id.ivTimelinePostPic);
-            ivLike = itemView.findViewById(R.id.ivTimelineLike);
-            ivComment = itemView.findViewById(R.id.ivTimelineComment);
-            tvComments = itemView.findViewById(R.id.tvComments);
-             */
+            tvRName = itemView.findViewById(R.id.tvExploreName);
+            tvLikeCount = itemView.findViewById(R.id.tvExploreLikeCount);
+            tvToGoCount = itemView.findViewById(R.id.tvExploreToGoCount);
+            tvAddress = itemView.findViewById(R.id.tvExploreAddress);
+            ivRPic = itemView.findViewById(R.id.ivExplorePic);
+            ivLike = itemView.findViewById(R.id.ivExploreLike);
+            ivToGo = itemView.findViewById(R.id.ivExploreToGo);
         }
 
         public void bind(Restaurant restaurant) {
+
+            tvRName.setText(restaurant.getName());
+            tvAddress.setText(restaurant.getAddress());
+            tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
+            tvToGoCount.setText(String.valueOf(restaurant.getToGos()));
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
+            Glide.with(context).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivRPic);
+
+            /*
+            ivPostPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, PostDetailActivity.class);
+                    intent.putExtra(Post.class.getSimpleName(), post);
+                    context.startActivity(intent);
+                }
+            });
+
             //bind data to view elements
             //tvCaption.setText(post.getDescription());
             //tvUsername.setText(post.getUser().getUsername());

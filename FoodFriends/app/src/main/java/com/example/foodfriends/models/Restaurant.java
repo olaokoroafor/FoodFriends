@@ -1,8 +1,13 @@
 package com.example.foodfriends.models;
 
+import android.util.Log;
+
+import com.parse.FindCallback;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -76,6 +81,60 @@ public class Restaurant extends ParseObject {
     public String getAddress(){return getString(ADDRESS_KEY);}
     public void setAddress(String address){
         put(ADDRESS_KEY, address);
+    }
+
+    public int getLikes(){
+        final int[] likeCount = {0};
+        // specify what type of data we want to query - Post.class
+        ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        // start an asynchronous call for posts
+        query.whereEqualTo("restaurant", getObjectId());
+        query.findInBackground(new FindCallback<UserLike>() {
+            @Override
+            public void done(List<UserLike> likes, ParseException e) {
+                // check for errors
+                if (e != null) {
+                    return;
+                }
+                likeCount[0] = likes.size();
+
+            }
+        });
+        return likeCount[0];
+    }
+
+    public void incrementLikes(){
+        UserLike like = new UserLike();
+        like.setRestaurant(this);
+        like.setUser(ParseUser.getCurrentUser());
+        like.saveInBackground();
+    }
+
+    public int getToGos(){
+        final int[] toGoCount= {0};
+        // specify what type of data we want to query - Post.class
+        ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        // start an asynchronous call for posts
+        query.whereEqualTo("restaurant", getObjectId());
+        query.findInBackground(new FindCallback<UserToGo>() {
+            @Override
+            public void done(List<UserToGo> togos, ParseException e) {
+                // check for errors
+                if (e != null) {
+                    return;
+                }
+                toGoCount[0] = togos.size();
+
+            }
+        });
+        return toGoCount[0];
+    }
+
+    public void incrementToGos(){
+        UserToGo togo = new UserToGo();
+        togo.setRestaurant(this);
+        togo.setUser(ParseUser.getCurrentUser());
+        togo.saveInBackground();
     }
 
 

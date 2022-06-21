@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.foodfriends.R;
 import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,18 +22,37 @@ import com.example.foodfriends.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 public class ExploreFragment extends Fragment {
 
         private RecyclerView rvRestaurants;
+        private int offset = 0;
         public static final String TAG = "Explore Fragment";
         private ExploreAdapter adapter;
         public List<Restaurant> restaurantList;
         private SwipeRefreshLayout swipeContainer;
+        public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
         public ExploreFragment() {
             // Required empty public constructor
         }
@@ -50,7 +71,7 @@ public class ExploreFragment extends Fragment {
                     // Your code to refresh the list here.
                     // Make sure you call swipeContainer.setRefreshing(false)
                     // once the network request has completed successfully.
-                    fetchTimelineAsync(0);
+                    fetchTimelineAsync();
                 }
             });
             // Configure the refreshing colors
@@ -62,13 +83,13 @@ public class ExploreFragment extends Fragment {
             return view;
         }
 
-        public void fetchTimelineAsync(int page) {
+        public void fetchTimelineAsync() {
             // Send the network request to fetch the updated data
             // `client` here is an instance of Android Async HTTP
             // getHomeTimeline is an example endpoint.
             adapter.clear();
             //should change this later on for getting restaurants from yelp API instead of from Parse
-            queryRestaurants();
+            yelpQuery();
             swipeContainer.setRefreshing(false);
         }
 
@@ -83,9 +104,69 @@ public class ExploreFragment extends Fragment {
             rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
 
             queryRestaurants();
+            yelpQuery();
+            //yelpAsyncQuery();
         }
+/*
+    private void yelpAsyncQuery() {
+        String url = YELP_URL;
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("q", "android");
+        params.put("rsz", "8");
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // Root JSON in response is an dictionary i.e { "data : [ ... ] }
+                // Handle resulting parsed JSON response here
+            }
 
-        private void queryRestaurants() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+            }
+        });
+    }
+*/
+    private void yelpQuery() {
+        // Use OkHttpClient singleton
+        OkHttpClient client = new OkHttpClient();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
+        urlBuilder.addQueryParameter("term", "restaurant");
+        urlBuilder.addQueryParameter("limit", "20");
+        urlBuilder.addQueryParameter("offset", String.valueOf(offset));
+        urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city"));
+        String url = urlBuilder.build().toString();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + R.string.yelp_api_key)
+                .addHeader("Accept", "application/json")
+                .build();
+
+        // Get a handler that can be used to post to the main thread
+
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response){
+                if (response.isSuccessful()) {
+                    String responseData = response.body().toString();
+                    //JSONObject json = new JSONObject(responseData);
+                   // offset += new JSONArray().length();
+                } else {
+                    Log.i(TAG, response.toString());
+                    //Toast.makeText(getActivity(), "Connection failed", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void queryRestaurants() {
             // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             // start an asynchronous call for posts
@@ -107,5 +188,6 @@ public class ExploreFragment extends Fragment {
                 }
             });
         }
+
 
 }
