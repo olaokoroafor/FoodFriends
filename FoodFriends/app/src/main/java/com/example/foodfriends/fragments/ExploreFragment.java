@@ -164,13 +164,18 @@ public class ExploreFragment extends Fragment {
                         JSONArray jsonArray = json.getJSONArray("businesses");
                         List<Restaurant> res = Restaurant.fromJsonArray(jsonArray);
                         offset += 20;
-                        restaurantList.addAll(res);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
+                        if (res.size() == 0){
+                            yelpQuery();
+                        }
+                        else{
+                            restaurantList.addAll(res);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
