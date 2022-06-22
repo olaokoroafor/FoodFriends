@@ -88,23 +88,21 @@ public class Restaurant extends ParseObject {
     }
 
     public int getLikes(){
-        final int[] likeCount = {0};
+        int likesCount= 0;
         // specify what type of data we want to query - Post.class
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // start an asynchronous call for posts
-        query.whereEqualTo("restaurant", getObjectId());
-        query.findInBackground(new FindCallback<UserLike>() {
-            @Override
-            public void done(List<UserLike> likes, ParseException e) {
-                // check for errors
-                if (e != null) {
-                    return;
-                }
-                likeCount[0] = likes.size();
+        query.whereEqualTo("restaurant", this);
+        try {
+            List<UserLike> likes = query.find();
+            likesCount = likes.size();
+            Log.i(TAG, "List size: " + likesCount);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-            }
-        });
-        return likeCount[0];
+        Log.i(TAG, "likes Count" + likesCount);
+        return likesCount;
     }
 
     public void incrementLikes(){
@@ -137,40 +135,35 @@ public class Restaurant extends ParseObject {
     }
 
     public boolean user_like(){
-        final boolean[] liked = {false};
+        boolean liked = false;
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<UserLike>() {
-            public void done(List<UserLike> likes, ParseException e) {
-                Log.i(TAG, String.valueOf(likes.size()));
-                if(likes.size() > 0){
-                    liked[0] =true;
-                }
+        try {
+            List<UserLike> likes = query.find();
+            if (likes.size() > 0){
+                liked = true;
             }
-        });
-        return liked[0];
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return liked;
     }
 
     public int getToGos(){
-        final int[] toGoCount= {0};
+        int toGoCount= 0;
         // specify what type of data we want to query - Post.class
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         // start an asynchronous call for posts
-        query.whereEqualTo("restaurant", getObjectId());
-        query.findInBackground(new FindCallback<UserToGo>() {
-            @Override
-            public void done(List<UserToGo> togos, ParseException e) {
-                // check for errors
-                if (e != null) {
-                    Log.i(TAG, e.toString());
-                    return;
-                }
-                toGoCount[0] = togos.size();
+        query.whereEqualTo("restaurant", this);
+        try {
+            List<UserToGo> togos = query.find();
+            toGoCount = togos.size();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-            }
-        });
-        return toGoCount[0];
+        return toGoCount;
     }
 
     public void incrementToGos(){
@@ -203,19 +196,19 @@ public class Restaurant extends ParseObject {
     }
 
     public boolean user_to_go(){
-        final boolean[] going = {false};
+        boolean going = false;
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<UserToGo>() {
-            public void done(List<UserToGo> togos, ParseException e) {
-                Log.i(TAG, String.valueOf(togos.size()));
-                if(togos.size() > 0){
-                    going[0] =true;
-                }
+        try {
+            List<UserToGo> togos = query.find();
+            if (togos.size() > 0){
+                going = true;
             }
-        });
-        return going[0];
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return going;
     }
 
 }
