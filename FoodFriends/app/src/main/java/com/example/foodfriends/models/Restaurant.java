@@ -92,39 +92,58 @@ public class Restaurant extends ParseObject {
     }
 
     public String getYelpID(){return getString(YELP_ID_KEY);}
-    public void setYelpId(String yelpID){
-        put(YELP_ID_KEY, yelpID);
-    }
+    public void setYelpId(String yelpID){put(YELP_ID_KEY, yelpID);}
 
     public static Restaurant fromJson(JSONObject jsonObject) throws JSONException {
 
-        Restaurant r = new Restaurant();
-        r.setYelpId(jsonObject.getString("id"));
-        r.setName(jsonObject.getString("name"));
-        r.setImageUrl(jsonObject.getString("image_url"));
-        JSONObject location = jsonObject.getJSONObject("location");
-        r.setCity(location.getString("city"));
-        r.setState(location.getString("state"));
-        r.setZipcode(location.getString("zip_code"));
-        JSONObject coordinates = jsonObject.getJSONObject("coordinates");
-        r.setLatitude(coordinates.getDouble("latitude"));
-        r.setLongitude(coordinates.getDouble("longitude"));
-        r.setPrice("price");
-        String address = "";
-        JSONArray display =  location.getJSONArray("display_address");
-        for(int i = 0; i < display.length(); i++){
-            address += display.get(i);
+        try{
+            String yelp_id = jsonObject.getString("id");
+            ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+            query.whereEqualTo(YELP_ID_KEY, yelp_id);
+            if (query.find().size() > 0)
+                return null;
+            Restaurant r = new Restaurant();
+            r.setYelpId(jsonObject.getString("id"));
+            r.setName(jsonObject.getString("name"));
+            r.setImageUrl(jsonObject.getString("image_url"));
+            JSONObject location = jsonObject.getJSONObject("location");
+            r.setCity(location.getString("city"));
+            r.setState(location.getString("state"));
+            r.setZipcode(location.getString("zip_code"));
+            JSONObject coordinates = jsonObject.getJSONObject("coordinates");
+            r.setLatitude(coordinates.getDouble("latitude"));
+            r.setLongitude(coordinates.getDouble("longitude"));
+            r.setPrice("price");
+            String address = "";
+            JSONArray display =  location.getJSONArray("display_address");
+            for(int i = 0; i < display.length(); i++){
+                address += display.get(i);
+                if (i != display.length()-1)
+                    address += ", ";
+            }
+            r.setAddress(address);
+            r.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null)
+                        Log.i(TAG, "RESTAURANT ADDED DONE");
+                    else
+                        Log.e(TAG, e.toString());
+                }
+            });
+            return r;
         }
-        r.setAddress(address);
-        //r.saveInBackground();
-        return r;
+        catch (Exception e){
+            return null;
+        }
     }
 
     public static List<Restaurant> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Restaurant> restaurants = new ArrayList<>();
         for(int i = 0; i < jsonArray.length(); i++){
             Restaurant restaurant = fromJson(jsonArray.getJSONObject(i));
-            restaurants.add(fromJson(jsonArray.getJSONObject(i)));
+            if(restaurant != null)
+                restaurants.add(fromJson(jsonArray.getJSONObject(i)));
         }
         return restaurants;
 

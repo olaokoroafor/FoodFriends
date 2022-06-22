@@ -47,6 +47,7 @@ import okhttp3.Response;
 public class ExploreFragment extends Fragment {
 
         private RecyclerView rvRestaurants;
+        private boolean parse_source = true;
         private int offset = 0;
         public static final String TAG = "Explore Fragment";
         private ExploreAdapter adapter;
@@ -71,7 +72,8 @@ public class ExploreFragment extends Fragment {
                     // Your code to refresh the list here.
                     // Make sure you call swipeContainer.setRefreshing(false)
                     // once the network request has completed successfully.
-                    fetchTimelineAsync();
+                    queryRestaurants();
+                    swipeContainer.setRefreshing(false);
                 }
             });
             // Configure the refreshing colors
@@ -89,7 +91,7 @@ public class ExploreFragment extends Fragment {
             // getHomeTimeline is an example endpoint.
             adapter.clear();
             //should change this later on for getting restaurants from yelp API instead of from Parse
-            yelpQuery();
+            //yelpQuery();
             swipeContainer.setRefreshing(false);
         }
 
@@ -104,7 +106,7 @@ public class ExploreFragment extends Fragment {
             rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
 
             queryRestaurants();
-            yelpQuery();
+            //yelpQuery();
             //yelpAsyncQuery();
         }
 /*
@@ -133,8 +135,8 @@ public class ExploreFragment extends Fragment {
         OkHttpClient client = new OkHttpClient();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
         urlBuilder.addQueryParameter("term", "restaurant");
-        //urlBuilder.addQueryParameter("limit", "20");
-        //urlBuilder.addQueryParameter("offset", String.valueOf(offset));
+        urlBuilder.addQueryParameter("offset", String.valueOf(offset));
+        urlBuilder.addQueryParameter("limit", "20");
         urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city"));
         String url = urlBuilder.build().toString();
         Request request = new Request.Builder()
@@ -160,7 +162,9 @@ public class ExploreFragment extends Fragment {
                         responseData = response.body().string();
                         JSONObject json = new JSONObject(responseData);
                         JSONArray jsonArray = json.getJSONArray("businesses");
-                        restaurantList.addAll(Restaurant.fromJsonArray(jsonArray));
+                        List<Restaurant> res = Restaurant.fromJsonArray(jsonArray);
+                        offset += res.size();
+                        restaurantList.addAll(res);
                         adapter.notifyDataSetChanged();
 
                     } catch (Exception e) {
@@ -177,9 +181,12 @@ public class ExploreFragment extends Fragment {
     }
 
     private void queryRestaurants() {
+        if(parse_source){
             // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             // start an asynchronous call for posts
+            query.setLimit(20);
+            query.setSkip(offset);
             query.findInBackground(new FindCallback<Restaurant>() {
                 @Override
                 public void done(List<Restaurant> restaurants, ParseException e) {
@@ -193,10 +200,20 @@ public class ExploreFragment extends Fragment {
                         Log.i(TAG, "Restaurant: " + r.getName());
                     }
                     // save received posts to list and notify adapter of new data
+                    offset += restaurants.size();
+                    if (restaurants.size() < 20){
+                        offset = 0;
+                        parse_source = false;
+                    }
+
                     restaurantList.addAll(restaurants);
                     adapter.notifyDataSetChanged();
                 }
             });
+        }
+        else{
+            yelpQuery();
+        }
         }
 
 
