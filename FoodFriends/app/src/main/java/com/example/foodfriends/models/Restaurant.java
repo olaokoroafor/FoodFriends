@@ -100,8 +100,11 @@ public class Restaurant extends ParseObject {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo(YELP_ID_KEY, yelp_id);
-            if (query.find().size() > 0)
+            int num = query.find().size();
+            Log.i(TAG, "NUM EXISTING " + String.valueOf(num));
+            if (num > 0)
                 return null;
+            Log.i(TAG, "MAKING RESTAURANT");
             Restaurant r = new Restaurant();
             r.setYelpId(jsonObject.getString("id"));
             r.setName(jsonObject.getString("name"));

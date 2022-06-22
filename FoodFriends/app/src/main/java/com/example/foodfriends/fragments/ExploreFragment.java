@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.foodfriends.adapters.ExploreAdapter;
+import com.example.foodfriends.misc.EndlessRecyclerViewScrollListener;
 import com.example.foodfriends.models.Restaurant;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -54,6 +55,7 @@ public class ExploreFragment extends Fragment {
         public List<Restaurant> restaurantList;
         private SwipeRefreshLayout swipeContainer;
         public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
+        private EndlessRecyclerViewScrollListener scrollListener;
         public ExploreFragment() {
             // Required empty public constructor
         }
@@ -72,6 +74,12 @@ public class ExploreFragment extends Fragment {
                     // Your code to refresh the list here.
                     // Make sure you call swipeContainer.setRefreshing(false)
                     // once the network request has completed successfully.
+                    // 1. First, clear the array of data
+                    restaurantList.clear();
+                    // 2. Notify the adapter of the update
+                    adapter.notifyDataSetChanged(); // or notifyItemRangeRemoved
+                    // 3. Reset endless scroll listener when performing a new search
+                    scrollListener.resetState();
                     queryRestaurants();
                     swipeContainer.setRefreshing(false);
                 }
@@ -103,33 +111,24 @@ public class ExploreFragment extends Fragment {
             restaurantList = new ArrayList<Restaurant>();
             adapter = new ExploreAdapter(getContext(), restaurantList);
             rvRestaurants.setAdapter(adapter);
-            rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+            rvRestaurants.setLayoutManager(linearLayoutManager);
+            // Retain an instance so that you can call `resetState()` for fresh searches
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    // Triggered only when new data needs to be appended to the list
+                    // Add whatever code is needed to append new items to the bottom of the list
+                    queryRestaurants();
+                }
+            };
+            // Adds the scroll listener to RecyclerView
+            rvRestaurants.addOnScrollListener(scrollListener);
 
             queryRestaurants();
-            //yelpQuery();
-            //yelpAsyncQuery();
         }
-/*
-    private void yelpAsyncQuery() {
-        String url = YELP_URL;
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("q", "android");
-        params.put("rsz", "8");
-        client.get(url, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // Root JSON in response is an dictionary i.e { "data : [ ... ] }
-                // Handle resulting parsed JSON response here
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-            }
-        });
-    }
-*/
     private void yelpQuery() {
         // Use OkHttpClient singleton
         OkHttpClient client = new OkHttpClient();
@@ -139,6 +138,7 @@ public class ExploreFragment extends Fragment {
         urlBuilder.addQueryParameter("limit", "20");
         urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city"));
         String url = urlBuilder.build().toString();
+        Log.i(TAG, "URL: " + url);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + getResources().getString(R.string.yelp_api_key))
@@ -163,18 +163,20 @@ public class ExploreFragment extends Fragment {
                         JSONObject json = new JSONObject(responseData);
                         JSONArray jsonArray = json.getJSONArray("businesses");
                         List<Restaurant> res = Restaurant.fromJsonArray(jsonArray);
-                        offset += res.size();
+                        offset += 20;
                         restaurantList.addAll(res);
-                        adapter.notifyDataSetChanged();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    // offset += new JSONArray().length();
-                    String jsonObject = "stuff";
                 } else {
                     Log.i(TAG, response.toString());
-                    //Toast.makeText(getActivity(), "Connection failed", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -184,6 +186,7 @@ public class ExploreFragment extends Fragment {
         if(parse_source){
             // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+            query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
             // start an asynchronous call for posts
             query.setLimit(20);
             query.setSkip(offset);
