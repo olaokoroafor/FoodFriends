@@ -14,7 +14,10 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ParseClassName("Restaurant")
@@ -28,6 +31,7 @@ public class Restaurant extends ParseObject {
     public static final String LONGITUDE_KEY = "longitude";
     public static final String PRICE_KEY = "price";
     public static final String ADDRESS_KEY = "address";
+    public static final String YELP_ID_KEY = "yelp_id";
     private static final String TAG = "Restaurant Model";
 
     public String getName(){
@@ -85,6 +89,45 @@ public class Restaurant extends ParseObject {
     public String getAddress(){return getString(ADDRESS_KEY);}
     public void setAddress(String address){
         put(ADDRESS_KEY, address);
+    }
+
+    public String getYelpID(){return getString(YELP_ID_KEY);}
+    public void setYelpId(String yelpID){
+        put(YELP_ID_KEY, yelpID);
+    }
+
+    public static Restaurant fromJson(JSONObject jsonObject) throws JSONException {
+
+        Restaurant r = new Restaurant();
+        r.setYelpId(jsonObject.getString("id"));
+        r.setName(jsonObject.getString("name"));
+        r.setImageUrl(jsonObject.getString("image_url"));
+        JSONObject location = jsonObject.getJSONObject("location");
+        r.setCity(location.getString("city"));
+        r.setState(location.getString("state"));
+        r.setZipcode(location.getString("zip_code"));
+        JSONObject coordinates = jsonObject.getJSONObject("coordinates");
+        r.setLatitude(coordinates.getDouble("latitude"));
+        r.setLongitude(coordinates.getDouble("longitude"));
+        r.setPrice("price");
+        String address = "";
+        JSONArray display =  location.getJSONArray("display_address");
+        for(int i = 0; i < display.length(); i++){
+            address += display.get(i);
+        }
+        r.setAddress(address);
+        //r.saveInBackground();
+        return r;
+    }
+
+    public static List<Restaurant> fromJsonArray(JSONArray jsonArray) throws JSONException {
+        List<Restaurant> restaurants = new ArrayList<>();
+        for(int i = 0; i < jsonArray.length(); i++){
+            Restaurant restaurant = fromJson(jsonArray.getJSONObject(i));
+            restaurants.add(fromJson(jsonArray.getJSONObject(i)));
+        }
+        return restaurants;
+
     }
 
     public int getLikes(){

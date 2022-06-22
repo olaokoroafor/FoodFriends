@@ -140,7 +140,7 @@ public class ExploreFragment extends Fragment {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + getResources().getString(R.string.yelp_api_key))
-                .addHeader("Accept", "application/json")
+                //.addHeader("Accept", "application/json")
                 .build();
 
         // Get a handler that can be used to post to the main thread
@@ -155,9 +155,18 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onResponse(Call call, final Response response){
                 if (response.isSuccessful()) {
-                    String responseData = response.body().toString();
-                    //JSONObject json = new JSONObject(responseData);
-                   // offset += new JSONArray().length();
+                    String responseData = null;
+                    try {
+                        responseData = response.body().string();
+                        JSONObject json = new JSONObject(responseData);
+                        JSONArray jsonArray = json.getJSONArray("businesses");
+                        restaurantList.addAll(Restaurant.fromJsonArray(jsonArray));
+                        adapter.notifyDataSetChanged();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    // offset += new JSONArray().length();
                     String jsonObject = "stuff";
                 } else {
                     Log.i(TAG, response.toString());
