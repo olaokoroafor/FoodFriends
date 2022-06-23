@@ -146,7 +146,7 @@ public class Restaurant extends ParseObject {
         for(int i = 0; i < jsonArray.length(); i++){
             Restaurant restaurant = fromJson(jsonArray.getJSONObject(i));
             if(restaurant != null)
-                restaurants.add(fromJson(jsonArray.getJSONObject(i)));
+                restaurants.add(restaurant);
         }
         return restaurants;
 

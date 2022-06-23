@@ -99,32 +99,89 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.i(TAG, "Menu item selected");
-                Fragment fragment = exploreFragment;
-                if (item.getItemId() == R.id.menu_explore){
-                    Log.i(TAG, "Explore Fragment");
-                    fragment = exploreFragment;
+                //Fragment fragment = exploreFragment;
+                if (item.getItemId() == R.id.menu_explore) {
+                    if (fragmentManager.findFragmentByTag("explore") != null) {
+                        //if the fragment exists, show it.
+                        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("explore")).commit();
+                    } else {
+                        //if the fragment does not exist, add it to fragment manager.
+                        fragmentManager.beginTransaction().add(R.id.tvPlaceholder, exploreFragment, "explore").commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("search") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("search")).commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("profile") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("profile")).commit();
+                    }
+                    //Log.i(TAG, "Explore Fragment");
+                    //fragment = exploreFragment;
+                    //fragmentManager.beginTransaction().addToBackStack(null).show(fragment).commit();
                 }
+                if (item.getItemId() == R.id.menu_search) {
+                    if (fragmentManager.findFragmentByTag("search") != null) {
+                        //if the fragment exists, show it.
+                        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("search")).commit();
+                    } else {
+                        //if the fragment does not exist, add it to fragment manager.
+                        fragmentManager.beginTransaction().add(R.id.tvPlaceholder, searchFragment, "search").commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("explore") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("explore")).commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("profile") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("profile")).commit();
+                    }
+                }
+                if (item.getItemId() == R.id.menu_profile) {
+                    if (fragmentManager.findFragmentByTag("profile") != null) {
+                        //if the fragment exists, show it.
+                        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("profile")).commit();
+                    } else {
+                        //if the fragment does not exist, add it to fragment manager.
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("user", ParseUser.getCurrentUser());
+                        profileFragment.setArguments(bundle);
+                        fragmentManager.beginTransaction().add(R.id.tvPlaceholder, profileFragment, "profile").commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("search") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("search")).commit();
+                    }
+                    if (fragmentManager.findFragmentByTag("explore") != null) {
+                        //if the other fragment is visible, hide it.
+                        fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("explore")).commit();
+                    }
+                }
+/*
                 if (item.getItemId() == R.id.menu_search){
                     Log.i(TAG, "Search selected");
                     fragment = searchFragment;
+                    //fragmentManager.beginTransaction().addToBackStack(null).show(fragment).commit();
                 }
                 if (item.getItemId() == R.id.menu_profile){
                     Log.i(TAG, "profile selected");
                     fragment = profileFragment;
-                    /*
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("user", ParseUser.getCurrentUser());
                     fragment.setArguments(bundle);
-                    */
+                    //fragmentManager.beginTransaction().addToBackStack(null).show(fragment).commit();
+
                 }
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.tvPlaceholder, fragment);
                 transaction.addToBackStack(null).commit();
                 return true;
+            */
+            return true;
             }
-        });
+        }
+        );
         bottomNavigationView.setSelectedItemId(R.id.menu_explore);
-    }
 
     /*
     @SuppressLint("MissingPermission")
@@ -245,4 +302,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     */
+}
 }
