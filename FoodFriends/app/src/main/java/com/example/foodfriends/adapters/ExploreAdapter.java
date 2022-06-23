@@ -168,7 +168,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                 public void onClick(View v) {
                     ParseUser user = ParseUser.getCurrentUser();
                     //String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f (%s)", user.getDouble("latitude"), user.getDouble("longitude"), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
-                    String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLatitude().toString() + " (" + restaurant.getName() + ")";
+                    String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                     intent.setPackage("com.google.android.apps.maps");
                     context.startActivity(intent);
