@@ -18,6 +18,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_restaurant_menu_24.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1025" />
+        <entry key="app/src/main/res/drawable/ic_location_pin_007.xml" value="0.131" />
         <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12409420289855072" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
@@ -28,6 +29,7 @@
         <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.2263885498046876" />
         <entry key="app/src/main/res/layout/profile_restaurant.xml" value="0.309375" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.20208333333333334" />
+        <entry key="app/src/main/res/xml/design_dimensions.xml" value="0.24895833333333334" />
       </map>
     </option>
   </component>

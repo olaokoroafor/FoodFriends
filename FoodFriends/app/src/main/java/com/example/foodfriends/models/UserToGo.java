@@ -6,8 +6,8 @@ import com.parse.ParseUser;
 
 @ParseClassName("UserToGo")
 public class UserToGo extends ParseObject {
-    public static final String USER_KEY = "user";
-    public static final String RESTAURANT_KEY = "restaurant";
+    private static final String USER_KEY = "user";
+    private static final String RESTAURANT_KEY = "restaurant";
 
     public ParseUser getUser(){
         return getParseUser(USER_KEY);

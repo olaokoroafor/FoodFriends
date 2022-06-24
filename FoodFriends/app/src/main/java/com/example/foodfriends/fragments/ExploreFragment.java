@@ -80,6 +80,8 @@ public class ExploreFragment extends Fragment {
                     adapter.notifyDataSetChanged(); // or notifyItemRangeRemoved
                     // 3. Reset endless scroll listener when performing a new search
                     scrollListener.resetState();
+                    parse_source = true;
+                    offset = 0;
                     queryRestaurants();
                     swipeContainer.setRefreshing(false);
                 }

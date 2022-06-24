@@ -22,81 +22,101 @@ import java.util.List;
 
 @ParseClassName("Restaurant")
 public class Restaurant extends ParseObject {
-    public static final String NAME_KEY = "name";
-    public static final String IMAGE_URL_KEY = "imageUrl";
-    public static final String CITY_KEY = "city";
-    public static final String STATE_KEY = "state";
-    public static final String ZIPCODE_KEY = "zipcode";
-    public static final String LATITUDE_KEY = "latitude";
-    public static final String LONGITUDE_KEY = "longitude";
-    public static final String PRICE_KEY = "price";
-    public static final String ADDRESS_KEY = "address";
-    public static final String YELP_ID_KEY = "yelp_id";
+    private static final String NAME_KEY = "name";
+    private static final String IMAGE_URL_KEY = "imageUrl";
+    private static final String CITY_KEY = "city";
+    private static final String STATE_KEY = "state";
+    private static final String ZIPCODE_KEY = "zipcode";
+    private static final String LATITUDE_KEY = "latitude";
+    private static final String LONGITUDE_KEY = "longitude";
+    private static final String PRICE_KEY = "price";
+    private static final String ADDRESS_KEY = "address";
+    private static final String YELP_ID_KEY = "yelp_id";
     private static final String TAG = "Restaurant Model";
 
-    public String getName(){
+    public String getName() {
         return getString(NAME_KEY);
     }
-    public void setName(String name){
+
+    public void setName(String name) {
         put(NAME_KEY, name);
     }
 
-    public String getImageUrl(){
+    public String getImageUrl() {
         return getString(IMAGE_URL_KEY);
     }
-    public void setImageUrl(String imageUrl){
+
+    public void setImageUrl(String imageUrl) {
         put(IMAGE_URL_KEY, imageUrl);
     }
 
-    public String getCity(){return getString(CITY_KEY);}
-    public void setCity(String city){
+    public String getCity() {
+        return getString(CITY_KEY);
+    }
+
+    public void setCity(String city) {
         put(CITY_KEY, city);
     }
 
-    public String getState(){
+    public String getState() {
         return getString(STATE_KEY);
     }
-    public void setState(String name){
+
+    public void setState(String name) {
         put(STATE_KEY, name);
     }
 
-    public String getZipcode(){
+    public String getZipcode() {
         return getString(ZIPCODE_KEY);
     }
-    public void setZipcode(String zipcode){
+
+    public void setZipcode(String zipcode) {
         put(ZIPCODE_KEY, zipcode);
     }
 
-    public Double getLatitude(){
+    public Double getLatitude() {
         return getDouble(LATITUDE_KEY);
     }
-    public void setLatitude(Double latitude){
+
+    public void setLatitude(Double latitude) {
         put(LATITUDE_KEY, latitude);
     }
 
-    public Double getLongitude(){
+    public Double getLongitude() {
         return getDouble(LONGITUDE_KEY);
     }
-    public void setLongitude(Double longitude){
+
+    public void setLongitude(Double longitude) {
         put(LONGITUDE_KEY, longitude);
     }
 
-    public String getPrice(){return getString(PRICE_KEY);}
-    public void setPrice(String price){
+    public String getPrice() {
+        return getString(PRICE_KEY);
+    }
+
+    public void setPrice(String price) {
         put(PRICE_KEY, price);
     }
 
-    public String getAddress(){return getString(ADDRESS_KEY);}
-    public void setAddress(String address){
+    public String getAddress() {
+        return getString(ADDRESS_KEY);
+    }
+
+    public void setAddress(String address) {
         put(ADDRESS_KEY, address);
     }
 
-    public String getYelpID(){return getString(YELP_ID_KEY);}
-    public void setYelpId(String yelpID){put(YELP_ID_KEY, yelpID);}
+    public String getYelpID() {
+        return getString(YELP_ID_KEY);
+    }
+
+    public void setYelpId(String yelpID) {
+        put(YELP_ID_KEY, yelpID);
+    }
 
     public static Restaurant fromJson(JSONObject jsonObject) throws JSONException {
 
-        try{
+        try {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo(YELP_ID_KEY, yelp_id);
@@ -118,10 +138,10 @@ public class Restaurant extends ParseObject {
             r.setLongitude(coordinates.getDouble("longitude"));
             r.setPrice("price");
             String address = "";
-            JSONArray display =  location.getJSONArray("display_address");
-            for(int i = 0; i < display.length(); i++){
+            JSONArray display = location.getJSONArray("display_address");
+            for (int i = 0; i < display.length(); i++) {
                 address += display.get(i);
-                if (i != display.length()-1)
+                if (i != display.length() - 1)
                     address += ", ";
             }
             r.setAddress(address);
@@ -135,15 +155,14 @@ public class Restaurant extends ParseObject {
                 }
             });
             return r;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     public static List<Restaurant> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Restaurant> restaurants = new ArrayList<>();
-        for(int i = 0; i < jsonArray.length(); i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             Restaurant restaurant = fromJson(jsonArray.getJSONObject(i));
             if(restaurant != null)
                 restaurants.add(restaurant);
@@ -152,8 +171,8 @@ public class Restaurant extends ParseObject {
 
     }
 
-    public int getLikes(){
-        int likesCount= 0;
+    public int getLikes() {
+        int likesCount = 0;
         // specify what type of data we want to query - Post.class
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // start an asynchronous call for posts
@@ -170,7 +189,7 @@ public class Restaurant extends ParseObject {
         return likesCount;
     }
 
-    public void incrementLikes(){
+    public void incrementLikes() {
         UserLike like = new UserLike();
         like.setRestaurant(this);
         like.setUser(ParseUser.getCurrentUser());
@@ -183,7 +202,7 @@ public class Restaurant extends ParseObject {
         });
     }
 
-    public void decrementLikes(){
+    public void decrementLikes() {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -199,14 +218,14 @@ public class Restaurant extends ParseObject {
         });
     }
 
-    public boolean user_like(){
+    public boolean user_like() {
         boolean liked = false;
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
         try {
             List<UserLike> likes = query.find();
-            if (likes.size() > 0){
+            if (likes.size() > 0) {
                 liked = true;
             }
         } catch (ParseException e) {
@@ -215,8 +234,8 @@ public class Restaurant extends ParseObject {
         return liked;
     }
 
-    public int getToGos(){
-        int toGoCount= 0;
+    public int getToGos() {
+        int toGoCount = 0;
         // specify what type of data we want to query - Post.class
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         // start an asynchronous call for posts
@@ -231,7 +250,7 @@ public class Restaurant extends ParseObject {
         return toGoCount;
     }
 
-    public void incrementToGos(){
+    public void incrementToGos() {
         UserToGo togo = new UserToGo();
         togo.setRestaurant(this);
         togo.setUser(ParseUser.getCurrentUser());
@@ -244,7 +263,7 @@ public class Restaurant extends ParseObject {
         });
     }
 
-    public void decrementToGos(){
+    public void decrementToGos() {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -260,14 +279,14 @@ public class Restaurant extends ParseObject {
         });
     }
 
-    public boolean user_to_go(){
+    public boolean user_to_go() {
         boolean going = false;
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
         try {
             List<UserToGo> togos = query.find();
-            if (togos.size() > 0){
+            if (togos.size() > 0) {
                 going = true;
             }
         } catch (ParseException e) {
