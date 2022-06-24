@@ -48,7 +48,7 @@ import okhttp3.Response;
 public class ExploreFragment extends Fragment {
 
         private RecyclerView rvRestaurants;
-        private boolean parse_source = true;
+        private boolean parseSource = true;
         private int offset = 0;
         public static final String TAG = "Explore Fragment";
         private ExploreAdapter adapter;
@@ -80,7 +80,7 @@ public class ExploreFragment extends Fragment {
                     adapter.notifyDataSetChanged(); // or notifyItemRangeRemoved
                     // 3. Reset endless scroll listener when performing a new search
                     scrollListener.resetState();
-                    parse_source = true;
+                    parseSource = true;
                     offset = 0;
                     queryRestaurants();
                     swipeContainer.setRefreshing(false);
@@ -190,7 +190,7 @@ public class ExploreFragment extends Fragment {
     }
 
     private void queryRestaurants() {
-        if(parse_source){
+        if(parseSource){
             // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
@@ -213,7 +213,7 @@ public class ExploreFragment extends Fragment {
                     offset += restaurants.size();
                     if (restaurants.size() < 20){
                         offset = 0;
-                        parse_source = false;
+                        parseSource = false;
                     }
 
                     restaurantList.addAll(restaurants);

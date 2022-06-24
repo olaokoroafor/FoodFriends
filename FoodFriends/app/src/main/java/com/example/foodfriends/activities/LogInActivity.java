@@ -62,6 +62,7 @@ public class LogInActivity extends AppCompatActivity {
                     return;
                 } else {
                     Intent i = new Intent(LogInActivity.this, MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                 }
             }
