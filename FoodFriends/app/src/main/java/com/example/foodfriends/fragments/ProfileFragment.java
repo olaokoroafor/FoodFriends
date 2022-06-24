@@ -10,12 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,14 +47,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
-    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
-    public static final int RESULT_OK = 0;
-    public String photoFileName = "profile_photo.jpg";
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
+    private static final int RESULT_OK = 0;
+    private String photoFileName = "profile_photo.jpg";
     private File photoFile;
-    private RecyclerView rvPosts;
-    public static final String TAG = "Profile Fragment";
+    private RecyclerView rvRestaurants;
+    private static final String TAG = "Profile Fragment";
     private ProfileRestaurantsAdapter adapter;
-    public List<Restaurant> allRestaurants;
+    private List<Restaurant> allRestaurants;
     private ImageView ivPfp;
     private ImageView ivAddPfp;
     private TextView tvUsername;
@@ -81,7 +79,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rvPosts = view.findViewById(R.id.rvProfilePosts);
+        rvRestaurants = view.findViewById(R.id.rvProfilePosts);
         ivPfp = view.findViewById(R.id.ivProfilePfp);
         tvUsername = view.findViewById(R.id.tvprofileUsername);
         ivAddPfp = view.findViewById(R.id.ivAddPfp);
@@ -137,21 +135,19 @@ public class ProfileFragment extends Fragment {
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
         }
 
-        tvUsername.setText(currentUser.getUsername());
+        tvUsername.setText("@"+currentUser.getUsername());
 
 
         allRestaurants = new ArrayList<Restaurant>();
-        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
-        rvPosts.setAdapter(adapter);
+        rvRestaurants.setAdapter(adapter);
         int selected_tab = tabLayout.getSelectedTabPosition();
         if(selected_tab == 0){
-            adapter.clear();
             Log.i(TAG, "Likes Tab selected");
             queryUserLikes();
         }
         else{
-            adapter.clear();
             Log.i(TAG, "To Go tab selected");
             queryUserToGos();
         }
