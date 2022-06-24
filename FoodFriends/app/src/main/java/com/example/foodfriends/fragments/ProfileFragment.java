@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
+import com.example.foodfriends.activities.LogInActivity;
 import com.example.foodfriends.adapters.ProfileRestaurantsAdapter;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.models.UserLike;
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private ParseUser currentUser;
     private TabLayout tabLayout;
+    private Button btnLogOut;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -83,13 +86,25 @@ public class ProfileFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvprofileUsername);
         ivAddPfp = view.findViewById(R.id.ivAddPfp);
         tabLayout = view.findViewById(R.id.profileTab);
+        btnLogOut = view.findViewById(R.id.btnLogOut);
+        btnLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser.logOut();
+                Intent i = new Intent(getContext(), LogInActivity.class);
+                // set the new task and clear flags
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
+            }
+        });
+
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             currentUser = ParseUser.getCurrentUser();
             ivAddPfp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     launchCamera();
-                    currentUser.put("profilePhoto", new ParseFile(photoFile));
+                    currentUser.put("profileImage", new ParseFile(photoFile));
                     currentUser.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -114,7 +129,7 @@ public class ProfileFragment extends Fragment {
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-        ParseFile pfp = currentUser.getParseFile("profilePhoto");
+        ParseFile pfp = currentUser.getParseFile("profileImage");
         if (pfp != null){
             Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
         }

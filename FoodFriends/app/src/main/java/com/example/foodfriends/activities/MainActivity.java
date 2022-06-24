@@ -40,7 +40,7 @@ import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
-    Button btnLogOut;
+
     BottomNavigationView bottomNavigationView;
     FusedLocationProviderClient mFusedLocationClient;
     int PERMISSION_ID = 44;
@@ -84,18 +84,6 @@ public class MainActivity extends AppCompatActivity {
         */
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        /*
-        btnLogOut = findViewById(R.id.btnLogOut);
-        btnLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser.logOut();
-                Intent i = new Intent(MainActivity.this, LogInActivity.class);
-                // set the new task and clear flags
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-            }
-        });*/
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -158,26 +146,6 @@ public class MainActivity extends AppCompatActivity {
                         fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("explore")).commit();
                     }
                 }
-/*
-                if (item.getItemId() == R.id.menu_search){
-                    Log.i(TAG, "Search selected");
-                    fragment = searchFragment;
-                    //fragmentManager.beginTransaction().addToBackStack(null).show(fragment).commit();
-                }
-                if (item.getItemId() == R.id.menu_profile){
-                    Log.i(TAG, "profile selected");
-                    fragment = profileFragment;
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("user", ParseUser.getCurrentUser());
-                    fragment.setArguments(bundle);
-                    //fragmentManager.beginTransaction().addToBackStack(null).show(fragment).commit();
-
-                }
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.tvPlaceholder, fragment);
-                transaction.addToBackStack(null).commit();
-                return true;
-            */
             return true;
             }
         }

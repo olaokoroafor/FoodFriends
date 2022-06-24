@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp">
+    android:layout_marginTop="@dimen/margin_padding_size_tiny"
+    android:layout_marginBottom="@dimen/margin_padding_size_tiny">
 
     <ImageView
         android:id="@+id/ivProfileRPic"
@@ -19,9 +19,9 @@
         android:id="@+id/tvProfileRName"
         android:layout_width="258dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="@dimen/margin_padding_size_tiny"
         android:text="Restaurant Name"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivProfileRPic"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,8 +30,8 @@
         android:id="@+id/tvProfileRAddress"
         android:layout_width="229dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        android:layout_marginEnd="@dimen/margin_padding_size_tiny"
         android:text="Address"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvProfileRName" />
@@ -40,7 +40,7 @@
         android:id="@+id/ivProfileMapWidget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
         app:layout_constraintEnd_toStartOf="@+id/tvProfileRAddress"
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toEndOf="@+id/ivProfileRPic"
