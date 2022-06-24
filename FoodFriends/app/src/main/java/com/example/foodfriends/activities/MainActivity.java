@@ -62,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
         final Fragment searchFragment = new SearchFragment();
         final Fragment profileFragment = new ProfileFragment();
 
-        /* New Handler to start the Menu-Activity
-         * and close this Splash-Screen after some seconds.*/
+        /*
+         New Handler to start the Menu-Activity
+         * and close this Splash-Screen after some seconds.
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        */
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         btnLogOut = findViewById(R.id.btnLogOut);
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.menu_explore);
     }
 
+    /*
     @SuppressLint("MissingPermission")
     private void requestNewLocationData() {
 

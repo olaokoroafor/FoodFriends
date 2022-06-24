@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="60dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="15dp"
     android:paddingBottom="5dp">
 
     <ImageView
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:padding="4dp"
         android:text="Restaurant"
-        android:textSize="40sp"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/ivExplorePic"
@@ -33,7 +34,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/tvExploreLikeCount"
         app:layout_constraintTop_toBottomOf="@+id/tvExploreName"
         app:srcCompat="@drawable/ic_baseline_call_missed_outgoing_24" />
@@ -91,4 +92,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivExplorePic"
         app:srcCompat="@drawable/ic_baseline_map_24" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/rust"
+        android:outlineAmbientShadowColor="@color/rust"
+        android:outlineSpotShadowColor="@color/rust"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvExploreAddress"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.333" />
 </androidx.constraintlayout.widget.ConstraintLayout>

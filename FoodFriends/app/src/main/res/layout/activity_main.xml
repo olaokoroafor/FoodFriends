@@ -30,14 +30,11 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/tvPlaceholder"
-        android:layout_width="419dp"
-        android:layout_height="611dp"
-        android:layout_marginTop="60dp"
+        android:layout_width="421dp"
+        android:layout_height="542dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvMainAppName"
