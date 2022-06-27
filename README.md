@@ -200,13 +200,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * text (String)
     * image (ParseFile)
 
-
-[Add table of models]
 ### Networking
-- [Add list of network requests by screen ]
-- [Create basic snippets for each Parse network request]
-
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
  - Yelp API
      - GET https://api.yelp.com/v3/businesses/search 
  - Google Maps API
