@@ -138,7 +138,7 @@ public class ExploreFragment extends Fragment {
         urlBuilder.addQueryParameter("term", "restaurant");
         urlBuilder.addQueryParameter("offset", String.valueOf(offset));
         urlBuilder.addQueryParameter("limit", "20");
-        urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city"));
+        urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city") + "," + ParseUser.getCurrentUser().getString("state"));
         String url = urlBuilder.build().toString();
         Log.i(TAG, "URL: " + url);
         Request request = new Request.Builder()
@@ -193,7 +193,9 @@ public class ExploreFragment extends Fragment {
         if(parseSource){
             // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+            //think about this because Yelp does not always give you restaurants in your city when you search this
             query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
+            query.whereEqualTo("state", ParseUser.getCurrentUser().getString("state"));
             // start an asynchronous call for posts
             query.setLimit(20);
             query.setSkip(offset);
@@ -214,6 +216,9 @@ public class ExploreFragment extends Fragment {
                     if (restaurants.size() < 20){
                         offset = 0;
                         parseSource = false;
+                    }
+                    if(restaurants.size()==0){
+                        yelpQuery();
                     }
 
                     restaurantList.addAll(restaurants);

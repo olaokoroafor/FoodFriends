@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +20,9 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
+import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.fragments.FindFriendsFragment;
+import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -107,8 +113,14 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
             else{
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivPfp);
             }
-
-            if(follows){
+            ivPfp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity) context).displayOtherProfileFragment(user);
+                }
+            });
+            follows = Friends.user_follows(user);
+            if (follows){
                 Glide.with(context)
                         .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivAddFriend);
@@ -118,19 +130,18 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
                         .load(R.drawable.ic_baseline_person_add_24)
                         .into(ivAddFriend);
             }
-
             ivAddFriend.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(follows){
-                        //do something to database
+                    if (follows){
+                        Friends.unfollow(user);
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_person_add_24)
                                 .into(ivAddFriend);
                         follows=false;
                     }
                     else{
-                        //do something to database
+                        Friends.follow(user);
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_person_remove_24)
                                 .into(ivAddFriend);

@@ -33,7 +33,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.LogInActivity;
 import com.example.foodfriends.adapters.ProfileRestaurantsAdapter;
+import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
 import com.google.android.material.tabs.TabLayout;
@@ -64,6 +66,8 @@ public class ProfileFragment extends Fragment {
     private TabLayout tabLayout;
     private Button btnLogOut;
     private ImageView ivFindFriends;
+    private ImageView ivFollow;
+    private boolean follows;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -88,32 +92,9 @@ public class ProfileFragment extends Fragment {
         ivAddPfp = view.findViewById(R.id.ivAddPfp);
         tabLayout = view.findViewById(R.id.profileTab);
         ivFindFriends = view.findViewById(R.id.ivFindFriends);
-        ivFindFriends.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new FindFriendsFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.tvPlaceholder, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                /*
-                Intent i = new Intent(getContext(), FindFriendsActivity.class);
-                startActivity(i);
-                 */
-            }
-        });
         btnLogOut = view.findViewById(R.id.btnLogOut);
-        btnLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser.logOut();
-                Intent i = new Intent(getContext(), LogInActivity.class);
-                // set the new task and clear flags
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-            }
-        });
+        ivFollow = view.findViewById(R.id.ivFollow);
+
 
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             currentUser = ParseUser.getCurrentUser();
@@ -139,9 +120,65 @@ public class ProfileFragment extends Fragment {
                     });
                 }
             });
+
+            btnLogOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ParseUser.logOut();
+                    Intent i = new Intent(getContext(), LogInActivity.class);
+                    // set the new task and clear flags
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                }
+            });
+
+            ivFindFriends.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Fragment fragment = new FindFriendsFragment();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.tvPlaceholder, fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
+            ivFollow.setVisibility(View.GONE);
         }
         else{
             ivAddPfp.setVisibility(View.GONE);
+            btnLogOut.setVisibility(View.GONE);
+            ivFindFriends.setVisibility(View.GONE);
+            follows = Friends.user_follows(currentUser);
+            if (follows){
+                Glide.with(getContext())
+                        .load(R.drawable.ic_baseline_person_remove_24)
+                        .into(ivFollow);
+            }
+            else{
+                Glide.with(getContext())
+                        .load(R.drawable.ic_baseline_person_add_24)
+                        .into(ivFollow);
+            }
+            ivFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (follows){
+                        Friends.unfollow(currentUser);
+                        Glide.with(getContext())
+                                .load(R.drawable.ic_baseline_person_add_24)
+                                .into(ivFollow);
+                        follows = false;
+                    }
+                    else{
+                        Friends.follow(currentUser);
+                        Glide.with(getContext())
+                                .load(R.drawable.ic_baseline_person_remove_24)
+                                .into(ivFollow);
+                        follows = true;
+                    }
+                }
+            });
         }
 
         RequestOptions requestOptions = new RequestOptions();
