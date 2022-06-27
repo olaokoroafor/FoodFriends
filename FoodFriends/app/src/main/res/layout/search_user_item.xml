@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_padding_size_tiny">
+
+    <ImageView
+        android:id="@+id/ivSearchPfp"
+        android:layout_width="79dp"
+        android:layout_height="71dp"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvSearchUsername"
+        android:layout_width="203dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_xxlarge"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:layout_marginEnd="@dimen/margin_padding_size_small"
+        android:text="TextView"
+        app:layout_constraintEnd_toStartOf="@+id/ivAddFriend"
+        app:layout_constraintStart_toEndOf="@+id/ivSearchPfp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSearchLocation"
+        android:layout_width="203dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_xxlarge"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/ivSearchPfp"
+        app:layout_constraintTop_toBottomOf="@+id/tvSearchUsername" />
+
+    <ImageView
+        android:id="@+id/ivAddFriend"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:layout_marginEnd="@dimen/margin_padding_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_person_add_24" />
+</androidx.constraintlayout.widget.ConstraintLayout>

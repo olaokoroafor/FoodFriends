@@ -78,7 +78,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ivFindFriends"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="@dimen/margin_padding_size_xxlarge"
