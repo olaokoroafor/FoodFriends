@@ -181,20 +181,6 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                 }
             });
             /*
-            ivPostPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, PostDetailActivity.class);
-                    intent.putExtra(Post.class.getSimpleName(), post);
-                    context.startActivity(intent);
-                }
-            });
-
-            //bind data to view elements
-            //tvCaption.setText(post.getDescription());
-            //tvUsername.setText(post.getUser().getUsername());
-            //tvCaptionUsername.setText(post.getUser().getUsername());
-            /*
             tvComments.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -204,28 +190,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                     Log.i("Timeline Adapter", post.getObjectId());
                 }
             });
-
-
             tvPostedAt.setText(Post.getRelativeTimeAgo(post.getCreatedAt().toString()));
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions = requestOptions.transforms(new CenterCrop());
-            Glide.with(context).applyDefaultRequestOptions(requestOptions).load(post.getImage().getUrl()).into(ivPostPic);
-            ivPostPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, PostDetailActivity.class);
-                    intent.putExtra(Post.class.getSimpleName(), post);
-                    context.startActivity(intent);
-                }
-            });
-            requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(65));
-            ParseFile pfp_url = post.getUser().getParseFile("profileImage");
-            if (pfp_url != null){
-                Glide.with(context).applyDefaultRequestOptions(requestOptions).load(pfp_url.getUrl()).into(ivProfilePic);
-            }
-            else{
-                Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivProfilePic);
-            }
             ivComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -235,63 +200,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                     Log.i("Timeline Adapter", post.getObjectId());
                 }
             });
-            View.OnClickListener to_profile = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((HomeActivity) context).displayProfileFragment(post.getUser());
-                }
-            };
-            ivProfilePic.setOnClickListener(to_profile);
-            tvUsername.setOnClickListener(to_profile);
-            tvCaptionUsername.setOnClickListener(to_profile);
 
-            List<String> likeArray = post.getLikes();
-            Integer likes;
-            if (likeArray != null){
-                likes = likeArray.size();
-            }
-            else{
-                likes = 0;
-            }
-            tvLikeCount.setText( likes + " likes");
-
-            if (likeArray.contains(ParseUser.getCurrentUser().getObjectId())){
-                liked = true;
-                Glide.with(context)
-                        .load(R.drawable.ufi_heart_active)
-                        .into(ivLike);
-            }
-            else{
-                liked = false;
-                Glide.with(context)
-                        .load(R.drawable.ufi_heart)
-                        .into(ivLike);
-            }
-
-            ivLike.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!liked){
-                        post.setLikes(ParseUser.getCurrentUser(), true);
-                        post.saveInBackground();
-                        tvLikeCount.setText(new Integer(likes+1).toString() + " likes");
-                        liked = true;
-                        Glide.with(context)
-                                .load(R.drawable.ufi_heart_active)
-                                .into(ivLike);
-                    }
-
-                    else{
-                        post.setLikes(ParseUser.getCurrentUser(), false);
-                        post.saveInBackground();
-                        tvLikeCount.setText(new Integer(likes-1).toString() + " likes");
-                        liked = false;
-                        Glide.with(context)
-                                .load(R.drawable.ufi_heart)
-                                .into(ivLike);
-                    }
-                }
-            });
             */
 
 

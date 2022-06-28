@@ -45,7 +45,7 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
         return new ViewHolder(view);
     }
 
-    // binds the data to the TextView in each cell
+    // binds the data to the Views in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Restaurant restaurant= restaurants.get(position);
@@ -60,7 +60,7 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView ivResPic;
         private ImageView ivMap;
         private TextView tvResName;
@@ -72,25 +72,6 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             ivMap = itemView.findViewById(R.id.ivProfileMapWidget);
             tvResName = itemView.findViewById(R.id.tvProfileRName);
             tvAddress = itemView.findViewById(R.id.tvProfileRAddress);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            /*
-
-            // gets item position
-            int position = getAdapterPosition();
-            // make sure the position is valid, i.e. actually exists in the view
-            if (position != RecyclerView.NO_POSITION) {
-                // get the movie at the position, this won't work if the class is static
-                Post post = allPosts.get(position);
-                // create intent for the new activity
-                Intent intent = new Intent(context, PostDetailActivity.class);
-                intent.putExtra(Post.class.getSimpleName(), post);
-                context.startActivity(intent);
-            }*/
-
         }
 
         public void bind(Restaurant restaurant) {

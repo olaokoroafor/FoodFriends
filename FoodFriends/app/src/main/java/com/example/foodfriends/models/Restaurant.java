@@ -121,10 +121,13 @@ public class Restaurant extends ParseObject {
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo(YELP_ID_KEY, yelp_id);
             int num = query.find().size();
+            /*
             Log.i(TAG, "NUM EXISTING " + String.valueOf(num));
             if (num > 0)
                 return null;
             Log.i(TAG, "MAKING RESTAURANT");
+
+             */
             Restaurant r = new Restaurant();
             r.setYelpId(jsonObject.getString("id"));
             r.setName(jsonObject.getString("name"));
@@ -173,9 +176,7 @@ public class Restaurant extends ParseObject {
 
     public int getLikes() {
         int likesCount = 0;
-        // specify what type of data we want to query - Post.class
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
-        // start an asynchronous call for posts
         query.whereEqualTo("restaurant", this);
         try {
             List<UserLike> likes = query.find();
@@ -236,9 +237,7 @@ public class Restaurant extends ParseObject {
 
     public int getToGos() {
         int toGoCount = 0;
-        // specify what type of data we want to query - Post.class
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
-        // start an asynchronous call for posts
         query.whereEqualTo("restaurant", this);
         try {
             List<UserToGo> togos = query.find();
