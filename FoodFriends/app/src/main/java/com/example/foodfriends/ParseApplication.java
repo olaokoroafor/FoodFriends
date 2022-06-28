@@ -5,11 +5,14 @@ import android.app.Application;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
 
@@ -22,6 +25,8 @@ public class ParseApplication extends Application {
         ParseObject.registerSubclass(Restaurant.class);
         ParseObject.registerSubclass(UserLike.class);
         ParseObject.registerSubclass(UserToGo.class);
+        //ParseObject.registerSubclass(User.class);
+        ParseObject.registerSubclass(Friends.class);
 
         // Use for monitoring Parse OkHttp traffic
         // Can be Level.BASIC, Level.HEADERS, or Level.BODY

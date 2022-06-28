@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/ic_baseline_face_24.xml" value="0.1245" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_baseline_active_go_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.117" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_a_photo_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_call_missed_outgoing_24.xml" value="0.1025" />
+        <entry key="app/src/main/res/drawable/ic_baseline_group_add_24.xml" value="0.125" />
         <entry key="app/src/main/res/drawable/ic_baseline_heart_24.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_baseline_map_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.1025" />
@@ -19,15 +21,18 @@
         <entry key="app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_location_pin_007.xml" value="0.131" />
+        <entry key="app/src/main/res/layout/activity_find_friends.xml" value="0.12952898550724637" />
         <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12409420289855072" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_find_friends.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.17980072463768115" />
-        <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.2263885498046876" />
+        <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.7105926513671876" />
         <entry key="app/src/main/res/layout/profile_restaurant.xml" value="0.309375" />
+        <entry key="app/src/main/res/layout/search_user_item.xml" value="0.12298940022786452" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.20208333333333334" />
         <entry key="app/src/main/res/xml/design_dimensions.xml" value="0.24895833333333334" />
       </map>

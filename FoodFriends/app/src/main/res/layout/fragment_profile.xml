@@ -78,7 +78,17 @@
     </com.google.android.material.tabs.TabLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ivFindFriends"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="@dimen/margin_padding_size_xxlarge"
+        android:layout_marginTop="@dimen/margin_padding_size_xxlarge"
+        android:src="@drawable/ic_baseline_group_add_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivFollow"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="@dimen/margin_padding_size_xxlarge"

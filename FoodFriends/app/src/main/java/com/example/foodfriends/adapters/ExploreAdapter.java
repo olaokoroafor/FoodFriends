@@ -67,6 +67,8 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
         private ImageView ivToGo;
         private boolean liked;
         private boolean going;
+        int num_likes;
+        int num_togo;
 
 
         public ViewHolder(@NonNull View itemView){
@@ -84,9 +86,9 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
             tvRName.setText(restaurant.getName());
             tvAddress.setText(restaurant.getAddress());
-            int num_likes = restaurant.getLikes();
+            num_likes =  restaurant.getLikes();
             tvLikeCount.setText(String.valueOf(num_likes));
-            int num_togo = restaurant.getToGos();
+            num_togo = restaurant.getToGos();
             tvToGoCount.setText(String.valueOf(num_togo));
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
@@ -124,6 +126,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                         restaurant.incrementLikes();
                         tvLikeCount.setText(new Integer(num_likes+1).toString());
                         liked = true;
+                        num_likes += 1;
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_red_heart_24)
                                 .into(ivLike);
@@ -133,6 +136,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                         restaurant.decrementLikes();
                         tvLikeCount.setText(new Integer(num_likes-1).toString());
                         liked = false;
+                        num_likes -= 1;
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_heart_24)
                                 .into(ivLike);
@@ -147,6 +151,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                         restaurant.incrementToGos();
                         tvToGoCount.setText(new Integer(num_togo+1).toString());
                         going = true;
+                        num_togo += 1;
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_active_go_24)
                                 .into(ivToGo);
@@ -156,6 +161,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                         restaurant.decrementToGos();
                         tvToGoCount.setText(new Integer(num_togo-1).toString());
                         going = false;
+                        num_togo -=1;
                         Glide.with(context)
                                 .load(R.drawable.ic_baseline_call_missed_outgoing_24)
                                 .into(ivToGo);

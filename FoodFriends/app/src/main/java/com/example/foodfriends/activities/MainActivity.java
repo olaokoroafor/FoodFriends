@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.fragments.ExploreFragment;
+import com.example.foodfriends.fragments.FindFriendsFragment;
 import com.example.foodfriends.fragments.ProfileFragment;
 import com.example.foodfriends.fragments.SearchFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -272,4 +273,16 @@ public class MainActivity extends AppCompatActivity {
     }
     */
 }
+
+    public void displayOtherProfileFragment(ParseUser user) {
+        Fragment other_profile_fragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        other_profile_fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.tvPlaceholder, other_profile_fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 }
