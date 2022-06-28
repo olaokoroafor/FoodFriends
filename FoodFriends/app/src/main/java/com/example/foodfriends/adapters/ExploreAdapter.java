@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +19,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
+import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.models.Restaurant;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -178,6 +181,13 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                     intent.setPackage("com.google.android.apps.maps");
                     context.startActivity(intent);
+                }
+            });
+
+            ivRPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity) context).displayRestaurantDetailFragment(restaurant);
                 }
             });
             /*

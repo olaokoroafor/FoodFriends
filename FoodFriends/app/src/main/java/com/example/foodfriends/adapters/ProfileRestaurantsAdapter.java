@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
+import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.models.Restaurant;
 import com.parse.ParseUser;
 
@@ -91,6 +92,13 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
             Glide.with(context).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivResPic);
+
+            ivResPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity) context).displayRestaurantDetailFragment(restaurant);
+                }
+            });
         }
     }
     // Clean all elements of the recycler
