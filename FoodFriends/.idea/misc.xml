@@ -29,8 +29,9 @@
         <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_find_friends.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_restaurant_detail.xml" value="0.213768115942029" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.17980072463768115" />
-        <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.7105926513671876" />
+        <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.18427581787109382" />
         <entry key="app/src/main/res/layout/profile_restaurant.xml" value="0.309375" />
         <entry key="app/src/main/res/layout/search_user_item.xml" value="0.12298940022786452" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.20208333333333334" />

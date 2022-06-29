@@ -27,7 +27,9 @@ import com.example.foodfriends.R;
 import com.example.foodfriends.fragments.ExploreFragment;
 import com.example.foodfriends.fragments.FindFriendsFragment;
 import com.example.foodfriends.fragments.ProfileFragment;
+import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.fragments.SearchFragment;
+import com.example.foodfriends.models.Restaurant;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     int PERMISSION_ID = 44;
     private double latitude;
     private double longitude;
+    private String fragment_tag;
     ParseUser user;
 
     @SuppressLint("MissingPermission")
@@ -87,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         */
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+        NavigationBarView.OnItemSelectedListener strange_listener = new NavigationBarView.OnItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.i(TAG, "Menu item selected");
@@ -149,10 +152,47 @@ public class MainActivity extends AppCompatActivity {
                         fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("explore")).commit();
                     }
                 }
-            return true;
+                return true;
             }
-        }
-        );
+        };
+        NavigationBarView.OnItemSelectedListener reloaded_listener = new NavigationBarView.OnItemSelectedListener(){
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Log.i(TAG, "Menu item selected");
+                Fragment fragment = exploreFragment;
+                if (item.getItemId() == R.id.menu_explore){
+                    //compose action has been selected
+                    //showComposeFragment("");
+                    Log.i(TAG, "explore selected");
+                    fragment = exploreFragment;
+                    fragment_tag = "explore";
+                }
+                if (item.getItemId() == R.id.menu_search){
+                    //invalidateOptionsMenu();
+                    //compose action has been selected
+                    //showComposeFragment("");
+                    Log.i(TAG, "search selected");
+                    fragment = searchFragment;
+                    fragment_tag = "search";
+                }
+                if (item.getItemId() == R.id.menu_profile){
+                    //compose action has been selected
+                    //showComposeFragment("");
+                    Log.i(TAG, "profile selected");
+                    fragment = profileFragment;
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("user", ParseUser.getCurrentUser());
+                    fragment.setArguments(bundle);
+                    fragment_tag = "profile";
+                }
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.tvPlaceholder, fragment, fragment_tag);
+                transaction.addToBackStack(null).commit();
+                return true;
+            }
+        };
+
+        bottomNavigationView.setOnItemSelectedListener(reloaded_listener);
         bottomNavigationView.setSelectedItemId(R.id.menu_explore);
 
     /*
@@ -287,4 +327,17 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    public void displayRestaurantDetailFragment(Restaurant restaurant) {
+        Fragment detail_fragment = new RestaurantDetailFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("restaurant", restaurant);
+        detail_fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.tvPlaceholder, detail_fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
 }

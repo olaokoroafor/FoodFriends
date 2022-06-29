@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/margin_padding_size_small"
+    tools:context=".fragments.RestaurantDetailFragment">
+
+    <ImageView
+        android:id="@+id/ivDetailPic"
+        android:layout_width="209dp"
+        android:layout_height="223dp"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_restaurant_menu_24" />
+
+    <TextView
+        android:id="@+id/tvDetailName"
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_padding_size_tiny"
+        android:text="Restaurant"
+        android:textSize="@dimen/text_size_xlarge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailPic"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivDetailToGo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="@dimen/margin_padding_size_large"
+        android:layout_marginTop="@dimen/margin_padding_size_tiny"
+        app:layout_constraintStart_toEndOf="@+id/tvDetailLikeCount"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailName"
+        app:srcCompat="@drawable/ic_baseline_call_missed_outgoing_24" />
+
+    <ImageView
+        android:id="@+id/ivDetailLike"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="@dimen/margin_padding_size_tiny"
+        android:layout_marginTop="@dimen/margin_padding_size_tiny"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailPic"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailName"
+        app:srcCompat="@drawable/ic_baseline_heart_24" />
+
+    <TextView
+        android:id="@+id/tvDetailLikeCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailLike"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailName" />
+
+    <TextView
+        android:id="@+id/tvDetailToGoCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailToGo"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailName" />
+
+    <TextView
+        android:id="@+id/tvDetailAddress"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        android:padding="@dimen/margin_padding_size_tiny"
+        android:text="Address"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivDetailPic" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="43dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        app:layout_constraintEnd_toStartOf="@+id/tvDetailAddress"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivDetailPic"
+        app:srcCompat="@drawable/ic_baseline_map_24" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvComments"
+        android:layout_width="0dp"
+        android:layout_height="339dp"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailPrice" />
+
+    <TextView
+        android:id="@+id/tvDetailPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        android:layout_marginTop="@dimen/margin_padding_size_small"
+        android:text="Price"
+        android:textColor="@color/amber"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailAddress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -120,7 +120,6 @@ public class Restaurant extends ParseObject {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo(YELP_ID_KEY, yelp_id);
-            int num = query.find().size();
             /*
             Log.i(TAG, "NUM EXISTING " + String.valueOf(num));
             if (num > 0)
@@ -139,7 +138,7 @@ public class Restaurant extends ParseObject {
             JSONObject coordinates = jsonObject.getJSONObject("coordinates");
             r.setLatitude(coordinates.getDouble("latitude"));
             r.setLongitude(coordinates.getDouble("longitude"));
-            r.setPrice("price");
+            r.setPrice(jsonObject.getString("price"));
             String address = "";
             JSONArray display = location.getJSONArray("display_address");
             for (int i = 0; i < display.length(); i++) {
@@ -148,6 +147,12 @@ public class Restaurant extends ParseObject {
                     address += ", ";
             }
             r.setAddress(address);
+            try {
+                r.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            /*
             r.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -156,7 +161,7 @@ public class Restaurant extends ParseObject {
                     else
                         Log.e(TAG, e.toString());
                 }
-            });
+            });*/
             return r;
         } catch (Exception e) {
             return null;
