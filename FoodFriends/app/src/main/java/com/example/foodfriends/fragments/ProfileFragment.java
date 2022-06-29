@@ -311,6 +311,8 @@ public class ProfileFragment extends Fragment {
 
         Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+        Log.i(TAG, String.valueOf(photoFile));
+        Log.i(TAG, String.valueOf(fileProvider));
 
         if(intent.resolveActivity(getActivity().getPackageManager()) != null){
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -334,5 +336,17 @@ public class ProfileFragment extends Fragment {
 
         }
     }
+
+}
+
+
+interface ProfileState {
+}
+
+class LoadingState implements ProfileState {
+}
+
+class CompleteState implements ProfileState {
+    public ParseUser user;
 
 }
