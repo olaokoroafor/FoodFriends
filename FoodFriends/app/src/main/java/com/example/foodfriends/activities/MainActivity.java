@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         final Fragment searchFragment = new SearchFragment();
         final Fragment profileFragment = new ProfileFragment();
 
+
+        //Use when we want to get user's location
         /*
          New Handler to start the Menu-Activity
          * and close this Splash-Screen after some seconds.

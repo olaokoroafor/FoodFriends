@@ -42,8 +42,6 @@ public class LogInActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //
-                // Log.i.(TAG, "Button Clicked"):
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 loginUser(username, password);
@@ -57,7 +55,6 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e != null) {
-                    // Hooray! Let them use the app now.
                     Log.i(TAG, "Something went wrong :(");
                     return;
                 } else {

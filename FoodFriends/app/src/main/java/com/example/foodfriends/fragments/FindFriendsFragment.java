@@ -61,7 +61,6 @@ public class FindFriendsFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // do something when text changes
                 return false;
             }
         });

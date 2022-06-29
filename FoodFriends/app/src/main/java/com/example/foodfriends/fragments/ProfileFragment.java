@@ -234,14 +234,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void queryUserLikes() {
-        // specify what type of data we want to query - Post.class
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // include data referred by restaurant key
         query.include(UserLike.RESTAURANT_KEY);
         query.whereEqualTo("user", currentUser);
-        // order posts by creation date (newest first)
         query.addDescendingOrder("createdAt");
-        // start an asynchronous call for posts
 
         query.findInBackground(new FindCallback<UserLike>() {
             @Override
@@ -252,12 +249,10 @@ public class ProfileFragment extends Fragment {
                     return;
                 }
                 List<Restaurant> rs = new ArrayList<Restaurant>();
-                // for debugging purposes let's print every post description to logcat
                 for (UserLike like : likes) {
                     rs.add(like.getRestaurant());
                     Log.i(TAG, "Restaurant: " + like.getObjectId());
                 }
-
                 // save received posts to list and notify adapter of new data
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
@@ -284,7 +279,6 @@ public class ProfileFragment extends Fragment {
                     return;
                 }
                 List<Restaurant> rs = new ArrayList<Restaurant>();
-                // for debugging purposes let's print every post description to logcat
                 for (UserToGo togo : togos) {
                     rs.add(togo.getRestaurant());
                     Log.i(TAG, "Restaurant: " + togo.getObjectId());
