@@ -15,7 +15,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-public class LogInActivity extends AppCompatActivity {
+public class LogInActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = "LoginActivity";
     EditText etUsername;
     EditText etPassword;
@@ -31,23 +31,31 @@ public class LogInActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etLogInPassword);
         btnLogin = findViewById(R.id.btnLogIn);
         tvSignUp = findViewById(R.id.tvSignUpLink);
-        tvSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(LogInActivity.this, SignUpActivity.class);
-                startActivity(i);
+        tvSignUp.setOnClickListener(this);
+        tvSignUp.setOnClickListener(this);
+        btnLogin.setOnClickListener(this);
 
-            }
-        });
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+
+            case R.id.tvSignUpLink:
+                to_sign_up();
+                break;
+
+            case R.id.btnLogIn:
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 loginUser(username, password);
-            }
-        });
+                break;
+        }
+    }
 
+    private void to_sign_up() {
+        Intent i = new Intent(LogInActivity.this, SignUpActivity.class);
+        startActivity(i);
     }
 
     private void loginUser(String username, String password) {
@@ -65,4 +73,6 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
