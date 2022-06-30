@@ -62,7 +62,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         user.setState(etState.getText().toString());
         user.setCity(etCity.getText().toString());
         user.setName(etName.getText().toString());
-        Log.i(TAG, String.valueOf(user.isValid()));
         switch (user.isValid()){
             case -1:
                 user.getUser().signUpInBackground(new SignUpCallback() {

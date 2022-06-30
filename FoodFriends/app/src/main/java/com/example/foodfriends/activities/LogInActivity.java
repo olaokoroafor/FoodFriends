@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.foodfriends.R;
 import com.parse.LogInCallback;
@@ -63,7 +64,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e != null) {
-                    Log.i(TAG, "Something went wrong :(");
+                    Toast.makeText(LogInActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     Intent i = new Intent(LogInActivity.this, MainActivity.class);
