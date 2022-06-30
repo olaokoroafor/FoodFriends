@@ -38,10 +38,12 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * Provides different functionality depending on view clicked
+     * Either taking user to sign up page or logging the user in**/
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-
             case R.id.tvSignUpLink:
                 to_sign_up();
                 break;
@@ -54,11 +56,17 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /**
+     * Fires intent to to take user to Sign Up Activity **/
     private void to_sign_up() {
         Intent i = new Intent(LogInActivity.this, SignUpActivity.class);
         startActivity(i);
     }
 
+    /**
+     * Users ParseUser object method to log in current user
+     * Takes user to main activity if log in attempt is successful
+     * **/
     private void loginUser(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override

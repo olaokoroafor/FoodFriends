@@ -54,6 +54,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    /**
+     * Creates user object for the current user, with specified attributes
+     * **/
     private void signUp() {
         UserObservable user = new UserObservable();
         // Set the user's username and password, which can be obtained by a forms
@@ -94,6 +97,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * Displays Welcome Alert to use then sends them to the Main Activity
+     * **/
     private void showAlert(String title,String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this)
                 .setTitle(title)

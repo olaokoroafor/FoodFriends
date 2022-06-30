@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -96,7 +97,7 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             ivResPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((MainActivity) context).displayRestaurantDetailFragment(restaurant);
+                    ((MainActivity) context).displayRestaurantDetailFragment(new RestaurantObservable(restaurant));
                 }
             });
         }

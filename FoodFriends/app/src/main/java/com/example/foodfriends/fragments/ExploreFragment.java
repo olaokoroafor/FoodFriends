@@ -1,7 +1,6 @@
 package com.example.foodfriends.fragments;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import com.example.foodfriends.R;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,43 +19,21 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.foodfriends.adapters.ExploreAdapter;
 import com.example.foodfriends.misc.EndlessRecyclerViewScrollListener;
-import com.example.foodfriends.models.Restaurant;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import com.example.foodfriends.misc.RestaurantServer;
+import com.example.foodfriends.observable_models.RestaurantObservable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
-public class ExploreFragment extends Fragment {
+public class ExploreFragment extends Fragment{
 
     private RecyclerView rvRestaurants;
-    private boolean parseSource = true;
-    private int offset = 0;
     public static final String TAG = "Explore Fragment";
     private ExploreAdapter adapter;
-    public List<Restaurant> restaurantList;
+    public List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
-    public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
     private EndlessRecyclerViewScrollListener scrollListener;
+    private RestaurantServer restaurantServer;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -67,18 +43,19 @@ public class ExploreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
+        restaurantList = new ArrayList<RestaurantObservable>();
+        restaurantServer = new RestaurantServer(restaurantList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 restaurantList.clear();
-                adapter.notifyDataSetChanged();
                 scrollListener.resetState();
-                parseSource = true;
-                offset = 0;
-                queryRestaurants();
+                restaurantServer.reset();
+                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
+                adapter.notifyDataSetChanged();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -95,118 +72,20 @@ public class ExploreFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvRestaurants = view.findViewById(R.id.rvRestaurants);
-
-        restaurantList = new ArrayList<Restaurant>();
         adapter = new ExploreAdapter(getContext(), restaurantList);
         rvRestaurants.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvRestaurants.setLayoutManager(linearLayoutManager);
-        // Retain an instance so that you can call `resetState()` for fresh searches
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                queryRestaurants();
+                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
+                adapter.notifyDataSetChanged();
             }
         };
-        // Adds the scroll listener to RecyclerView
         rvRestaurants.addOnScrollListener(scrollListener);
-
-        queryRestaurants();
+        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
+        adapter.notifyDataSetChanged();
     }
-
-    private void yelpQuery() {
-        // Use OkHttpClient singleton
-        OkHttpClient client = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
-        urlBuilder.addQueryParameter("term", "restaurant");
-        urlBuilder.addQueryParameter("offset", String.valueOf(offset));
-        urlBuilder.addQueryParameter("limit", "20");
-        urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city") + "," + ParseUser.getCurrentUser().getString("state"));
-        String url = urlBuilder.build().toString();
-        Log.i(TAG, "URL: " + url);
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + getResources().getString(R.string.yelp_api_key))
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) {
-                if (response.isSuccessful()) {
-                    String responseData = null;
-                    try {
-                        responseData = response.body().string();
-                        JSONObject json = new JSONObject(responseData);
-                        JSONArray jsonArray = json.getJSONArray("businesses");
-                        List<Restaurant> res = Restaurant.fromJsonArray(jsonArray);
-                        offset += 20;
-                        if (res.size() == 0) {
-                            yelpQuery();
-                        } else {
-                            restaurantList.addAll(res);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.i(TAG, response.toString());
-                }
-            }
-        });
-    }
-
-    private void queryRestaurants() {
-        if (parseSource) {
-            // specify what type of data we want to query - Post.class
-            ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
-            //think about this because Yelp does not always give you restaurants in your city when you search this
-            query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
-            query.whereEqualTo("state", ParseUser.getCurrentUser().getString("state"));
-            // start an asynchronous call for posts
-            query.setLimit(20);
-            query.setSkip(offset);
-            query.findInBackground(new FindCallback<Restaurant>() {
-                @Override
-                public void done(List<Restaurant> restaurants, ParseException e) {
-                    // check for errors
-                    if (e != null) {
-                        Log.e(TAG, "Issue with getting posts", e);
-                        return;
-                    }
-                    // for debugging purposes let's print every restaurant description to logcat
-                    for (Restaurant r : restaurants) {
-                        Log.i(TAG, "Restaurant: " + r.getName());
-                    }
-                    offset += restaurants.size();
-                    if (restaurants.size() < 20) {
-                        offset = 0;
-                        parseSource = false;
-                    }
-                    if (restaurants.size() == 0) {
-                        yelpQuery();
-                    }
-
-                    restaurantList.addAll(restaurants);
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        } else {
-            yelpQuery();
-        }
-    }
-
-
 }
