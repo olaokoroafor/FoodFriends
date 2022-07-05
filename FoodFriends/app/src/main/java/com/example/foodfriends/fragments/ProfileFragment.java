@@ -32,12 +32,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.LogInActivity;
+import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.adapters.ProfileRestaurantsAdapter;
 import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
+import com.example.foodfriends.observable_models.UserObservable;
 import com.google.android.material.tabs.TabLayout;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -49,8 +51,11 @@ import com.parse.SaveCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements Observer, View.OnClickListener{
+
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
     private static final int RESULT_OK = 0;
     private String photoFileName = "profile_photo.jpg";
@@ -62,7 +67,7 @@ public class ProfileFragment extends Fragment {
     private ImageView ivPfp;
     private ImageView ivAddPfp;
     private TextView tvUsername;
-    private ParseUser currentUser;
+    private UserObservable currentUser;
     private TabLayout tabLayout;
     private Button btnLogOut;
     private ImageView ivFindFriends;
@@ -86,6 +91,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        currentUser.addObserver(this);
         rvRestaurants = view.findViewById(R.id.rvProfilePosts);
         ivPfp = view.findViewById(R.id.ivProfilePfp);
         tvUsername = view.findViewById(R.id.tvprofileUsername);
@@ -97,60 +103,16 @@ public class ProfileFragment extends Fragment {
 
 
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
-            currentUser = ParseUser.getCurrentUser();
-            ivAddPfp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    launchCamera();
-                    currentUser.put("profilePhoto", new ParseFile(photoFile));
-                    currentUser.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null){
-                                Log.e(TAG, "Error saving photo: " + e);
-                                Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
-                            }
-                            else{
-                                Log.i(TAG, "Photo upload was successful!");
-                                RequestOptions requestOptions = new RequestOptions();
-                                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(100));
-                                Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUser.getParseFile("profilePhoto").getUrl()).into(ivPfp);
-                            }
-                        }
-                    });
-                }
-            });
-
-            btnLogOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ParseUser.logOut();
-                    Intent i = new Intent(getContext(), LogInActivity.class);
-                    // set the new task and clear flags
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(i);
-                }
-            });
-
-            ivFindFriends.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Fragment fragment = new FindFriendsFragment();
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.tvPlaceholder, fragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                }
-            });
+            ivAddPfp.setOnClickListener(this);
+            btnLogOut.setOnClickListener(this);
+            ivFindFriends.setOnClickListener(this);
             ivFollow.setVisibility(View.GONE);
         }
         else{
             ivAddPfp.setVisibility(View.GONE);
             btnLogOut.setVisibility(View.GONE);
             ivFindFriends.setVisibility(View.GONE);
-            follows = Friends.user_follows(currentUser);
-            if (follows){
+            if (Friends.user_follows(currentUser.getUser())){
                 Glide.with(getContext())
                         .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivFollow);
@@ -160,40 +122,18 @@ public class ProfileFragment extends Fragment {
                         .load(R.drawable.ic_baseline_person_add_24)
                         .into(ivFollow);
             }
-            ivFollow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (follows){
-                        Friends.unfollow(currentUser);
-                        Glide.with(getContext())
-                                .load(R.drawable.ic_baseline_person_add_24)
-                                .into(ivFollow);
-                        follows = false;
-                    }
-                    else{
-                        Friends.follow(currentUser);
-                        Glide.with(getContext())
-                                .load(R.drawable.ic_baseline_person_remove_24)
-                                .into(ivFollow);
-                        follows = true;
-                    }
-                }
-            });
+            ivFollow.setOnClickListener(this);
         }
-
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-        ParseFile pfp = currentUser.getParseFile("profilePhoto");
+        ParseFile pfp = currentUser.getProfilePhoto();
         if (pfp != null){
             Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
         }
         else{
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
         }
-
         tvUsername.setText("@"+currentUser.getUsername());
-
-
         allRestaurants = new ArrayList<Restaurant>();
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
@@ -208,7 +148,6 @@ public class ProfileFragment extends Fragment {
             queryUserToGos();
         }
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
-
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0){
@@ -222,7 +161,6 @@ public class ProfileFragment extends Fragment {
                     queryUserToGos();
                 }
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
             }
@@ -233,11 +171,65 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+
+            case R.id.ivAddPfp:
+                addPfp();
+                break;
+            case R.id.btnLogOut:
+                user_log_out();
+                break;
+            case R.id.ivFindFriends:
+                go_find_friends();
+                break;
+            case R.id.ivFollow:
+                toggle_follow();
+                break;
+        }
+    }
+
+    private void addPfp() {
+        launchCamera();
+        currentUser.setProfilePhoto(new ParseFile(photoFile));
+        currentUser.save_user();
+    }
+
+    private void go_find_friends() {
+        Fragment fragment = new FindFriendsFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.tvPlaceholder, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void user_log_out() {
+        ParseUser.logOut();
+        Intent i = new Intent(getContext(), LogInActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+    }
+
+    private void toggle_follow() {
+        if (Friends.user_follows(currentUser.getUser())){
+            Friends.unfollow(currentUser.getUser());
+        }
+        else{
+            Friends.follow(currentUser.getUser());
+        }
+        currentUser.triggerObserver();
+    }
+
+
     private void queryUserLikes() {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // include data referred by restaurant key
         query.include(UserLike.RESTAURANT_KEY);
-        query.whereEqualTo("user", currentUser);
+        query.whereEqualTo("user", currentUser.getUser());
         query.addDescendingOrder("createdAt");
 
         query.findInBackground(new FindCallback<UserLike>() {
@@ -265,7 +257,7 @@ public class ProfileFragment extends Fragment {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         // include data referred by restaurant key
         query.include(UserToGo.RESTAURANT_KEY);
-        query.whereEqualTo("user", currentUser);
+        query.whereEqualTo("user", currentUser.getUser());
         // order posts by creation date (newest first)
         query.addDescendingOrder("createdAt");
 
@@ -337,16 +329,21 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-}
+    @Override
+    public void update(Observable o, Object arg) {
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(100));
+        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUser.getProfilePhoto().getUrl()).into(ivPfp);
 
-
-interface ProfileState {
-}
-
-class LoadingState implements ProfileState {
-}
-
-class CompleteState implements ProfileState {
-    public ParseUser user;
-
+        if (Friends.user_follows(currentUser.getUser())){
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_add_24)
+                    .into(ivFollow);
+        }
+        else{
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_remove_24)
+                    .into(ivFollow);
+        }
+    }
 }

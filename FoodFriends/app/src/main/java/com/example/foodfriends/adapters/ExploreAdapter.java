@@ -168,7 +168,6 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
         }
 
         private void go_to_gmaps() {
-            ParseUser user = ParseUser.getCurrentUser();
             String uri = "http://maps.google.com/maps?daddr=" + restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             intent.setPackage("com.google.android.apps.maps");

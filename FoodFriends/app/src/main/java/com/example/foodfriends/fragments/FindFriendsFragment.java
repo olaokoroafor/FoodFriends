@@ -64,8 +64,6 @@ public class FindFriendsFragment extends Fragment {
                 return false;
             }
         });
-
-
         allUsers= new ArrayList<ParseUser>();
         rvUsers.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new FindFriendsAdapter(getContext(), allUsers);
@@ -73,11 +71,8 @@ public class FindFriendsFragment extends Fragment {
     }
 
     private void queryUsers(String search_term) {
-
         ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
-
         query.whereStartsWith("username", search_term);
-
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> users, ParseException e) {

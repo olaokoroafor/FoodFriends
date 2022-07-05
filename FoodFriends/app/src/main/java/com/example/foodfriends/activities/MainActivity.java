@@ -16,6 +16,7 @@ import com.example.foodfriends.fragments.ProfileFragment;
 import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.fragments.SearchFragment;
 import com.example.foodfriends.observable_models.RestaurantObservable;
+import com.example.foodfriends.observable_models.UserObservable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.parse.ParseUser;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.menu_profile){
                     fragment = profileFragment;
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("user", ParseUser.getCurrentUser());
+                    bundle.putParcelable("user", new UserObservable(ParseUser.getCurrentUser()));
                     fragment.setArguments(bundle);
                     fragment_tag = "profile";
                 }
