@@ -119,9 +119,6 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
                         .load(R.drawable.ic_baseline_call_missed_outgoing_24)
                         .into(ivToGo);
             }
-
-
-
         }
 
         @Override
@@ -187,5 +184,8 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
     public void addAll(List<RestaurantObservable> list) {
         restaurants.addAll(list);
         notifyDataSetChanged();
+    }
+    public int size(){
+        return restaurants.size();
     }
 }

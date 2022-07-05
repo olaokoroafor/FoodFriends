@@ -55,7 +55,11 @@ public class ExploreFragment extends Fragment{
                 scrollListener.resetState();
                 restaurantServer.reset();
                 restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-                adapter.notifyDataSetChanged();
+                rvRestaurants.post(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -81,11 +85,21 @@ public class ExploreFragment extends Fragment{
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-                adapter.notifyDataSetChanged();
+                rvRestaurants.post(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                Log.i(TAG, String.valueOf(adapter.size()));
             }
         };
         rvRestaurants.addOnScrollListener(scrollListener);
         restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-        adapter.notifyDataSetChanged();
+        rvRestaurants.post(new Runnable() {
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+        Log.i(TAG, String.valueOf(adapter.size()));
     }
 }

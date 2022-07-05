@@ -120,13 +120,6 @@ public class Restaurant extends ParseObject {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo(YELP_ID_KEY, yelp_id);
-            /*
-            Log.i(TAG, "NUM EXISTING " + String.valueOf(num));
-            if (num > 0)
-                return null;
-            Log.i(TAG, "MAKING RESTAURANT");
-
-             */
             Restaurant r = new Restaurant();
             r.setYelpId(jsonObject.getString("id"));
             r.setName(jsonObject.getString("name"));
@@ -186,12 +179,9 @@ public class Restaurant extends ParseObject {
         try {
             List<UserLike> likes = query.find();
             likesCount = likes.size();
-            Log.i(TAG, "List size: " + likesCount);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        Log.i(TAG, "likes Count" + likesCount);
         return likesCount;
     }
 

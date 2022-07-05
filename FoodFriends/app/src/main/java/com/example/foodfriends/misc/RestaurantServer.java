@@ -76,15 +76,6 @@ public class RestaurantServer {
                             yelpQuery(apiKey);
                         } else {
                             observed_restaurants.addAll(res);
-                            /*
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-
-                             */
                         }
 
                     } catch (Exception e) {
@@ -107,10 +98,30 @@ public class RestaurantServer {
             // start an asynchronous call for posts
             query.setLimit(20);
             query.setSkip(offset);
+            List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+            try {
+                List<Restaurant> restaurants = query.find();
+                for (Restaurant r : restaurants) {
+                    observed.add(new RestaurantObservable(r));
+                }
+                offset += restaurants.size();
+                if (restaurants.size() < 20) {
+                    offset = 0;
+                    parseSource = false;
+                }
+                if (restaurants.size() == 0) {
+                    yelpQuery(apiKey);
+                }
+                observed_restaurants.addAll(observed);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            /*
             query.findInBackground(new FindCallback<Restaurant>() {
                 @Override
                 public void done(List<Restaurant> restaurants, ParseException e) {
                     List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+                    Log.i(TAG, "Restaurant Size: " + String.valueOf(restaurants.size()));
                     // check for errors
                     if (e != null) {
                         Log.e(TAG, "Issue with getting posts", e);
@@ -118,7 +129,6 @@ public class RestaurantServer {
                     }
                     // for debugging purposes let's print every restaurant description to logcat
                     for (Restaurant r : restaurants) {
-                        Log.i(TAG, "Restaurant: " + r.getName());
                         observed.add(new RestaurantObservable(r));
                     }
                     offset += restaurants.size();
@@ -133,6 +143,8 @@ public class RestaurantServer {
                     observed_restaurants.addAll(observed);
                 }
             });
+
+             */
         } else {
             yelpQuery(apiKey);
         }
