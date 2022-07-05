@@ -25,14 +25,14 @@ import com.parse.ParseUser;
 import java.util.List;
 
 public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileRestaurantsAdapter.ViewHolder>{
-    private List<Restaurant> restaurants;
+    private List<RestaurantObservable> restaurants;
     private LayoutInflater mInflater;
     private Context context;
 
 
 
     // data is passed into the constructor
-    public ProfileRestaurantsAdapter(Context context, List<Restaurant> rs) {
+    public ProfileRestaurantsAdapter(Context context, List<RestaurantObservable> rs) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.restaurants = rs;
@@ -50,7 +50,7 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
     // binds the data to the Views in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Restaurant restaurant= restaurants.get(position);
+        RestaurantObservable restaurant= restaurants.get(position);
         holder.bind(restaurant);
     }
 
@@ -62,11 +62,12 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ImageView ivResPic;
         private ImageView ivMap;
         private TextView tvResName;
         private TextView tvAddress;
+        private RestaurantObservable restaurantObservable;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -76,30 +77,35 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             tvAddress = itemView.findViewById(R.id.tvProfileRAddress);
         }
 
-        public void bind(Restaurant restaurant) {
+        public void bind(RestaurantObservable restaurant) {
+            restaurantObservable = restaurant;
             tvResName.setText(restaurant.getName());
             tvAddress.setText(restaurant.getAddress());
-            tvAddress.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ParseUser user = ParseUser.getCurrentUser();
-                    //String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f (%s)", user.getDouble("latitude"), user.getDouble("longitude"), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
-                    String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                    intent.setPackage("com.google.android.apps.maps");
-                    context.startActivity(intent);
-                }
-            });
+            tvAddress.setOnClickListener(this);
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
             Glide.with(context).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivResPic);
+            ivResPic.setOnClickListener(this);
+        }
 
-            ivResPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((MainActivity) context).displayRestaurantDetailFragment(new RestaurantObservable(restaurant));
-                }
-            });
+        @Override
+        public void onClick(View v) {
+            switch(v.getId()){
+                case R.id.tvProfileRAddress:
+                    go_to_gmaps();
+                    break;
+                case R.id.ivProfileRPic:
+                    ((MainActivity) context).displayRestaurantDetailFragment(restaurantObservable);
+                    break;
+            }
+
+        }
+
+        private void go_to_gmaps() {
+            String uri = "http://maps.google.com/maps?daddr=" + restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            intent.setPackage("com.google.android.apps.maps");
+            context.startActivity(intent);
         }
     }
     // Clean all elements of the recycler

@@ -30,7 +30,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class RestaurantDetailFragment extends Fragment implements Observer, View.OnClickListener{
-    private static final String TAG = "Restauarant Detail Fragment";
+    private static final String TAG = "Restaurant Detail Fragment";
     private TextView tvRName;
     private TextView tvLikeCount;
     private TextView tvToGoCount;

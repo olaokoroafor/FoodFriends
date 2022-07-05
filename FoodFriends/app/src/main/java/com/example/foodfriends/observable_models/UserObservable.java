@@ -8,8 +8,10 @@ import android.util.Patterns;
 
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.models.User;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.Observable;
 
@@ -41,12 +43,12 @@ public class UserObservable extends Observable implements Parcelable {
     public UserObservable(ParseUser user){
         this.user = user;
         this.objectId = user.getObjectId();
-        this.username = user.getString(USERNAME_KEY);;
-        this.name = user.getString(NAME_KEY);;
+        this.username = user.getString(USERNAME_KEY);
+        this.name = user.getString(NAME_KEY);
         this.profilePhoto = user.getParseFile(PROFILE_PHOTO_KEY);
-        this.city = user.getString(CITY_KEY);;
-        this.state = user.getString(STATE_KEY);;
-        this.latitude = user.getDouble(LATITUDE_KEY);;
+        this.city = user.getString(CITY_KEY);
+        this.state = user.getString(STATE_KEY);
+        this.latitude = user.getDouble(LATITUDE_KEY);
         this.longitude = user.getDouble(LONGITUDE_KEY);
     }
 
@@ -191,7 +193,17 @@ public class UserObservable extends Observable implements Parcelable {
     }
 
     public void save_user(){
-        this.user.saveInBackground();
+        this.user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null){
+                    Log.e(TAG, "Error saving photo: " + e);
+                }
+                else{
+                    Log.i(TAG, "Photo upload was successful!");
+                }
+            }
+        });
     }
 
 

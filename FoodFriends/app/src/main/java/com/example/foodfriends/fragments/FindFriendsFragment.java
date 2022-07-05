@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.adapters.FindFriendsAdapter;
+import com.example.foodfriends.observable_models.FriendObservable;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -29,7 +30,7 @@ public class FindFriendsFragment extends Fragment {
     private SearchView searchFriends;
     private RecyclerView rvUsers;
     private FindFriendsAdapter adapter;
-    private List<ParseUser> allUsers;
+    private List<FriendObservable> allUsers;
 
     public FindFriendsFragment() {
         // Required empty public constructor
@@ -64,7 +65,7 @@ public class FindFriendsFragment extends Fragment {
                 return false;
             }
         });
-        allUsers= new ArrayList<ParseUser>();
+        allUsers= new ArrayList<FriendObservable>();
         rvUsers.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new FindFriendsAdapter(getContext(), allUsers);
         rvUsers.setAdapter(adapter);
@@ -82,7 +83,9 @@ public class FindFriendsFragment extends Fragment {
                     return;
                 }
                 allUsers.clear();
-                allUsers.addAll(users);
+                for (ParseUser user: users){
+                    allUsers.add(new FriendObservable(user));
+                }
                 adapter.notifyDataSetChanged();
             }
         });

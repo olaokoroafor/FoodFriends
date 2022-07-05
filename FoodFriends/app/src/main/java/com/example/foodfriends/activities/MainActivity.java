@@ -15,6 +15,8 @@ import com.example.foodfriends.fragments.ExploreFragment;
 import com.example.foodfriends.fragments.ProfileFragment;
 import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.fragments.SearchFragment;
+import com.example.foodfriends.models.User;
+import com.example.foodfriends.observable_models.FriendObservable;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     public void displayOtherProfileFragment(ParseUser user) {
         Fragment other_profile_fragment = new ProfileFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
+        bundle.putParcelable("user", new UserObservable(user));
         other_profile_fragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

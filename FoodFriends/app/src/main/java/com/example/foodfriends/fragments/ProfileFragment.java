@@ -39,6 +39,7 @@ import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
+import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
 import com.google.android.material.tabs.TabLayout;
 import com.parse.FindCallback;
@@ -63,7 +64,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private RecyclerView rvRestaurants;
     private static final String TAG = "Profile Fragment";
     private ProfileRestaurantsAdapter adapter;
-    private List<Restaurant> allRestaurants;
+    private List<RestaurantObservable> allRestaurants;
     private ImageView ivPfp;
     private ImageView ivAddPfp;
     private TextView tvUsername;
@@ -134,7 +135,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
         }
         tvUsername.setText("@"+currentUser.getUsername());
-        allRestaurants = new ArrayList<Restaurant>();
+        allRestaurants = new ArrayList<RestaurantObservable>();
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
         rvRestaurants.setAdapter(adapter);
@@ -164,7 +165,6 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
             }
-
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
             }
@@ -240,12 +240,10 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     Log.e(TAG, "Issue with getting posts", e);
                     return;
                 }
-                List<Restaurant> rs = new ArrayList<Restaurant>();
+                List<RestaurantObservable> rs = new ArrayList<RestaurantObservable>();
                 for (UserLike like : likes) {
-                    rs.add(like.getRestaurant());
-                    Log.i(TAG, "Restaurant: " + like.getObjectId());
+                    rs.add(new RestaurantObservable(like.getRestaurant()));
                 }
-                // save received posts to list and notify adapter of new data
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
             }
@@ -270,10 +268,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     Log.e(TAG, "Issue with getting restaurants", e);
                     return;
                 }
-                List<Restaurant> rs = new ArrayList<Restaurant>();
+                List<RestaurantObservable> rs = new ArrayList<RestaurantObservable>();
                 for (UserToGo togo : togos) {
-                    rs.add(togo.getRestaurant());
-                    Log.i(TAG, "Restaurant: " + togo.getObjectId());
+                    rs.add(new RestaurantObservable(togo.getRestaurant()));
                 }
 
                 allRestaurants.addAll(rs);
@@ -316,7 +313,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 
             if (resultCode != RESULT_OK) { // Result was a failure
-                Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Picture wasn't taken!" + String.valueOf(resultCode), Toast.LENGTH_SHORT).show();
             } else {
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
@@ -333,7 +330,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     public void update(Observable o, Object arg) {
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(100));
-        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUser.getProfilePhoto().getUrl()).into(ivPfp);
+        ParseFile pfp = currentUser.getProfilePhoto();
+        if (pfp != null){
+            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
+        }
+        else{
+            Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
+        }
 
         if (Friends.user_follows(currentUser.getUser())){
             Glide.with(getContext())
