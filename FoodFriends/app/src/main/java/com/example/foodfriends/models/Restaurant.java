@@ -114,64 +114,9 @@ public class Restaurant extends ParseObject {
         put(YELP_ID_KEY, yelpID);
     }
 
-    public static Restaurant fromJson(JSONObject jsonObject) throws JSONException {
-
-        try {
-            String yelp_id = jsonObject.getString("id");
-            ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
-            query.whereEqualTo(YELP_ID_KEY, yelp_id);
-            Restaurant r = new Restaurant();
-            r.setYelpId(jsonObject.getString("id"));
-            r.setName(jsonObject.getString("name"));
-            r.setImageUrl(jsonObject.getString("image_url"));
-            JSONObject location = jsonObject.getJSONObject("location");
-            r.setCity(location.getString("city"));
-            r.setState(location.getString("state"));
-            r.setZipcode(location.getString("zip_code"));
-            JSONObject coordinates = jsonObject.getJSONObject("coordinates");
-            r.setLatitude(coordinates.getDouble("latitude"));
-            r.setLongitude(coordinates.getDouble("longitude"));
-            r.setPrice(jsonObject.getString("price"));
-            String address = "";
-            JSONArray display = location.getJSONArray("display_address");
-            for (int i = 0; i < display.length(); i++) {
-                address += display.get(i);
-                if (i != display.length() - 1)
-                    address += ", ";
-            }
-            r.setAddress(address);
-            try {
-                r.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            /*
-            r.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null)
-                        Log.i(TAG, "RESTAURANT ADDED DONE");
-                    else
-                        Log.e(TAG, e.toString());
-                }
-            });*/
-            return r;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static List<Restaurant> fromJsonArray(JSONArray jsonArray) throws JSONException {
-        List<Restaurant> restaurants = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Restaurant restaurant = fromJson(jsonArray.getJSONObject(i));
-            if(restaurant != null)
-                restaurants.add(restaurant);
-        }
-        return restaurants;
-
-    }
-
+    /**
+     * Returns the number of likes for this particular restaurant
+     * */
     public int getLikes() {
         int likesCount = 0;
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
@@ -185,6 +130,9 @@ public class Restaurant extends ParseObject {
         return likesCount;
     }
 
+    /**
+     * Adds a like entry for the logged in user and restaurant into Userlike table
+     * */
     public void incrementLikes() {
         UserLike like = new UserLike();
         like.setRestaurant(this);
@@ -198,6 +146,9 @@ public class Restaurant extends ParseObject {
         });
     }
 
+    /**
+     * Removes a like entry for the logged in user and restaurant into Userlike table
+     * */
     public void decrementLikes() {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
@@ -214,6 +165,9 @@ public class Restaurant extends ParseObject {
         });
     }
 
+    /**
+     * Checks to see if logged in user likes restaurant
+     * */
     public boolean user_like() {
         boolean liked = false;
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
@@ -230,6 +184,9 @@ public class Restaurant extends ParseObject {
         return liked;
     }
 
+    /**
+     * Returns the number of togos for this particular restaurant
+     * */
     public int getToGos() {
         int toGoCount = 0;
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
@@ -244,6 +201,10 @@ public class Restaurant extends ParseObject {
         return toGoCount;
     }
 
+
+    /**
+     * Adds a togo entry for the logged in user and restaurant into UserTogo table
+     * */
     public void incrementToGos() {
         UserToGo togo = new UserToGo();
         togo.setRestaurant(this);
@@ -257,6 +218,9 @@ public class Restaurant extends ParseObject {
         });
     }
 
+    /**
+     * Removes a togo entry for the logged in user and restaurant into UserTogo table
+     * */
     public void decrementToGos() {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);
@@ -273,6 +237,9 @@ public class Restaurant extends ParseObject {
         });
     }
 
+    /**
+     * Checks to see if logged in user wants to go to this restaurant
+     * */
     public boolean user_to_go() {
         boolean going = false;
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);

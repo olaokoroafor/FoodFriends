@@ -30,17 +30,26 @@ public class RestaurantServer {
     private int offset;
     private List<RestaurantObservable> observed_restaurants;
 
+    /**
+     * Constructor
+     * */
     public RestaurantServer(List<RestaurantObservable> restaurantList) {
         this.parseSource = true;
         this.offset =  0;
         this.observed_restaurants = restaurantList;
     }
 
+    /**
+     * Resets the instance variables to allow for a new search without offsets and at Parse
+     * */
     public void reset(){
         this.offset = 0;
         this.parseSource = true;
     }
 
+    /**
+     * Adds restaurants returned from Yelp Query to the list that the explore adapter uses
+     * */
     public void yelpQuery(String apiKey) {
         // Use OkHttpClient singleton
         OkHttpClient client = new OkHttpClient();
@@ -88,6 +97,9 @@ public class RestaurantServer {
         });
     }
 
+    /**
+     *  Adds restaurant from parse or calls yelpquery to do so depending on parse_source
+     * */
     public void findRestaurants(String apiKey) {
         if (parseSource) {
             // specify what type of data we want to query - Post.class

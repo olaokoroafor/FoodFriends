@@ -4,10 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Patterns;
 
-import com.example.foodfriends.models.Restaurant;
-import com.example.foodfriends.models.User;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -53,6 +50,9 @@ public class UserObservable extends Observable implements Parcelable {
     }
 
 
+    /**
+     * Parcelable
+     * */
     protected UserObservable(Parcel in) {
         user = in.readParcelable(ParseUser.class.getClassLoader());
         objectId = in.readString();
@@ -74,6 +74,9 @@ public class UserObservable extends Observable implements Parcelable {
         }
     }
 
+    /**
+     * Parcelable
+     * */
     public static final Creator<UserObservable> CREATOR = new Creator<UserObservable>() {
         @Override
         public UserObservable createFromParcel(Parcel in) {
@@ -187,11 +190,17 @@ public class UserObservable extends Observable implements Parcelable {
 
     }
 
+    /**
+     * Triggers update function on observer
+     * */
     public void triggerObserver() {
         setChanged();
         notifyObservers();
     }
 
+    /**
+     * Saves user with said attributes to database
+     * */
     public void save_user(){
         this.user.saveInBackground(new SaveCallback() {
             @Override
@@ -207,7 +216,9 @@ public class UserObservable extends Observable implements Parcelable {
     }
 
 
-
+    /**
+     * Does validation on user object fields
+     * */
     public int isValid() {
 
         if(TextUtils.isEmpty(getUsername()))
@@ -222,11 +233,17 @@ public class UserObservable extends Observable implements Parcelable {
             return -1;
     }
 
+    /**
+     * Parcelable
+     * */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Parcelable
+     * */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(user, flags);

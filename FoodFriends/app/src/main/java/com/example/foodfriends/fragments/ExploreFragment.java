@@ -40,6 +40,9 @@ public class ExploreFragment extends Fragment{
     }
 
 
+    /**
+     * Inflates the UI xml for the fragment and declares/instantiates the swipe container
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,6 +75,11 @@ public class ExploreFragment extends Fragment{
         return view;
     }
 
+    /**
+     * Connects the recycler view of restaurants to the adapter
+     * Declares/instantiates the endless scroll listener
+     * Populates the list of restautants for the adapter to display
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -100,6 +108,5 @@ public class ExploreFragment extends Fragment{
                 adapter.notifyDataSetChanged();
             }
         });
-        Log.i(TAG, String.valueOf(adapter.size()));
     }
 }

@@ -36,7 +36,9 @@ public class FindFriendsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    /**
+     * Inflates the UI xml for the fragment
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,6 +46,10 @@ public class FindFriendsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_find_friends, container, false);
     }
 
+    /**
+     * Connects the recycler view of users to the adapter
+     * Populates the list of users for the adapter to display
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -71,6 +77,9 @@ public class FindFriendsFragment extends Fragment {
         rvUsers.setAdapter(adapter);
     }
 
+    /**
+     * Searches Parse Database for users with username starting with submitted query
+     * */
     private void queryUsers(String search_term) {
         ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
         query.whereStartsWith("username", search_term);

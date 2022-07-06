@@ -43,12 +43,16 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
     @NonNull
     @Override
 
+    /**
+     * Inflates view of the item restaurant xml**/
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_restaurant, parent, false);
 
         return new ViewHolder(view);
     }
 
+    /**
+     * Calls binder for a restaurant at particular position**/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RestaurantObservable restaurant = restaurants.get(position);
@@ -56,6 +60,8 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
     }
 
+    /**
+     * Returns length of restaurant list**/
     @Override
     public int getItemCount() {
         return restaurants.size();
@@ -74,6 +80,9 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
         private RestaurantObservable restaurantObservable;
 
 
+        /**
+         * Constructor
+         * */
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             tvRName = itemView.findViewById(R.id.tvExploreName);
@@ -85,6 +94,9 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
             ivToGo = itemView.findViewById(R.id.ivExploreToGo);
         }
 
+        /**
+         * Binds the xml elements to restaurant data
+         * */
         public void bind(RestaurantObservable restaurant) {
             restaurantObservable = restaurant;
             restaurant.addObserver(this);
@@ -121,6 +133,10 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
             }
         }
 
+
+        /**
+         * Called when restaurant data is updated, re renders likes/togos/ text views and image views
+         * */
         @Override
         public void update(Observable o, Object arg) {
             tvLikeCount.setText(String.valueOf(restaurantObservable.getLikes()));
@@ -147,6 +163,9 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
             }
         }
 
+        /**
+         * Specifies what needs to be done for each UI element click
+         * */
         @Override
         public void onClick(View v) {
             switch(v.getId()){
@@ -167,6 +186,9 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
         }
 
+        /**
+         * Directs user to google maps with restaurant preplaced in map
+         * */
         private void go_to_gmaps() {
             String uri = "http://maps.google.com/maps?daddr=" + restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));

@@ -47,7 +47,8 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         this.users = users;
     }
 
-    // inflates the cell layout from xml when needed
+    /**
+     * Inflates view of the user search item xml**/
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -56,7 +57,8 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         return new ViewHolder(view);
     }
 
-    // binds the data to the Views in each cell
+    /**
+     * Calls binder for a user at particular position**/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FriendObservable user = users.get(position);
@@ -78,7 +80,10 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         private TextView tvLocation;
         private FriendObservable current_user;
 
-        ViewHolder(View itemView) {
+        /**
+         * Constructor
+         * */
+        public ViewHolder(View itemView) {
             super(itemView);
             ivPfp = itemView.findViewById(R.id.ivSearchPfp);
             ivAddFriend = itemView.findViewById(R.id.ivAddFriend);
@@ -86,6 +91,9 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
             tvLocation = itemView.findViewById(R.id.tvSearchLocation);
         }
 
+        /**
+         * Binds the xml elements to user data
+         * */
         public void bind(FriendObservable user) {
             current_user = user;
             user.addObserver(this);
@@ -114,6 +122,9 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
             ivAddFriend.setOnClickListener(this);
         }
 
+        /**
+         * Specifies what needs to be done for each UI click
+         * */
         @Override
         public void onClick(View v) {
             switch(v.getId()){
@@ -126,6 +137,9 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
             }
         }
 
+        /**
+         * Called when restaurant data is updated, re renders follow image view
+         * */
         @Override
         public void update(Observable o, Object arg) {
             if (current_user.user_follows()){

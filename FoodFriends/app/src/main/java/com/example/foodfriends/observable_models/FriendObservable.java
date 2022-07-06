@@ -17,7 +17,6 @@ public class FriendObservable extends Observable{
     private ParseUser user;
     private String objectId;
     private String username;
-    private String password;
     private String name;
     private ParseFile profilePhoto;
     private String city;
@@ -87,10 +86,16 @@ public class FriendObservable extends Observable{
         notifyObservers();
     }
 
+    /**
+     * Checks to see if logged in user follows this friend
+     * */
     public boolean user_follows() {
         return follows;
     }
 
+    /**
+     * Makes logged in user follow this friend
+     * */
     public void toggle_follow() {
         if (this.follows) {
             Friends.follow(this.user);

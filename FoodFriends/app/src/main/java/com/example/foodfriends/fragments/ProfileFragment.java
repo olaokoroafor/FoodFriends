@@ -32,11 +32,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.LogInActivity;
-import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.adapters.ProfileRestaurantsAdapter;
 import com.example.foodfriends.models.Friends;
-import com.example.foodfriends.models.Restaurant;
-import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
 import com.example.foodfriends.observable_models.RestaurantObservable;
@@ -47,7 +44,6 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,6 +76,10 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     }
 
 
+    /**
+     * Inflates the UI xml for the fragment
+     * Receives user object from bundle
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,6 +89,12 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * Connects the recycler view of restaurants to the adapter
+     * Populates the list of restaurants for the adapter to display
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -172,7 +178,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     }
 
 
-
+    /**
+     * Specifies what needs to be done for each UI element click
+     * */
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -192,12 +200,18 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         }
     }
 
+    /**
+     * Adds profile picture bu launching camera, then sabving this photo to user object
+     * */
     private void addPfp() {
         launchCamera();
         currentUser.setProfilePhoto(new ParseFile(photoFile));
         currentUser.save_user();
     }
 
+    /**
+     * Takes user to the find friends fragment
+     * */
     private void go_find_friends() {
         Fragment fragment = new FindFriendsFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -207,6 +221,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         fragmentTransaction.commit();
     }
 
+    /**
+     * Logs user out of account and sends them to login page
+     * */
     private void user_log_out() {
         ParseUser.logOut();
         Intent i = new Intent(getContext(), LogInActivity.class);
@@ -214,6 +231,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         startActivity(i);
     }
 
+    /**
+     * Either follows or unfollows someone based on original state of user relationship
+     * */
     private void toggle_follow() {
         if (Friends.user_follows(currentUser.getUser())){
             Friends.unfollow(currentUser.getUser());
@@ -225,6 +245,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     }
 
 
+    /**
+     * Adds all the restaurants that the user has liked to adapter list
+     * */
     private void queryUserLikes() {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // include data referred by restaurant key
@@ -250,6 +273,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         });
     }
 
+    /**
+     * Adds all the restaurants that the user wants to go to to adapter list
+     * */
     private void queryUserToGos() {
 
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
@@ -279,21 +305,21 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         });
     }
 
+    /**
+     * Gets filetarget for the photo based on file name
+     * */
     public File getPhotoFileUri(String fileName) {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
         File mediaStorageDir = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
-        // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
             Log.d(TAG, "failed to create directory");
         }
-
-        // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
     }
 
+    /**
+     * Launches Camera for user and allows them to take pictures
+     * */
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         photoFile = getPhotoFileUri(photoFileName);
@@ -308,6 +334,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         }
     }
 
+    /**
+     * Checks to see if picture has been taken when camera finishes
+     * */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -326,6 +355,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         }
     }
 
+    /**
+     * Called when user data is updated, re renders user's profile photo
+     * */
     @Override
     public void update(Observable o, Object arg) {
         RequestOptions requestOptions = new RequestOptions();

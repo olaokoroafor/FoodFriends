@@ -41,6 +41,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         this.objectId = restaurant.getObjectId();
     }
 
+    /**
+     * Turns a restaurant object into a restaurantobservable object
+     * */
     public RestaurantObservable(Restaurant restaurant){
         this.restaurant = restaurant;
         this.objectId = restaurant.getObjectId();
@@ -60,6 +63,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         this.going = restaurant.user_to_go();
     }
 
+    /**
+     * Parcelable
+     * */
     protected RestaurantObservable(Parcel in) {
         restaurant = in.readParcelable(Restaurant.class.getClassLoader());
         objectId = in.readString();
@@ -87,6 +93,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         going = in.readByte() != 0;
     }
 
+    /**
+     * Parcelable
+     * */
     public static final Creator<RestaurantObservable> CREATOR = new Creator<RestaurantObservable>() {
         @Override
         public RestaurantObservable createFromParcel(Parcel in) {
@@ -241,6 +250,10 @@ public class RestaurantObservable extends Observable implements Parcelable{
         return going;
     }
 
+
+    /**
+     * Either likes or unlikes restuarant depending on if user already liked the restaurant
+     * */
     public void toggleLike(){
         if (isLiked()){
             restaurant.decrementLikes();
@@ -256,6 +269,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         notifyObservers();
     }
 
+    /**
+     * Either togos or un togos restuarant depending on if user already liked the restaurant
+     * */
     public void toggleTogo(){
         if (isGoing()){
             restaurant.decrementToGos();
@@ -271,6 +287,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         notifyObservers();
     }
 
+    /**
+     * Parses json object into a restaurant observable object
+     * */
     public static RestaurantObservable fromJson(JSONObject jsonObject) throws JSONException {
 
         try {
@@ -306,6 +325,9 @@ public class RestaurantObservable extends Observable implements Parcelable{
         }
     }
 
+    /**
+     * Parses json array into a list of restaurant observable objects
+     * */
     public static List<RestaurantObservable> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<RestaurantObservable> restaurants = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -317,11 +339,17 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     }
 
+    /**
+     * Parcelable
+     * */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Parcelable
+     * */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(restaurant, flags);

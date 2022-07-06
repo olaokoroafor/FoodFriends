@@ -33,6 +33,9 @@ public class Friends extends ParseObject {
         put(REQUESTED_KEY, user);
     }
 
+    /**
+     * Checks to see if user passed in is followed by user logged in
+     * */
     public static boolean user_follows(ParseUser requested) {
         ParseUser user = ParseUser.getCurrentUser();
         boolean follows = false;
@@ -50,6 +53,9 @@ public class Friends extends ParseObject {
         return follows;
     }
 
+    /**
+     * Adds a following entry into Friends table for logged in user and requested
+     * */
     public static void follow(ParseUser requested) {
         Friends friend = new Friends();
         friend.setUser(ParseUser.getCurrentUser());
@@ -63,6 +69,9 @@ public class Friends extends ParseObject {
         });
     }
 
+    /**
+     * Removes a following entry into Friends table for logged in user and requested
+     * */
     public static void unfollow(ParseUser requested) {
         ParseQuery<Friends> query = ParseQuery.getQuery(Friends.class);
         query.whereEqualTo(USER_KEY, ParseUser.getCurrentUser());

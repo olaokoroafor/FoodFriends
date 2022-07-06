@@ -38,7 +38,8 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
         this.restaurants = rs;
     }
 
-    // inflates the cell layout from xml when needed
+    /**
+     * Inflates view of the item restaurant xml when necessary**/
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,7 +48,8 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
         return new ViewHolder(view);
     }
 
-    // binds the data to the Views in each cell
+    /**
+     * Calls binder for a restaurant at particular position**/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RestaurantObservable restaurant= restaurants.get(position);
@@ -69,7 +71,10 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
         private TextView tvAddress;
         private RestaurantObservable restaurantObservable;
 
-        ViewHolder(View itemView) {
+        /**
+         * Constructor
+         * */
+        public ViewHolder(View itemView) {
             super(itemView);
             ivResPic = itemView.findViewById(R.id.ivProfileRPic);
             ivMap = itemView.findViewById(R.id.ivProfileMapWidget);
@@ -77,6 +82,9 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             tvAddress = itemView.findViewById(R.id.tvProfileRAddress);
         }
 
+        /**
+         * Binds the xml elements to restaurant data
+         * */
         public void bind(RestaurantObservable restaurant) {
             restaurantObservable = restaurant;
             tvResName.setText(restaurant.getName());
@@ -88,6 +96,9 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
             ivResPic.setOnClickListener(this);
         }
 
+        /**
+         * Specifies what needs to be done for each UI element click
+         * */
         @Override
         public void onClick(View v) {
             switch(v.getId()){
@@ -101,6 +112,9 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
 
         }
 
+        /**
+         * Directs user to google maps with restaurant preplaced in map
+         * */
         private void go_to_gmaps() {
             String uri = "http://maps.google.com/maps?daddr=" + restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));

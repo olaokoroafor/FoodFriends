@@ -46,6 +46,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the UI xml for the fragment, and adds observer to restaurant object
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,6 +59,10 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         return inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
     }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -101,6 +108,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         tvAddress.setOnClickListener(this);
     }
 
+    /**
+     * Specifies what needs to be done for each UI element click
+     * */
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -118,6 +128,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
 
     }
 
+    /**
+     * Directs user to google maps with restaurant preplaced in map
+     * */
     private void go_to_gmaps() {
         String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
@@ -125,6 +138,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         getActivity().startActivity(intent);
     }
 
+    /**
+     * Called when restaurant data is updated, re renders likes/togos/ text views and image views
+     * */
     @Override
     public void update(Observable o, Object arg) {
         tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
