@@ -132,7 +132,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
      * Directs user to google maps with restaurant preplaced in map
      * */
     private void go_to_gmaps() {
-        String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
+        String uri = "http://maps.google.com/maps?daddr=" + String.valueOf(restaurant.getCoordinates().getLatitude()) + "," + String.valueOf(restaurant.getCoordinates().getLongitude()) + " (" + restaurant.getName() + ")";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         intent.setPackage("com.google.android.apps.maps");
         getActivity().startActivity(intent);
