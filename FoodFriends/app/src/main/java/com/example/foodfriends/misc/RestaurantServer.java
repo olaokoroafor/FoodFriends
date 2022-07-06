@@ -26,15 +26,36 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RestaurantServer{
+public class RestaurantServer {
     public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
     private static final String TAG = "Restaurant Server";
-    private int max_radius = 40000;
+    private int max_radius = 40000; //in kilometers
     private boolean parseSource;
     private int offset;
     private List<RestaurantObservable> observed_restaurants;
     private UserObservable user;
     private boolean precise_loc;
+
+
+    /**
+     * Constructor
+     */
+    public RestaurantServer(List<RestaurantObservable> restaurantList) {
+        this.parseSource = true;
+        this.offset = 0;
+        this.observed_restaurants = restaurantList;
+        this.user = new UserObservable(ParseUser.getCurrentUser());
+        precise_loc = false;
+    }
+
+    /**
+     * Resets the instance variables to allow for a new search without offsets and at Parse
+     */
+    public void reset() {
+        this.offset = 0;
+        this.parseSource = true;
+    }
+
 
     public UserObservable getUser() {
         return user;
@@ -45,27 +66,8 @@ public class RestaurantServer{
     }
 
     /**
-     * Constructor
-     * */
-    public RestaurantServer(List<RestaurantObservable> restaurantList) {
-        this.parseSource = true;
-        this.offset =  0;
-        this.observed_restaurants = restaurantList;
-        this.user = new UserObservable(ParseUser.getCurrentUser());
-        precise_loc = false;
-    }
-
-    /**
-     * Resets the instance variables to allow for a new search without offsets and at Parse
-     * */
-    public void reset(){
-        this.offset = 0;
-        this.parseSource = true;
-    }
-
-    /**
      * Adds restaurants returned from Yelp Query to the list that the explore adapter uses
-     * */
+     */
     public void yelpQuery(String apiKey) {
         // Use OkHttpClient singleton
         OkHttpClient client = new OkHttpClient();
@@ -73,7 +75,13 @@ public class RestaurantServer{
         urlBuilder.addQueryParameter("term", "restaurant");
         urlBuilder.addQueryParameter("offset", String.valueOf(offset));
         urlBuilder.addQueryParameter("limit", "20");
-        urlBuilder.addQueryParameter("location", user.getCity() + "," + user.getState());
+        if (user.getCoordinates() != null) {
+            urlBuilder.addQueryParameter("latitude", String.valueOf(user.getCoordinates().getLatitude()));
+            urlBuilder.addQueryParameter("longitude", String.valueOf(user.getCoordinates().getLongitude()));
+            urlBuilder.addQueryParameter("radius", String.valueOf(max_radius));
+        } else {
+            urlBuilder.addQueryParameter("location", user.getCity() + "," + user.getState());
+        }
         String url = urlBuilder.build().toString();
         Log.i(TAG, "URL: " + url);
         Request request = new Request.Builder()
@@ -114,17 +122,17 @@ public class RestaurantServer{
     }
 
     /**
-     *  Adds restaurant from parse or calls yelpquery to do so depending on parse_source
-     * */
+     * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
+     */
     public void findRestaurants(String apiKey) {
+        Log.i(TAG, String.valueOf(parseSource));
         if (parseSource) {
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
-            if (user.getLongitude() != null && user.getLatitude()!=null){
-
-            }
-            else {
-                query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
-                query.whereEqualTo("state", ParseUser.getCurrentUser().getString("state"));
+            if (user.getCoordinates() != null) {
+                query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius);
+            } else {
+                query.whereEqualTo("city", user.getCity());
+                query.whereEqualTo("state", user.getState());
             }
 
             query.setLimit(20);
@@ -137,6 +145,7 @@ public class RestaurantServer{
                 }
                 offset += restaurants.size();
                 if (restaurants.size() < 20) {
+                    Log.i(TAG, String.valueOf(restaurants.size()));
                     offset = 0;
                     parseSource = false;
                 }
@@ -174,7 +183,6 @@ public class RestaurantServer{
                     observed_restaurants.addAll(observed);
                 }
             });
-
              */
         } else {
             yelpQuery(apiKey);

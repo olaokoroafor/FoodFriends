@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.foodfriends.models.Restaurant;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
 import org.json.JSONArray;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.zip.CheckedInputStream;
 
-public class RestaurantObservable extends Observable implements Parcelable{
+public class RestaurantObservable extends Observable implements Parcelable {
     private Restaurant restaurant;
     private String objectId;
     private String yelp_id;
@@ -27,8 +29,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
     private String city;
     private String state;
     private String address;
-    private Double latitude;
-    private Double longitude;
+    private ParseGeoPoint coordinates;
     private int likes;
     private int togos;
     private boolean liked;
@@ -36,15 +37,15 @@ public class RestaurantObservable extends Observable implements Parcelable{
     private static final String TAG = "RESTAURANT OBSERVABLE MODEL";
 
 
-    public RestaurantObservable(){
+    public RestaurantObservable() {
         this.restaurant = new Restaurant();
         this.objectId = restaurant.getObjectId();
     }
 
     /**
      * Turns a restaurant object into a restaurantobservable object
-     * */
-    public RestaurantObservable(Restaurant restaurant){
+     */
+    public RestaurantObservable(Restaurant restaurant) {
         this.restaurant = restaurant;
         this.objectId = restaurant.getObjectId();
         this.yelp_id = restaurant.getYelpID();
@@ -55,8 +56,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
         this.city = restaurant.getCity();
         this.state = restaurant.getState();
         this.address = restaurant.getAddress();
-        this.latitude = restaurant.getLatitude();
-        this.longitude = restaurant.getLongitude();
+        this.coordinates = restaurant.getCoordinates();
         this.likes = restaurant.getLikes();
         this.togos = restaurant.getToGos();
         this.liked = restaurant.user_like();
@@ -65,7 +65,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Parcelable
-     * */
+     */
     protected RestaurantObservable(Parcel in) {
         restaurant = in.readParcelable(Restaurant.class.getClassLoader());
         objectId = in.readString();
@@ -77,16 +77,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
         city = in.readString();
         state = in.readString();
         address = in.readString();
-        if (in.readByte() == 0) {
-            latitude = null;
-        } else {
-            latitude = in.readDouble();
-        }
-        if (in.readByte() == 0) {
-            longitude = null;
-        } else {
-            longitude = in.readDouble();
-        }
+        coordinates = in.readParcelable(ParseGeoPoint.class.getClassLoader());
         likes = in.readInt();
         togos = in.readInt();
         liked = in.readByte() != 0;
@@ -95,7 +86,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Parcelable
-     * */
+     */
     public static final Creator<RestaurantObservable> CREATOR = new Creator<RestaurantObservable>() {
         @Override
         public RestaurantObservable createFromParcel(Parcel in) {
@@ -208,30 +199,8 @@ public class RestaurantObservable extends Observable implements Parcelable{
         notifyObservers();
     }
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-        this.restaurant.setLatitude(latitude);
-        setChanged();
-        notifyObservers();
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void save_restaurant(){
+    public void save_restaurant() {
         this.restaurant.saveInBackground();
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-        this.restaurant.setLongitude(longitude);
-        setChanged();
-        notifyObservers();
     }
 
     public int getLikes() {
@@ -253,14 +222,13 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Either likes or unlikes restuarant depending on if user already liked the restaurant
-     * */
-    public void toggleLike(){
-        if (isLiked()){
+     */
+    public void toggleLike() {
+        if (isLiked()) {
             restaurant.decrementLikes();
             likes -= 1;
             liked = false;
-        }
-        else{
+        } else {
             restaurant.incrementLikes();
             likes += 1;
             liked = true;
@@ -271,14 +239,13 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Either togos or un togos restuarant depending on if user already liked the restaurant
-     * */
-    public void toggleTogo(){
-        if (isGoing()){
+     */
+    public void toggleTogo() {
+        if (isGoing()) {
             restaurant.decrementToGos();
             togos -= 1;
             going = false;
-        }
-        else{
+        } else {
             restaurant.incrementToGos();
             togos += 1;
             going = true;
@@ -287,16 +254,27 @@ public class RestaurantObservable extends Observable implements Parcelable{
         notifyObservers();
     }
 
+    public ParseGeoPoint getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(ParseGeoPoint coordinates) {
+        this.coordinates = coordinates;
+        this.restaurant.setCoordinates(coordinates);
+        setChanged();
+        notifyObservers();
+    }
+
     /**
      * Parses json object into a restaurant observable object
-     * */
+     */
     public static RestaurantObservable fromJson(JSONObject jsonObject) throws JSONException {
 
         try {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo("yelp_id", yelp_id);
-            if(query.find().size() > 0)
+            if (query.find().size() > 0)
                 return null;
             RestaurantObservable r = new RestaurantObservable();
             r.setYelpId(jsonObject.getString("id"));
@@ -307,8 +285,8 @@ public class RestaurantObservable extends Observable implements Parcelable{
             r.setState(location.getString("state"));
             r.setZipcode(location.getString("zip_code"));
             JSONObject coordinates = jsonObject.getJSONObject("coordinates");
-            r.setLatitude(coordinates.getDouble("latitude"));
-            r.setLongitude(coordinates.getDouble("longitude"));
+            ParseGeoPoint coordinate_object = new ParseGeoPoint(coordinates.getDouble("latitude"), coordinates.getDouble("longitude"));
+            r.setCoordinates(coordinate_object);
             r.setPrice(jsonObject.getString("price"));
             String address = "";
             JSONArray display = location.getJSONArray("display_address");
@@ -327,12 +305,12 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Parses json array into a list of restaurant observable objects
-     * */
+     */
     public static List<RestaurantObservable> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<RestaurantObservable> restaurants = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             RestaurantObservable restaurant = fromJson(jsonArray.getJSONObject(i));
-            if(restaurant != null)
+            if (restaurant != null)
                 restaurants.add(restaurant);
         }
         return restaurants;
@@ -341,7 +319,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Parcelable
-     * */
+     */
     @Override
     public int describeContents() {
         return 0;
@@ -349,7 +327,7 @@ public class RestaurantObservable extends Observable implements Parcelable{
 
     /**
      * Parcelable
-     * */
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(restaurant, flags);
@@ -362,21 +340,12 @@ public class RestaurantObservable extends Observable implements Parcelable{
         dest.writeString(city);
         dest.writeString(state);
         dest.writeString(address);
-        if (latitude == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(latitude);
-        }
-        if (longitude == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(longitude);
-        }
+        dest.writeParcelable(coordinates, flags);
         dest.writeInt(likes);
         dest.writeInt(togos);
         dest.writeByte((byte) (liked ? 1 : 0));
         dest.writeByte((byte) (going ? 1 : 0));
     }
+
+
 }

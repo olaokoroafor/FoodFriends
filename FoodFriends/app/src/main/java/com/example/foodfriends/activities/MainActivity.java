@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
      * Tries to get user's last known location if there is one and user's location is not null
      **/
     private void get_user_location() {
-        Log.i(TAG, "Latitude: " + user.getLatitude().toString() + ", Longitude: " + user.getLongitude().toString());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "No permissions");
@@ -97,9 +97,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            user.setLatitude(location.getLatitude());
-                            user.setLongitude(location.getLongitude());
-                            Log.i(TAG, "Latitude: " + user.getLatitude().toString() + ", Longitude: " + user.getLongitude().toString());
+                            ParseGeoPoint coordinates = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+                            user.setCoordinates(coordinates);
                             user.save_user();
                         }
                     }

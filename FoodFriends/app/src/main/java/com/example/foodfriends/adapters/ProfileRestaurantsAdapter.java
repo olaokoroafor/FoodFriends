@@ -116,7 +116,7 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
          * Directs user to google maps with restaurant preplaced in map
          * */
         private void go_to_gmaps() {
-            String uri = "http://maps.google.com/maps?daddr=" + restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
+            String uri = "http://maps.google.com/maps?daddr=" + String.valueOf(restaurantObservable.getCoordinates().getLatitude()) + "," + String.valueOf(restaurantObservable.getCoordinates().getLongitude()) + " (" + restaurantObservable.getName() + ")";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             intent.setPackage("com.google.android.apps.maps");
             context.startActivity(intent);
