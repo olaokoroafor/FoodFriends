@@ -173,6 +173,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * longitude (float)
     * price (string)
     * address (string)
+    * location_coordinates (geo point)
 
 * User
     * id (string)
@@ -181,6 +182,7 @@ https://www.google.com/search?q=database+first+android+studio&rlz=1C5GCEM_enUS10
     * city (string)
     * state (string)
     * profilePhoto (ParseFile)
+    * location_coordinates (geo point)
 
 * UserLike
     * user (User Pointer)
