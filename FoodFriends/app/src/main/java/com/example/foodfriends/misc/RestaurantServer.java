@@ -2,8 +2,10 @@ package com.example.foodfriends.misc;
 
 import android.util.Log;
 
+import com.example.foodfriends.fragments.ExploreFragment;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
+import com.example.foodfriends.observable_models.UserObservable;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -15,6 +17,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,12 +26,23 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RestaurantServer {
+public class RestaurantServer{
     public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
     private static final String TAG = "Restaurant Server";
+    private int max_radius = 40000;
     private boolean parseSource;
     private int offset;
     private List<RestaurantObservable> observed_restaurants;
+    private UserObservable user;
+    private boolean precise_loc;
+
+    public UserObservable getUser() {
+        return user;
+    }
+
+    public void setUser(UserObservable user) {
+        this.user = user;
+    }
 
     /**
      * Constructor
@@ -37,6 +51,8 @@ public class RestaurantServer {
         this.parseSource = true;
         this.offset =  0;
         this.observed_restaurants = restaurantList;
+        this.user = new UserObservable(ParseUser.getCurrentUser());
+        precise_loc = false;
     }
 
     /**
@@ -57,7 +73,7 @@ public class RestaurantServer {
         urlBuilder.addQueryParameter("term", "restaurant");
         urlBuilder.addQueryParameter("offset", String.valueOf(offset));
         urlBuilder.addQueryParameter("limit", "20");
-        urlBuilder.addQueryParameter("location", ParseUser.getCurrentUser().getString("city") + "," + ParseUser.getCurrentUser().getString("state"));
+        urlBuilder.addQueryParameter("location", user.getCity() + "," + user.getState());
         String url = urlBuilder.build().toString();
         Log.i(TAG, "URL: " + url);
         Request request = new Request.Builder()
@@ -102,12 +118,15 @@ public class RestaurantServer {
      * */
     public void findRestaurants(String apiKey) {
         if (parseSource) {
-            // specify what type of data we want to query - Post.class
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
-            //think about this because Yelp does not always give you restaurants in your city when you search this
-            query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
-            query.whereEqualTo("state", ParseUser.getCurrentUser().getString("state"));
-            // start an asynchronous call for posts
+            if (user.getLongitude() != null && user.getLatitude()!=null){
+
+            }
+            else {
+                query.whereEqualTo("city", ParseUser.getCurrentUser().getString("city"));
+                query.whereEqualTo("state", ParseUser.getCurrentUser().getString("state"));
+            }
+
             query.setLimit(20);
             query.setSkip(offset);
             List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
