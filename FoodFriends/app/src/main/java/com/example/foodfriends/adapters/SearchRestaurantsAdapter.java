@@ -99,7 +99,7 @@ public class SearchRestaurantsAdapter extends RecyclerView.Adapter<com.example.f
         }
 
         /**
-         * Takes the user to rrestaurant detail page for specific restaurant clicked
+         * Takes the user to restaurant detail page for specific restaurant clicked
          * */
         @Override
         public void onClick(View v) {
