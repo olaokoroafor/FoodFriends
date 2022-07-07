@@ -22,6 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.misc.GoogleMapsHelper;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.parse.ParseUser;
@@ -122,22 +123,12 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 restaurant.toggleTogo();
                 break;
             case R.id.tvDetailAddress:
-                go_to_gmaps();
+                GoogleMapsHelper helper = new GoogleMapsHelper(restaurant, getContext());
+                helper.goToGmaps();
                 break;
         }
 
     }
-
-    /**
-     * Directs user to google maps with restaurant preplaced in map
-     * */
-    private void go_to_gmaps() {
-        String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        intent.setPackage("com.google.android.apps.maps");
-        getActivity().startActivity(intent);
-    }
-
     /**
      * Called when restaurant data is updated, re renders likes/togos/ text views and image views
      * */

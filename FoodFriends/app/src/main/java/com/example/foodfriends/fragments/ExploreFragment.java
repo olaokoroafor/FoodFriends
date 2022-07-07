@@ -28,9 +28,9 @@ import java.util.List;
 public class ExploreFragment extends Fragment{
 
     private RecyclerView rvRestaurants;
-    public static final String TAG = "Explore Fragment";
+    private static final String TAG = "Explore Fragment";
     private ExploreAdapter adapter;
-    public List<RestaurantObservable> restaurantList;
+    private List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;

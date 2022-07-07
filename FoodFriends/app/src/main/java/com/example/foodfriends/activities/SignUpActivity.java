@@ -21,12 +21,12 @@ import com.parse.SignUpCallback;
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "Sign Up Activity";
-    EditText etName;
-    EditText etUsername;
-    EditText etPassword;
-    EditText etState;
-    EditText etCity;
-    Button btnSignUp;
+    private EditText etName;
+    private EditText etUsername;
+    private EditText etPassword;
+    private EditText etState;
+    private EditText etCity;
+    private Button btnSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
