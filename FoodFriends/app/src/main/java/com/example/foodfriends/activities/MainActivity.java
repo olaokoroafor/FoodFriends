@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int LAUNCH_DETAIL_ACTIVITY = 0;
     private FusedLocationProviderClient fusedLocationClient;
     private boolean from_map_activity;
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
     private String fragment_tag;
-    UserObservable user;
+    private UserObservable user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
