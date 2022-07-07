@@ -10,17 +10,19 @@ tools:context=".fragments.SearchFragment">
         android:id="@+id/searchRestaurants"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        app:defaultQueryHint="Find Restaurants..."
         android:iconifiedByDefault="false"
-        app:layout_constraintBottom_toTopOf="@+id/listview"
+        app:layout_constraintBottom_toTopOf="@+id/rvSearchRestaurants"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:queryHint="Find Restaurants...">
 
         <requestFocus />
     </androidx.appcompat.widget.SearchView>
 
-    <ListView
-        android:id="@+id/listview"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchRestaurants"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_below="@+id/searchRestaurants"
