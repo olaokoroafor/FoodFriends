@@ -37,7 +37,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
-    private static final int LAUNCH_DETAIL_ACTIVITY = 0;
     private FusedLocationProviderClient fusedLocationClient;
     private boolean from_map_activity;
     private BottomNavigationView bottomNavigationView;
@@ -163,23 +162,6 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
         intent.putExtras(bundle);
-        startActivity(intent);
-        //startActivityForResult(intent, LAUNCH_DETAIL_ACTIVITY);
-
     }
-
-    /*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == LAUNCH_DETAIL_ACTIVITY) {
-            if(resultCode == Activity.RESULT_OK){
-                displayRestaurantDetailFragment(data.getParcelableExtra("restaurant"));
-            }
-        }
-    }
-
-     */
 
 }
