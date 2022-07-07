@@ -1,5 +1,7 @@
 package com.example.foodfriends.activities;
 
+import static java.util.Map.entry;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +20,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.Map;
+
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "Sign Up Activity";
     private final int EMPTY_USER_NAME_RESULT_CODE = 0;
@@ -50,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
+        switch (v.getId()) {
 
             case R.id.btnSignUp:
                 signUp();
@@ -61,7 +65,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     /**
      * Creates user object for the current user, with specified attributes
-     * **/
+     **/
     private void signUp() {
         UserObservable user = new UserObservable();
         // Set the user's username and password, which can be obtained by a forms
@@ -70,42 +74,29 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         user.setState(etState.getText().toString());
         user.setCity(etCity.getText().toString());
         user.setName(etName.getText().toString());
-        switch (user.isValid()){
-            case OK_RESULT_CODE:
-                user.getUser().signUpInBackground(new SignUpCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            showAlert("Successful Sign Up!", "Welcome " + user.getName() +"!");
-                        } else {
-                            ParseUser.logOut();
-                            Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+        if (user.isValid() == OK_RESULT_CODE) {
+            user.getUser().signUpInBackground(new SignUpCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        showAlert("Successful Sign Up!", "Welcome " + user.getName() + "!");
+                    } else {
+                        ParseUser.logOut();
+                        Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                });
-                break;
-            case EMPTY_USER_NAME_RESULT_CODE:
-                Toast.makeText(SignUpActivity.this, "Username must not be empty", Toast.LENGTH_SHORT).show();
-                break;
-
-            case EMPTY_PASSWORD_RESULT_CODE:
-                Toast.makeText(SignUpActivity.this, "Password must not be empty", Toast.LENGTH_SHORT).show();
-                break;
-
-            case SHORT_PASSWORD_RESULT_CODE:
-                Toast.makeText(SignUpActivity.this, "Password must be over 5 characters", Toast.LENGTH_SHORT).show();
-                break;
-
-            case EMPTY_NAME_RESULT_CODE:
-                Toast.makeText(SignUpActivity.this, "Name must not be empty", Toast.LENGTH_SHORT).show();
-                break;
+                }
+            });
+        } else {
+            Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
+            Log.i(TAG, String.valueOf(user.isValid()));
+            Toast.makeText(SignUpActivity.this, userValidityStates.get(user.isValid()), Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
      * Displays Welcome Alert to use then sends them to the Main Activity
-     * **/
-    private void showAlert(String title,String message){
+     **/
+    private void showAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this)
                 .setTitle(title)
                 .setMessage(message)
