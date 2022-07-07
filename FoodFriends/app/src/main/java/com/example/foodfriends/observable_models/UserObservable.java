@@ -220,7 +220,6 @@ public class UserObservable extends Observable implements Parcelable {
      * Does validation on user object fields
      * */
     public int isValid() {
-
         if(TextUtils.isEmpty(getUsername()))
             return  0;
         else if(TextUtils.isEmpty(getPassword()))

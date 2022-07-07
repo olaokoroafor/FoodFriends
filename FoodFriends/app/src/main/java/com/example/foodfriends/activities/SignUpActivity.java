@@ -21,6 +21,11 @@ import com.parse.SignUpCallback;
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "Sign Up Activity";
+    private final int EMPTY_USER_NAME_RESULT_CODE = 0;
+    private final int EMPTY_PASSWORD_RESULT_CODE = 1;
+    private final int SHORT_PASSWORD_RESULT_CODE = 2;
+    private final int EMPTY_NAME_RESULT_CODE = 3;
+    private final int OK_RESULT_CODE = -1;
     private EditText etName;
     private EditText etUsername;
     private EditText etPassword;
@@ -66,7 +71,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         user.setCity(etCity.getText().toString());
         user.setName(etName.getText().toString());
         switch (user.isValid()){
-            case -1:
+            case OK_RESULT_CODE:
                 user.getUser().signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -79,19 +84,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 });
                 break;
-            case 0:
+            case EMPTY_USER_NAME_RESULT_CODE:
                 Toast.makeText(SignUpActivity.this, "Username must not be empty", Toast.LENGTH_SHORT).show();
                 break;
 
-            case 1:
+            case EMPTY_PASSWORD_RESULT_CODE:
                 Toast.makeText(SignUpActivity.this, "Password must not be empty", Toast.LENGTH_SHORT).show();
                 break;
 
-            case 2:
+            case SHORT_PASSWORD_RESULT_CODE:
                 Toast.makeText(SignUpActivity.this, "Password must be over 5 characters", Toast.LENGTH_SHORT).show();
                 break;
 
-            case 3:
+            case EMPTY_NAME_RESULT_CODE:
                 Toast.makeText(SignUpActivity.this, "Name must not be empty", Toast.LENGTH_SHORT).show();
                 break;
         }
