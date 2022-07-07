@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.foodfriends.activities.LogInActivity;
+import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.activities.MapActivity;
 import com.example.foodfriends.adapters.ExploreAdapter;
 import com.example.foodfriends.misc.EndlessRecyclerViewScrollListener;
@@ -35,6 +36,7 @@ import java.util.Observer;
 public class ExploreFragment extends Fragment implements Observer {
 
     private RecyclerView rvRestaurants;
+    private int REQUEST_CODE = 0;
     private ImageView ivMap;
     private static final String TAG = "Explore Fragment";
     private ExploreAdapter adapter;
@@ -97,14 +99,7 @@ public class ExploreFragment extends Fragment implements Observer {
         ivMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), MapActivity.class);
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
-                intent.putExtras(bundle);
-
-                //intent.putExtra("restaurants", (Parcelable) restaurantList);
-                startActivity(intent);
+                ((MainActivity) getContext()).mapToDetail(restaurantList);
             }
         });
 

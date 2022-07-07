@@ -8,9 +8,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -29,9 +32,14 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
+    private static final int LAUNCH_DETAIL_ACTIVITY = 0;
     private FusedLocationProviderClient fusedLocationClient;
+    private boolean from_map_activity;
     BottomNavigationView bottomNavigationView;
     private String fragment_tag;
     UserObservable user;
@@ -79,7 +87,14 @@ public class MainActivity extends AppCompatActivity {
         };
 
         bottomNavigationView.setOnItemSelectedListener(reloaded_listener);
-        bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+        from_map_activity = getIntent().getBooleanExtra("from_map", false);
+        if (from_map_activity){
+            RestaurantObservable r = getIntent().getParcelableExtra("restaurant");
+            displayRestaurantDetailFragment(r);
+        }
+        else{
+            bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+        }
     }
 
 
@@ -138,5 +153,33 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    /**
+     * Displays restaurant detail fragment for marker on map
+     *
+     * @param restaurantList*/
+    public void mapToDetail(List<RestaurantObservable> restaurantList) {
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        //startActivityForResult(intent, LAUNCH_DETAIL_ACTIVITY);
+
+    }
+
+    /*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_DETAIL_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                displayRestaurantDetailFragment(data.getParcelableExtra("restaurant"));
+            }
+        }
+    }
+
+     */
 
 }

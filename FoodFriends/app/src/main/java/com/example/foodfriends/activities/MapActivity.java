@@ -2,13 +2,19 @@ package com.example.foodfriends.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.foodfriends.R;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
@@ -17,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseUser;
 
@@ -53,14 +60,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // Add a marker in Sydney, Australia,
         // and move the map's camera to the same location.
 
-        for (RestaurantObservable restaurantObservable: restaurantList) {
-            LatLng restaurant_coordinates = new LatLng(restaurantObservable.getCoordinates().getLatitude(), restaurantObservable.getCoordinates().getLongitude());
-            googleMap.addMarker(new MarkerOptions()
+        for (int i = 0; i < restaurantList.size(); i++) {
+            LatLng restaurant_coordinates = new LatLng(restaurantList.get(i).getCoordinates().getLatitude(), restaurantList.get(i).getCoordinates().getLongitude());
+            Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(restaurant_coordinates)
-                    .title(restaurantObservable.getName()));
+                    .title(restaurantList.get(i).getName()));
+            marker.setTag(i);
         }
 
         float zoomLevel = 12.0f;
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(user.getCoordinates().getLatitude(), user.getCoordinates().getLongitude()), zoomLevel));
+
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                int position = (int)(marker.getTag());
+                RestaurantObservable restaurantObservable = restaurantList.get(position);
+                Intent returnIntent = new Intent(MapActivity.this, MainActivity.class);
+                returnIntent.putExtra("from_map", true);
+                returnIntent.putExtra("restaurant", restaurantObservable);
+                startActivity(returnIntent);
+                return false;
+            }
+        });
     }
 }
