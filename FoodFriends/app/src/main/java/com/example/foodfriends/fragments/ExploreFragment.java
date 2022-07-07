@@ -23,9 +23,11 @@ import com.example.foodfriends.misc.RestaurantServer;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
-public class ExploreFragment extends Fragment{
+public class ExploreFragment extends Fragment implements Observer {
 
     private RecyclerView rvRestaurants;
     private static final String TAG = "Explore Fragment";
@@ -50,6 +52,7 @@ public class ExploreFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         restaurantList = new ArrayList<RestaurantObservable>();
         restaurantServer = new RestaurantServer(restaurantList);
+        restaurantServer.getUser().addObserver(this);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -102,6 +105,18 @@ public class ExploreFragment extends Fragment{
             }
         };
         rvRestaurants.addOnScrollListener(scrollListener);
+        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
+        rvRestaurants.post(new Runnable() {
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        restaurantList.clear();
+        restaurantServer.reset();
         restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
         rvRestaurants.post(new Runnable() {
             public void run() {

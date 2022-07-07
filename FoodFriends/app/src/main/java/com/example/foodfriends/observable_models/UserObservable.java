@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -21,15 +22,14 @@ public class UserObservable extends Observable implements Parcelable {
     private ParseFile profilePhoto;
     private String city;
     private String state;
-    private Double latitude;
-    private Double longitude;
+    private ParseGeoPoint coordinates;
     private static final String USERNAME_KEY = "username";
+    private static final String PASSWORD_KEY = "password";
     private static final String NAME_KEY = "name";
     private static final String PROFILE_PHOTO_KEY = "profilePhoto";
     private static final String CITY_KEY = "city";
     private static final String STATE_KEY = "state";
-    private static final String LATITUDE_KEY = "latitude";
-    private static final String LONGITUDE_KEY = "longitude";
+    private static final String LOCATION_COORDINATES_KEY = "location_coordinates";
     private static final String TAG = "USER OBSERVABLE MODEL";
 
     public UserObservable(){
@@ -45,8 +45,7 @@ public class UserObservable extends Observable implements Parcelable {
         this.profilePhoto = user.getParseFile(PROFILE_PHOTO_KEY);
         this.city = user.getString(CITY_KEY);
         this.state = user.getString(STATE_KEY);
-        this.latitude = user.getDouble(LATITUDE_KEY);
-        this.longitude = user.getDouble(LONGITUDE_KEY);
+        this.coordinates = user.getParseGeoPoint(LOCATION_COORDINATES_KEY);
     }
 
 
@@ -62,16 +61,7 @@ public class UserObservable extends Observable implements Parcelable {
         profilePhoto = in.readParcelable(ParseFile.class.getClassLoader());
         city = in.readString();
         state = in.readString();
-        if (in.readByte() == 0) {
-            latitude = null;
-        } else {
-            latitude = in.readDouble();
-        }
-        if (in.readByte() == 0) {
-            longitude = null;
-        } else {
-            longitude = in.readDouble();
-        }
+        coordinates = in.readParcelable(ParseGeoPoint.class.getClassLoader());
     }
 
     /**
@@ -105,20 +95,20 @@ public class UserObservable extends Observable implements Parcelable {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
-        user.put("password", password);
+        this.user.put(PASSWORD_KEY, password);
         setChanged();
         notifyObservers();
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public void setUsername(String username) {
         this.username = username;
-        this.user.put("username", username);
+        this.user.put(USERNAME_KEY, username);
         setChanged();
         notifyObservers();
     }
@@ -129,7 +119,7 @@ public class UserObservable extends Observable implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
-        this.user.put("name", name);
+        this.user.put(NAME_KEY, name);
         setChanged();
         notifyObservers();
     }
@@ -140,7 +130,7 @@ public class UserObservable extends Observable implements Parcelable {
 
     public void setProfilePhoto(ParseFile profilePhoto) {
         this.profilePhoto = profilePhoto;
-        this.user.put("profilePhoto", profilePhoto);
+        this.user.put(PROFILE_PHOTO_KEY, profilePhoto);
         setChanged();
         notifyObservers();
     }
@@ -151,7 +141,7 @@ public class UserObservable extends Observable implements Parcelable {
 
     public void setCity(String city) {
         this.city = city;
-        this.user.put("city", city);
+        this.user.put(CITY_KEY, city);
         setChanged();
         notifyObservers();
     }
@@ -162,32 +152,20 @@ public class UserObservable extends Observable implements Parcelable {
 
     public void setState(String state) {
         this.state = state;
-        this.user.put("state", state);
+        this.user.put(STATE_KEY, state);
         setChanged();
         notifyObservers();
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public ParseGeoPoint getCoordinates() {
+        return coordinates;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-        this.user.put("latitude", latitude);
+    public void setCoordinates(ParseGeoPoint coordinates) {
+        this.coordinates = coordinates;
+        this.user.put(LOCATION_COORDINATES_KEY, coordinates);
         setChanged();
         notifyObservers();
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-        this.user.put("longitude", longitude);
-        setChanged();
-        notifyObservers();
-
     }
 
     /**
@@ -206,10 +184,10 @@ public class UserObservable extends Observable implements Parcelable {
             @Override
             public void done(ParseException e) {
                 if (e != null){
-                    Log.e(TAG, "Error saving photo: " + e);
+                    Log.e(TAG, "Error saving user: " + e);
                 }
                 else{
-                    Log.i(TAG, "Photo upload was successful!");
+                    Log.i(TAG, "User save swas successful!");
                 }
             }
         });
@@ -253,17 +231,7 @@ public class UserObservable extends Observable implements Parcelable {
         dest.writeParcelable(profilePhoto, flags);
         dest.writeString(city);
         dest.writeString(state);
-        if (latitude == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(latitude);
-        }
-        if (longitude == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(longitude);
-        }
+        dest.writeParcelable(coordinates, flags);
     }
+
 }

@@ -2,10 +2,14 @@ package com.example.foodfriends.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,22 +21,29 @@ import com.example.foodfriends.fragments.RestaurantDetailFragment;
 import com.example.foodfriends.fragments.SearchFragment;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
-
+    private FusedLocationProviderClient fusedLocationClient;
     BottomNavigationView bottomNavigationView;
     private String fragment_tag;
-    ParseUser user;
+    UserObservable user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        user = ParseUser.getCurrentUser();
+
+        user = new UserObservable(ParseUser.getCurrentUser());
+        get_user_location();
+
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         final Fragment exploreFragment = new ExploreFragment();
@@ -40,23 +51,23 @@ public class MainActivity extends AppCompatActivity {
         final Fragment profileFragment = new ProfileFragment();
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        NavigationBarView.OnItemSelectedListener reloaded_listener = new NavigationBarView.OnItemSelectedListener(){
+        NavigationBarView.OnItemSelectedListener reloaded_listener = new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Log.i(TAG, "Menu item selected");
                 Fragment fragment = exploreFragment;
-                if (item.getItemId() == R.id.menu_explore){
+                if (item.getItemId() == R.id.menu_explore) {
                     fragment = exploreFragment;
                     fragment_tag = "explore";
                 }
-                if (item.getItemId() == R.id.menu_search){
+                if (item.getItemId() == R.id.menu_search) {
                     fragment = searchFragment;
                     fragment_tag = "search";
                 }
-                if (item.getItemId() == R.id.menu_profile){
+                if (item.getItemId() == R.id.menu_profile) {
                     fragment = profileFragment;
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("user", new UserObservable(ParseUser.getCurrentUser()));
+                    bundle.putParcelable("user", user);
                     fragment.setArguments(bundle);
                     fragment_tag = "profile";
                 }
@@ -68,12 +79,36 @@ public class MainActivity extends AppCompatActivity {
         };
 
         bottomNavigationView.setOnItemSelectedListener(reloaded_listener);
-        bottomNavigationView.setSelectedItemId(R.id.menu_explore);
-}
+        bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+    }
 
-/**
- * Displays profile fragment for user passed in
- * Done here because can not make this change from Adapter**/
+
+    /**
+     * Tries to get user's last known location if there is one and user's location is not null
+     **/
+    private void get_user_location() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "No permissions");
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            ParseGeoPoint coordinates = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+                            user.setCoordinates(coordinates);
+                            user.save_user();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Displays profile fragment for user passed in
+     * Done here because can not make this change from Adapter
+     **/
     public void displayOtherProfileFragment(ParseUser user) {
         Fragment other_profile_fragment = new ProfileFragment();
         Bundle bundle = new Bundle();
@@ -89,7 +124,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Displays restaurant detail fragment for user passed in
      * Done here because can not make this change from Adapter
-     * @param restaurant**/
+     *
+     * @param restaurant
+     **/
     public void displayRestaurantDetailFragment(RestaurantObservable restaurant) {
         Fragment detail_fragment = new RestaurantDetailFragment();
         Bundle bundle = new Bundle();

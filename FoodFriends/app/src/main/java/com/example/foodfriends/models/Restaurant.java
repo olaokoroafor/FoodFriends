@@ -1,5 +1,6 @@
 package com.example.foodfriends.models;
 
+import android.database.CursorIndexOutOfBoundsException;
 import android.util.Log;
 
 import com.parse.DeleteCallback;
@@ -8,6 +9,7 @@ import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -27,11 +29,10 @@ public class Restaurant extends ParseObject {
     private static final String CITY_KEY = "city";
     private static final String STATE_KEY = "state";
     private static final String ZIPCODE_KEY = "zipcode";
-    private static final String LATITUDE_KEY = "latitude";
-    private static final String LONGITUDE_KEY = "longitude";
     private static final String PRICE_KEY = "price";
     private static final String ADDRESS_KEY = "address";
     private static final String YELP_ID_KEY = "yelp_id";
+    private static final String LOCATION_COORDINATES_KEY = "location_coordinates";
     private static final String TAG = "Restaurant Model";
 
     public String getName() {
@@ -74,22 +75,6 @@ public class Restaurant extends ParseObject {
         put(ZIPCODE_KEY, zipcode);
     }
 
-    public Double getLatitude() {
-        return getDouble(LATITUDE_KEY);
-    }
-
-    public void setLatitude(Double latitude) {
-        put(LATITUDE_KEY, latitude);
-    }
-
-    public Double getLongitude() {
-        return getDouble(LONGITUDE_KEY);
-    }
-
-    public void setLongitude(Double longitude) {
-        put(LONGITUDE_KEY, longitude);
-    }
-
     public String getPrice() {
         return getString(PRICE_KEY);
     }
@@ -112,6 +97,14 @@ public class Restaurant extends ParseObject {
 
     public void setYelpId(String yelpID) {
         put(YELP_ID_KEY, yelpID);
+    }
+
+    public ParseGeoPoint getCoordinates() {
+        return getParseGeoPoint(LOCATION_COORDINATES_KEY);
+    }
+
+    public void setCoordinates(ParseGeoPoint coordinates) {
+        put(LOCATION_COORDINATES_KEY, coordinates);
     }
 
     /**

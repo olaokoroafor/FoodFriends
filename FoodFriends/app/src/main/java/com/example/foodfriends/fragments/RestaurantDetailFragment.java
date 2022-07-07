@@ -129,6 +129,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         }
 
     }
+
     /**
      * Called when restaurant data is updated, re renders likes/togos/ text views and image views
      * */
