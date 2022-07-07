@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.adapters.FindFriendsAdapter;
+import com.example.foodfriends.observable_models.FriendObservable;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -29,13 +30,15 @@ public class FindFriendsFragment extends Fragment {
     private SearchView searchFriends;
     private RecyclerView rvUsers;
     private FindFriendsAdapter adapter;
-    private List<ParseUser> allUsers;
+    private List<FriendObservable> allUsers;
 
     public FindFriendsFragment() {
         // Required empty public constructor
     }
 
-
+    /**
+     * Inflates the UI xml for the fragment
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,6 +46,10 @@ public class FindFriendsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_find_friends, container, false);
     }
 
+    /**
+     * Connects the recycler view of users to the adapter
+     * Populates the list of users for the adapter to display
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -64,20 +71,18 @@ public class FindFriendsFragment extends Fragment {
                 return false;
             }
         });
-
-
-        allUsers= new ArrayList<ParseUser>();
+        allUsers= new ArrayList<FriendObservable>();
         rvUsers.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new FindFriendsAdapter(getContext(), allUsers);
         rvUsers.setAdapter(adapter);
     }
 
+    /**
+     * Searches Parse Database for users with username starting with submitted query
+     * */
     private void queryUsers(String search_term) {
-
         ParseQuery<ParseUser> query = ParseQuery.getQuery(ParseUser.class);
-
         query.whereStartsWith("username", search_term);
-
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> users, ParseException e) {
@@ -87,7 +92,9 @@ public class FindFriendsFragment extends Fragment {
                     return;
                 }
                 allUsers.clear();
-                allUsers.addAll(users);
+                for (ParseUser user: users){
+                    allUsers.add(new FriendObservable(user));
+                }
                 adapter.notifyDataSetChanged();
             }
         });

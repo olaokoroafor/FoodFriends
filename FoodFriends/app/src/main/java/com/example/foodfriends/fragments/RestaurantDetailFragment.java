@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,17 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
+import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.misc.GoogleMapsHelper;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.parse.ParseUser;
 
-public class RestaurantDetailFragment extends Fragment {
+import java.util.Observable;
+import java.util.Observer;
+
+public class RestaurantDetailFragment extends Fragment implements Observer, View.OnClickListener{
+    private static final String TAG = "Restaurant Detail Fragment";
     private TextView tvRName;
     private TextView tvLikeCount;
     private TextView tvToGoCount;
@@ -32,26 +40,30 @@ public class RestaurantDetailFragment extends Fragment {
     private ImageView ivRPic;
     private ImageView ivLike;
     private ImageView ivToGo;
-    private Restaurant restaurant;
+    private RestaurantObservable restaurant;
     private RecyclerView rvComments;
-    private boolean liked;
-    private boolean going;
-    int num_likes;
-    int num_togo;
 
     public RestaurantDetailFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the UI xml for the fragment, and adds observer to restaurant object
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         restaurant = this.getArguments().getParcelable("restaurant");
+        restaurant.addObserver(this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
     }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -67,15 +79,12 @@ public class RestaurantDetailFragment extends Fragment {
         tvPrice.setText("PRICE: " + restaurant.getPrice());
         tvRName.setText(restaurant.getName());
         tvAddress.setText(restaurant.getAddress());
-        num_likes =  restaurant.getLikes();
-        tvLikeCount.setText(String.valueOf(num_likes));
-        num_togo = restaurant.getToGos();
-        tvToGoCount.setText(String.valueOf(num_togo));
+        tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
+        tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
         Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivRPic);
-        liked = restaurant.user_like();
-        if(liked){
+        if(restaurant.isLiked()){
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_red_heart_24)
                     .into(ivLike);
@@ -85,82 +94,67 @@ public class RestaurantDetailFragment extends Fragment {
                     .load(R.drawable.ic_baseline_heart_24)
                     .into(ivLike);
         }
-
-
-        going = restaurant.user_to_go();
-        if(going){
+        if(restaurant.isGoing()){
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_active_go_24)
                     .into(ivToGo);
         }
-
         else{
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_call_missed_outgoing_24)
                     .into(ivToGo);
         }
+        ivLike.setOnClickListener(this);
+        ivToGo.setOnClickListener(this);
+        tvAddress.setOnClickListener(this);
+    }
 
-        ivLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!liked){
-                    restaurant.incrementLikes();
-                    tvLikeCount.setText(new Integer(num_likes+1).toString());
-                    liked = true;
-                    num_likes += 1;
-                    Glide.with(getContext())
-                            .load(R.drawable.ic_baseline_red_heart_24)
-                            .into(ivLike);
-                }
+    /**
+     * Specifies what needs to be done for each UI element click
+     * */
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
 
-                else{
-                    restaurant.decrementLikes();
-                    tvLikeCount.setText(new Integer(num_likes-1).toString());
-                    liked = false;
-                    num_likes -= 1;
-                    Glide.with(getContext())
-                            .load(R.drawable.ic_baseline_heart_24)
-                            .into(ivLike);
-                }
-            }
-        });
+            case R.id.ivDetailLike:
+                restaurant.toggleLike();
+                break;
+            case R.id.ivDetailToGo:
+                restaurant.toggleTogo();
+                break;
+            case R.id.tvDetailAddress:
+                GoogleMapsHelper helper = new GoogleMapsHelper(restaurant, getContext());
+                helper.goToGmaps();
+                break;
+        }
 
-        ivToGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!going){
-                    restaurant.incrementToGos();
-                    tvToGoCount.setText(new Integer(num_togo+1).toString());
-                    going = true;
-                    num_togo += 1;
-                    Glide.with(getContext())
-                            .load(R.drawable.ic_baseline_active_go_24)
-                            .into(ivToGo);
-                }
-
-                else{
-                    restaurant.decrementToGos();
-                    tvToGoCount.setText(new Integer(num_togo-1).toString());
-                    going = false;
-                    num_togo -=1;
-                    Glide.with(getContext())
-                            .load(R.drawable.ic_baseline_call_missed_outgoing_24)
-                            .into(ivToGo);
-                }
-            }
-        });
-
-        tvAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser user = ParseUser.getCurrentUser();
-                String uri = "http://maps.google.com/maps?daddr=" + restaurant.getLatitude().toString() + "," + restaurant.getLongitude().toString() + " (" + restaurant.getName() + ")";
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                intent.setPackage("com.google.android.apps.maps");
-                getContext().startActivity(intent);
-            }
-        });
-
-
+    }
+    /**
+     * Called when restaurant data is updated, re renders likes/togos/ text views and image views
+     * */
+    @Override
+    public void update(Observable o, Object arg) {
+        tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
+        tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
+        if(restaurant.isLiked()){
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_red_heart_24)
+                    .into(ivLike);
+        }
+        else{
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_heart_24)
+                    .into(ivLike);
+        }
+        if(restaurant.isGoing()){
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_active_go_24)
+                    .into(ivToGo);
+        }
+        else{
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_call_missed_outgoing_24)
+                    .into(ivToGo);
+        }
     }
 }

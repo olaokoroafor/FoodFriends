@@ -24,26 +24,31 @@ import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.fragments.FindFriendsFragment;
 import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.observable_models.FriendObservable;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.ViewHolder>{
-    private List<ParseUser> users;
+    private List<FriendObservable> users;
     private LayoutInflater mInflater;
     private Context context;
 
 
 
+
     // data is passed into the constructor
-    public FindFriendsAdapter(Context context, List<ParseUser> users) {
+    public FindFriendsAdapter(Context context, List<FriendObservable> users) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.users = users;
     }
 
-    // inflates the cell layout from xml when needed
+    /**
+     * Inflates view of the user search item xml**/
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,10 +57,11 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         return new ViewHolder(view);
     }
 
-    // binds the data to the Views in each cell
+    /**
+     * Calls binder for a user at particular position**/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ParseUser user = users.get(position);
+        FriendObservable user = users.get(position);
         holder.bind(user);
     }
 
@@ -67,14 +73,17 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements Observer, View.OnClickListener{
         private ImageView ivPfp;
         private ImageView ivAddFriend;
         private TextView tvUsername;
         private TextView tvLocation;
-        private boolean follows = false;
+        private FriendObservable current_user;
 
-        ViewHolder(View itemView) {
+        /**
+         * Constructor
+         * */
+        public ViewHolder(View itemView) {
             super(itemView);
             ivPfp = itemView.findViewById(R.id.ivSearchPfp);
             ivAddFriend = itemView.findViewById(R.id.ivAddFriend);
@@ -82,26 +91,25 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
             tvLocation = itemView.findViewById(R.id.tvSearchLocation);
         }
 
-        public void bind(ParseUser user) {
+        /**
+         * Binds the xml elements to user data
+         * */
+        public void bind(FriendObservable user) {
+            current_user = user;
+            user.addObserver(this);
             tvUsername.setText(user.getUsername());
-            tvLocation.setText(user.getString("city") + ", " + user.getString("state"));
+            tvLocation.setText(user.getCity() + ", " + user.getState());
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-            ParseFile pfp = user.getParseFile("profilePhoto");
+            ParseFile pfp = user.getProfilePhoto();
             if (pfp != null){
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
             }
             else{
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivPfp);
             }
-            ivPfp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((MainActivity) context).displayOtherProfileFragment(user);
-                }
-            });
-            follows = Friends.user_follows(user);
-            if (follows){
+            ivPfp.setOnClickListener(this);
+            if (user.user_follows()){
                 Glide.with(context)
                         .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivAddFriend);
@@ -111,25 +119,39 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
                         .load(R.drawable.ic_baseline_person_add_24)
                         .into(ivAddFriend);
             }
-            ivAddFriend.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (follows){
-                        Friends.unfollow(user);
-                        Glide.with(context)
-                                .load(R.drawable.ic_baseline_person_add_24)
-                                .into(ivAddFriend);
-                        follows=false;
-                    }
-                    else{
-                        Friends.follow(user);
-                        Glide.with(context)
-                                .load(R.drawable.ic_baseline_person_remove_24)
-                                .into(ivAddFriend);
-                        follows=true;
-                    }
-                }
-            });
+            ivAddFriend.setOnClickListener(this);
+        }
+
+        /**
+         * Specifies what needs to be done for each UI click
+         * */
+        @Override
+        public void onClick(View v) {
+            switch(v.getId()){
+                case R.id.ivSearchPfp:
+                    ((MainActivity) context).displayOtherProfileFragment(current_user.getUser());
+                    break;
+                case R.id.ivAddFriend:
+                    current_user.toggle_follow();
+                    break;
+            }
+        }
+
+        /**
+         * Called when restaurant data is updated, re renders follow image view
+         * */
+        @Override
+        public void update(Observable o, Object arg) {
+            if (current_user.user_follows()){
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_person_add_24)
+                        .into(ivAddFriend);
+            }
+            else{
+                Glide.with(context)
+                        .load(R.drawable.ic_baseline_person_remove_24)
+                        .into(ivAddFriend);
+            }
         }
     }
     // Clean all elements of the recycler

@@ -7,12 +7,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
-import com.example.foodfriends.models.User;
 import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
 import com.parse.Parse;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
 

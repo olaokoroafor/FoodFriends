@@ -17,6 +17,9 @@ public class SearchFragment extends Fragment {
     }
 
 
+    /**
+     * Inflates the UI xml for the fragment
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
