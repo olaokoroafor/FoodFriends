@@ -24,7 +24,7 @@ public class GoogleMapsHelper {
      * */
     public void goToGmaps() {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(GMAPS_URL).newBuilder();
-        String destination = restaurantObservable.getLatitude().toString() + "," + restaurantObservable.getLongitude().toString() + " (" + restaurantObservable.getName() + ")";
+        String destination = String.valueOf(restaurantObservable.getCoordinates().getLatitude()) + "," + String.valueOf(restaurantObservable.getCoordinates().getLongitude()) + " (" + restaurantObservable.getName() + ")";
         urlBuilder.addQueryParameter("daddr", destination);
         String uri = urlBuilder.build().toString();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
