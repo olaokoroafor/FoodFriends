@@ -18,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.misc.GoogleMapsHelper;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.parse.ParseUser;
@@ -103,23 +104,14 @@ public class ProfileRestaurantsAdapter extends RecyclerView.Adapter<ProfileResta
         public void onClick(View v) {
             switch(v.getId()){
                 case R.id.tvProfileRAddress:
-                    go_to_gmaps();
+                    GoogleMapsHelper helper = new GoogleMapsHelper(restaurantObservable, context);
+                    helper.goToGmaps();
                     break;
                 case R.id.ivProfileRPic:
                     ((MainActivity) context).displayRestaurantDetailFragment(restaurantObservable);
                     break;
             }
 
-        }
-
-        /**
-         * Directs user to google maps with restaurant preplaced in map
-         * */
-        private void go_to_gmaps() {
-            String uri = "http://maps.google.com/maps?daddr=" + String.valueOf(restaurantObservable.getCoordinates().getLatitude()) + "," + String.valueOf(restaurantObservable.getCoordinates().getLongitude()) + " (" + restaurantObservable.getName() + ")";
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-            intent.setPackage("com.google.android.apps.maps");
-            context.startActivity(intent);
         }
     }
     // Clean all elements of the recycler

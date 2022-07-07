@@ -18,10 +18,10 @@ import com.parse.ParseUser;
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = "LoginActivity";
-    EditText etUsername;
-    EditText etPassword;
-    Button btnLogin;
-    TextView tvSignUp;
+    private EditText etUsername;
+    private EditText etPassword;
+    private Button btnLogin;
+    private TextView tvSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         etPassword = findViewById(R.id.etLogInPassword);
         btnLogin = findViewById(R.id.btnLogIn);
         tvSignUp = findViewById(R.id.tvSignUpLink);
-        tvSignUp.setOnClickListener(this);
         tvSignUp.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
 
@@ -45,7 +44,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.tvSignUpLink:
-                to_sign_up();
+                toSignUp();
                 break;
 
             case R.id.btnLogIn:
@@ -58,7 +57,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
     /**
      * Fires intent to to take user to Sign Up Activity **/
-    private void to_sign_up() {
+    private void toSignUp() {
         Intent i = new Intent(LogInActivity.this, SignUpActivity.class);
         startActivity(i);
     }
