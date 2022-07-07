@@ -30,9 +30,9 @@ import java.util.Observer;
 public class ExploreFragment extends Fragment implements Observer {
 
     private RecyclerView rvRestaurants;
-    public static final String TAG = "Explore Fragment";
+    private static final String TAG = "Explore Fragment";
     private ExploreAdapter adapter;
-    public List<RestaurantObservable> restaurantList;
+    private List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;
