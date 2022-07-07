@@ -30,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private final int SHORT_PASSWORD_RESULT_CODE = 2;
     private final int EMPTY_NAME_RESULT_CODE = 3;
     private final int OK_RESULT_CODE = -1;
+    private final Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
     private EditText etName;
     private EditText etUsername;
     private EditText etPassword;
@@ -87,7 +88,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 }
             });
         } else {
-            Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
             Log.i(TAG, String.valueOf(user.isValid()));
             Toast.makeText(SignUpActivity.this, userValidityStates.get(user.isValid()), Toast.LENGTH_SHORT).show();
         }
