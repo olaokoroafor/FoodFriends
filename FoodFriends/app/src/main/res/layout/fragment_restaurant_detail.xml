@@ -118,7 +118,7 @@
         android:id="@+id/etCommentBody"
         android:layout_width="325dp"
         android:layout_height="61dp"
-        android:layout_marginStart="@dimen/material_emphasis_medium"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
         android:layout_marginBottom="@dimen/margin_padding_size_large"
         android:ems="10"
         android:hint="Type comment"
