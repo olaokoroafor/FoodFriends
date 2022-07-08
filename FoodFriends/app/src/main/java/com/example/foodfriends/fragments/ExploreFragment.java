@@ -123,12 +123,17 @@ public class ExploreFragment extends Fragment implements Observer {
         };
         rvRestaurants.addOnScrollListener(scrollListener);
 
-        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-        rvRestaurants.post(new Runnable() {
-            public void run() {
-                adapter.notifyDataSetChanged();
+        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), new RestaurantsListener() {
+            @java.lang.Override
+            public void dataChanged() {
+                rvRestaurants.post(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
+
     }
 
     @Override
@@ -142,4 +147,15 @@ public class ExploreFragment extends Fragment implements Observer {
             }
         });
     }
+}
+
+class listener extends RestaurantsListener {
+    @java.lang.Override
+    public void dataChanged() {
+        super.dataChanged();
+    }
+}
+
+interface class RestaurantsListener {
+    public void dataChanged()
 }

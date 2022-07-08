@@ -124,7 +124,7 @@ public class RestaurantServer {
     /**
      * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
      */
-    public void findRestaurants(String apiKey) {
+    public void findRestaurants(String apiKey, @Nullable listener RestaurantListener) {
         Log.i(TAG, String.valueOf(parseSource));
         if (parseSource) {
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
@@ -138,25 +138,25 @@ public class RestaurantServer {
             query.setLimit(20);
             query.setSkip(offset);
             List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
-            try {
-                List<Restaurant> restaurants = query.find();
-                for (Restaurant r : restaurants) {
-                    observed.add(new RestaurantObservable(r));
-                }
-                offset += restaurants.size();
-                if (restaurants.size() < 20) {
-                    Log.i(TAG, String.valueOf(restaurants.size()));
-                    offset = 0;
-                    parseSource = false;
-                }
-                if (restaurants.size() == 0) {
-                    yelpQuery(apiKey);
-                }
-                observed_restaurants.addAll(observed);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            /*
+//            try {
+//                List<Restaurant> restaurants = query.find();
+//                for (Restaurant r : restaurants) {
+//                    observed.add(new RestaurantObservable(r));
+//                }
+//                offset += restaurants.size();
+//                if (restaurants.size() < 20) {
+//                    Log.i(TAG, String.valueOf(restaurants.size()));
+//                    offset = 0;
+//                    parseSource = false;
+//                }
+//                if (restaurants.size() == 0) {
+//                    yelpQuery(apiKey);
+//                }
+//                observed_restaurants.addAll(observed);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//            
             query.findInBackground(new FindCallback<Restaurant>() {
                 @Override
                 public void done(List<Restaurant> restaurants, ParseException e) {
@@ -181,9 +181,10 @@ public class RestaurantServer {
                     }
 
                     observed_restaurants.addAll(observed);
+                    listener.dataChanged()
                 }
             });
-             */
+             
         } else {
             yelpQuery(apiKey);
         }
