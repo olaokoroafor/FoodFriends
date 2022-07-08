@@ -1,6 +1,9 @@
 package com.example.foodfriends.misc;
 
+import android.text.style.AlignmentSpan;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.example.foodfriends.fragments.ExploreFragment;
 import com.example.foodfriends.models.Restaurant;
@@ -68,7 +71,7 @@ public class RestaurantServer {
     /**
      * Adds restaurants returned from Yelp Query to the list that the explore adapter uses
      */
-    public void yelpQuery(String apiKey) {
+    public void yelpQuery(String apiKey,  @Nullable RestaurantListener listener) {
         // Use OkHttpClient singleton
         OkHttpClient client = new OkHttpClient();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
@@ -106,9 +109,11 @@ public class RestaurantServer {
                         List<RestaurantObservable> res = RestaurantObservable.fromJsonArray(jsonArray);
                         offset += 20;
                         if (res.size() == 0) {
-                            yelpQuery(apiKey);
+                            yelpQuery(apiKey, listener);
                         } else {
                             observed_restaurants.addAll(res);
+                            listener.dataChanged();
+
                         }
 
                     } catch (Exception e) {
@@ -124,7 +129,7 @@ public class RestaurantServer {
     /**
      * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
      */
-    public void findRestaurants(String apiKey) {
+    public void findRestaurants(String apiKey, @Nullable RestaurantListener listener) {
         Log.i(TAG, String.valueOf(parseSource));
         if (parseSource) {
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
@@ -138,6 +143,7 @@ public class RestaurantServer {
             query.setLimit(20);
             query.setSkip(offset);
             List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+            /*
             try {
                 List<Restaurant> restaurants = query.find();
                 for (Restaurant r : restaurants) {
@@ -156,7 +162,8 @@ public class RestaurantServer {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            /*
+
+             */
             query.findInBackground(new FindCallback<Restaurant>() {
                 @Override
                 public void done(List<Restaurant> restaurants, ParseException e) {
@@ -177,16 +184,22 @@ public class RestaurantServer {
                         parseSource = false;
                     }
                     if (restaurants.size() == 0) {
-                        yelpQuery(apiKey);
+                        yelpQuery(apiKey, listener);
                     }
 
                     observed_restaurants.addAll(observed);
+                    listener.dataChanged();
                 }
             });
-             */
+
         } else {
-            yelpQuery(apiKey);
+            yelpQuery(apiKey, listener);
         }
     }
+}
+
+
+interface Listener{
+    void dataChanged();
 }
 

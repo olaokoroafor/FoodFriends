@@ -25,6 +25,7 @@ import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.activities.MapActivity;
 import com.example.foodfriends.adapters.ExploreAdapter;
 import com.example.foodfriends.misc.EndlessRecyclerViewScrollListener;
+import com.example.foodfriends.misc.RestaurantListener;
 import com.example.foodfriends.misc.RestaurantServer;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class ExploreFragment extends Fragment implements Observer {
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;
+    private RestaurantListener restaurantListener;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -61,6 +63,16 @@ public class ExploreFragment extends Fragment implements Observer {
         restaurantList = new ArrayList<RestaurantObservable>();
         restaurantServer = new RestaurantServer(restaurantList);
         restaurantServer.getUser().addObserver(this);
+        restaurantListener = new RestaurantListener(){
+            @Override
+            public void dataChanged() {
+                rvRestaurants.post(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        };
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -68,12 +80,7 @@ public class ExploreFragment extends Fragment implements Observer {
                 restaurantList.clear();
                 scrollListener.resetState();
                 restaurantServer.reset();
-                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-                rvRestaurants.post(new Runnable() {
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -99,47 +106,43 @@ public class ExploreFragment extends Fragment implements Observer {
         ivMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getContext()).mapToDetail(restaurantList);
+                Intent intent = new Intent(getContext(), MapActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
+                intent.putExtras(bundle);
+
+                //intent.putExtra("restaurants", (Parcelable) restaurantList);
+                startActivity(intent);
+                //((MainActivity) getContext()).mapToDetail(restaurantList);
             }
         });
-
         adapter = new ExploreAdapter(getContext(), restaurantList);
         rvRestaurants.setAdapter(adapter);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
         rvRestaurants.setLayoutManager(linearLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-                rvRestaurants.post(new Runnable() {
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
                 Log.i(TAG, String.valueOf(adapter.size()));
             }
         };
         rvRestaurants.addOnScrollListener(scrollListener);
 
-        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-        rvRestaurants.post(new Runnable() {
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
     }
 
     @Override
     public void update(Observable o, Object arg) {
         restaurantList.clear();
         restaurantServer.reset();
-        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key));
-        rvRestaurants.post(new Runnable() {
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
     }
 }
+
+//create a call back class/ listener interface that has on data changed
+//
+
+
