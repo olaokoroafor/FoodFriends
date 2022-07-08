@@ -93,6 +93,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         ivLike = view.findViewById(R.id.ivDetailLike);
         ivToGo = view.findViewById(R.id.ivDetailToGo);
         tvPrice = view.findViewById(R.id.tvDetailPrice);
+        rvComments = view.findViewById(R.id.rvComments);
+        etCommentBody = view.findViewById(R.id.etCommentBody);
+        ivCommentSubmit = view.findViewById(R.id.ivCommentSubmit);
 
         tvPrice.setText("PRICE: " + restaurant.getPrice());
         tvRName.setText(restaurant.getName());
@@ -125,7 +128,6 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         ivLike.setOnClickListener(this);
         ivToGo.setOnClickListener(this);
         tvAddress.setOnClickListener(this);
-        rvComments = view.findViewById(R.id.rvComments);
         comments = new ArrayList<Comment>();
         adapter = new CommentsAdapter(getContext(), comments);
 
@@ -133,34 +135,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvComments.setLayoutManager(linearLayoutManager);
         rvComments.setAdapter(adapter);
-        etCommentBody = view.findViewById(R.id.etCommentBody);
-        ivCommentSubmit = view.findViewById(R.id.ivCommentSubmit);
-        ivCommentSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Comment new_comment = new Comment();
-                new_comment.setText(etCommentBody.getText().toString());
-                new_comment.setUser(user.getUser());
-                new_comment.setRestaurant(restaurant.getRestaurant());
-                new_comment.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null){
-                            Log.e(TAG, "Error saving post: " + e);
-                            //Toast.makeText(this, "Error while saving", Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            Log.i(TAG, "Post save was successful!");
-                            int len = comments.size();
-                            comments.add(new_comment);
-                            adapter.notifyDataSetChanged();
-                            etCommentBody.setText("");
-                        }
-                    }
-                });
-            }
-        });
-
+        ivCommentSubmit.setOnClickListener(this);
 
         queryComments();
     }
@@ -182,8 +157,33 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 GoogleMapsHelper helper = new GoogleMapsHelper(restaurant, getContext());
                 helper.goToGmaps();
                 break;
+            case R.id.ivCommentSubmit:
+                add_comment();
         }
 
+    }
+
+    private void add_comment() {
+        Comment new_comment = new Comment();
+        new_comment.setText(etCommentBody.getText().toString());
+        new_comment.setUser(user.getUser());
+        new_comment.setRestaurant(restaurant.getRestaurant());
+        new_comment.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null){
+                    Log.e(TAG, "Error saving post: " + e);
+                    //Toast.makeText(this, "Error while saving", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Log.i(TAG, "Post save was successful!");
+                    int len = comments.size();
+                    comments.add(new_comment);
+                    adapter.notifyDataSetChanged();
+                    etCommentBody.setText("");
+                }
+            }
+        });
     }
 
     /**
@@ -215,6 +215,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         }
     }
 
+    /**
+     * Adds all the restaurant's comments to the list
+     * */
     private void queryComments() {
         // specify what type of data we want to query - Post.class
         ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);

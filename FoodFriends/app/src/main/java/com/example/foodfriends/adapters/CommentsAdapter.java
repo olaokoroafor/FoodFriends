@@ -30,15 +30,18 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         this.comments = comments;
     }
 
+    /**
+     * Inflates view of the item comment xml**/
     @NonNull
     @Override
-
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
 
         return new ViewHolder(view);
     }
 
+    /**
+     * Calls binder for a comment at particular position**/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Comment comment = comments.get(position);
@@ -46,6 +49,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
     }
 
+    /**
+     * Returns length of comment list**/
     @Override
     public int getItemCount() {
         return comments.size();
@@ -64,6 +69,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             tvCommentBody = itemView.findViewById(R.id.tvCommentBody);
         }
 
+        /**
+         * Binds the xml elements to comment data
+         * */
         public void bind(Comment comment) {
             //bind data to view elements
             tvUsername.setText(comment.getUser().getUsername());
