@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Displays restaurant detail fragment for user passed in
      * Done here because can not make this change from Adapter
-     *
      * @param restaurant
      **/
     public void displayRestaurantDetailFragment(RestaurantObservable restaurant) {
@@ -154,3 +153,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+//testing
