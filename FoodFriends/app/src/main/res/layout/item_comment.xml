@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2dp">
+
+    <ImageView
+        android:id="@+id/ivCommentPfp"
+        android:layout_width="41dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_face_24" />
+
+    <TextView
+        android:id="@+id/tvCommentUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:text="username"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ivCommentPfp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCommentBody"
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_padding_size_small"
+        android:layout_marginTop="@dimen/margin_padding_size_tiny"
+        android:text="comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/ivCommentPfp"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentUsername" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
