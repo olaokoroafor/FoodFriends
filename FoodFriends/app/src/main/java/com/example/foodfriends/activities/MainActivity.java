@@ -153,15 +153,4 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    /**
-     * Displays restaurant detail fragment for marker on map
-     *
-     * @param restaurantList*/
-    public void mapToDetail(List<RestaurantObservable> restaurantList) {
-        Intent intent = new Intent(MainActivity.this, MapActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
-        intent.putExtras(bundle);
-    }
-
 }
