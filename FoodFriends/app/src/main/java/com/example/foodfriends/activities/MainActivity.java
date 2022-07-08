@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         user = new UserObservable(ParseUser.getCurrentUser());
         get_user_location();
+        
+        Log.i(TAG, "Change 1")
 
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
