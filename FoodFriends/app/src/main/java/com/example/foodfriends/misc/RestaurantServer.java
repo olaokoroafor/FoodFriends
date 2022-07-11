@@ -6,11 +6,17 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.foodfriends.fragments.ExploreFragment;
+import com.example.foodfriends.fragments.ProfileFragment;
+import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.Restaurant;
+import com.example.foodfriends.models.UserLike;
+import com.example.foodfriends.models.UserToGo;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -32,31 +38,37 @@ import okhttp3.Response;
 public class RestaurantServer {
     public static final String YELP_URL = "https://api.yelp.com/v3/businesses/search";
     private static final String TAG = "Restaurant Server";
+    private static final int PARSE_LIKES = 0;
+    private static final int PARSE_TOGOS = 1;
+    private static final int PARSE_GENERAL = 2;
+    private static final int YELP = 3;
     private int max_radius = 40000; //in kilometers
-    private boolean parseSource;
     private int offset;
     private List<RestaurantObservable> observed_restaurants;
     private UserObservable user;
-    private boolean precise_loc;
+    private int source;
+    private List<ParseUser> friends;
 
 
     /**
      * Constructor
      */
     public RestaurantServer(List<RestaurantObservable> restaurantList) {
-        this.parseSource = true;
+        this.source = PARSE_LIKES;
         this.offset = 0;
         this.observed_restaurants = restaurantList;
         this.user = new UserObservable(ParseUser.getCurrentUser());
-        precise_loc = false;
+        this.friends = new ArrayList<ParseUser>();
+        populate_friends();
     }
+
 
     /**
      * Resets the instance variables to allow for a new search without offsets and at Parse
      */
     public void reset() {
         this.offset = 0;
-        this.parseSource = true;
+        this.source = PARSE_LIKES;
     }
 
 
@@ -66,6 +78,147 @@ public class RestaurantServer {
 
     public void setUser(UserObservable user) {
         this.user = user;
+    }
+
+
+    private void populate_friends(){
+        ParseQuery<Friends> query = ParseQuery.getQuery(Friends.class);
+        query.include(Friends.REQUESTED_KEY);
+        query.whereEqualTo(Friends.USER_KEY, user.getUser());
+        List<Friends> parse_friends = new ArrayList<Friends>();
+        try {
+            parse_friends = query.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        for (Friends friend: parse_friends){
+            friends.add(friend.getUser());
+        }
+    }
+
+    /**
+     * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
+     */
+    public void findRestaurants(String apiKey, @Nullable RestaurantListener listener) {
+        if (source == PARSE_LIKES){
+            parseLikes(apiKey, listener);
+        }
+        else if (source == PARSE_TOGOS){
+            parseTogos(apiKey, listener);
+        }
+        else if (source == PARSE_GENERAL){
+            parseGeneral(apiKey, listener);
+        } else {
+            yelpQuery(apiKey, listener);
+        }
+    }
+
+    private void parseLikes(String apiKey, RestaurantListener listener) {
+        ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        // include data referred by restaurant key
+        query.whereContainedIn("user", friends);
+        query.include(UserLike.RESTAURANT_KEY);
+        //TO DO MAKE DISTINCT
+        query.addDescendingOrder("createdAt");
+        query.setLimit(20);
+        query.setSkip(offset);
+
+        query.findInBackground(new FindCallback<UserLike>() {
+            @Override
+            public void done(List<UserLike> likes, ParseException e) {
+                // check for errors
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting Restaurants", e);
+                    return;
+                }
+                for (UserLike like : likes) {
+                    observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
+                }
+                offset += likes.size();
+                if (likes.size() < 20) {
+                    offset = 0;
+                    source = PARSE_TOGOS;
+                }
+                if (likes.size() == 0) {
+                    parseTogos(apiKey, listener);
+                }
+                listener.dataChanged();
+            }
+        });
+
+    }
+
+    private void parseTogos(String apiKey, RestaurantListener listener) {
+        ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        // include data referred by restaurant key
+        query.whereContainedIn("user", friends);
+        query.include(UserLike.RESTAURANT_KEY);
+        //TO DO MAKE DISTINCT
+        query.addDescendingOrder("createdAt");
+        query.setLimit(20);
+        query.setSkip(offset);
+
+        query.findInBackground(new FindCallback<UserToGo>() {
+            @Override
+            public void done(List<UserToGo> togos, ParseException e) {
+                // check for errors
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting Restaurants", e);
+                    return;
+                }
+                for (UserToGo toGo : togos) {
+                    observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
+                }
+                offset += togos.size();
+                if (togos.size() < 20) {
+                    offset = 0;
+                    source = PARSE_GENERAL;
+                }
+                if (togos.size() == 0) {
+                    parseGeneral(apiKey, listener);
+                }
+                listener.dataChanged();
+            }
+        });
+    }
+
+    private void parseGeneral(String apiKey, RestaurantListener listener) {
+        ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+        if (user.getCoordinates() != null) {
+            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius);
+        } else {
+            query.whereEqualTo("city", user.getCity());
+            query.whereEqualTo("state", user.getState());
+        }
+        query.setLimit(20);
+        query.setSkip(offset);
+        List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+        query.findInBackground(new FindCallback<Restaurant>() {
+            @Override
+            public void done(List<Restaurant> restaurants, ParseException e) {
+                List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+                Log.i(TAG, "Restaurant Size: " + String.valueOf(restaurants.size()));
+                // check for errors
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting posts", e);
+                    return;
+                }
+                // for debugging purposes let's print every restaurant description to logcat
+                for (Restaurant r : restaurants) {
+                    observed_restaurants.add(new RestaurantObservable(r));
+                }
+                listener.dataChanged();
+
+                offset += restaurants.size();
+                if (restaurants.size() < 20) {
+                    offset = 0;
+                    source = YELP;
+                }
+                if (restaurants.size() == 0) {
+                    yelpQuery(apiKey, listener);
+                }
+            }
+        });
     }
 
     /**
@@ -124,77 +277,6 @@ public class RestaurantServer {
                 }
             }
         });
-    }
-
-    /**
-     * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
-     */
-    public void findRestaurants(String apiKey, @Nullable RestaurantListener listener) {
-        Log.i(TAG, String.valueOf(parseSource));
-        if (parseSource) {
-            ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
-            if (user.getCoordinates() != null) {
-                query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius);
-            } else {
-                query.whereEqualTo("city", user.getCity());
-                query.whereEqualTo("state", user.getState());
-            }
-
-            query.setLimit(20);
-            query.setSkip(offset);
-            List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
-            /*
-            try {
-                List<Restaurant> restaurants = query.find();
-                for (Restaurant r : restaurants) {
-                    observed.add(new RestaurantObservable(r));
-                }
-                offset += restaurants.size();
-                if (restaurants.size() < 20) {
-                    Log.i(TAG, String.valueOf(restaurants.size()));
-                    offset = 0;
-                    parseSource = false;
-                }
-                if (restaurants.size() == 0) {
-                    yelpQuery(apiKey);
-                }
-                observed_restaurants.addAll(observed);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-             */
-            query.findInBackground(new FindCallback<Restaurant>() {
-                @Override
-                public void done(List<Restaurant> restaurants, ParseException e) {
-                    List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
-                    Log.i(TAG, "Restaurant Size: " + String.valueOf(restaurants.size()));
-                    // check for errors
-                    if (e != null) {
-                        Log.e(TAG, "Issue with getting posts", e);
-                        return;
-                    }
-                    // for debugging purposes let's print every restaurant description to logcat
-                    for (Restaurant r : restaurants) {
-                        observed.add(new RestaurantObservable(r));
-                    }
-                    offset += restaurants.size();
-                    if (restaurants.size() < 20) {
-                        offset = 0;
-                        parseSource = false;
-                    }
-                    if (restaurants.size() == 0) {
-                        yelpQuery(apiKey, listener);
-                    }
-
-                    observed_restaurants.addAll(observed);
-                    listener.dataChanged();
-                }
-            });
-
-        } else {
-            yelpQuery(apiKey, listener);
-        }
     }
 }
 
