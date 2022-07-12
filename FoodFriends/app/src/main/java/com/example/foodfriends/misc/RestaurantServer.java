@@ -97,7 +97,7 @@ public class RestaurantServer {
     }
 
     /**
-     * Adds restaurant from parse or calls yelpquery to do so depending on parse_source
+     * Adds restaurant from parse likes, togos, or general or calls yelpquery to do so depending on source
      */
     public void findRestaurants(String apiKey, @Nullable RestaurantListener listener) {
         if (source == PARSE_LIKES){
@@ -113,6 +113,9 @@ public class RestaurantServer {
         }
     }
 
+    /**
+     * Adds restaurant liked by the user's foodfriends
+     */
     private void parseLikes(String apiKey, RestaurantListener listener) {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         // include data referred by restaurant key
@@ -148,6 +151,9 @@ public class RestaurantServer {
 
     }
 
+    /**
+     * Adds restaurant the user's foodfriends are planning to go to
+     */
     private void parseTogos(String apiKey, RestaurantListener listener) {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         // include data referred by restaurant key

@@ -387,14 +387,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         } else {
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
         }
-
         if (follows) {
             Glide.with(getContext())
-                    .load(R.drawable.ic_baseline_person_add_24)
+                    .load(R.drawable.ic_baseline_person_remove_24)
                     .into(ivFollow);
         } else {
             Glide.with(getContext())
-                    .load(R.drawable.ic_baseline_person_remove_24)
+                    .load(R.drawable.ic_baseline_person_add_24)
                     .into(ivFollow);
         }
         Log.i(TAG, "DISPLAY CONTENT: " + String.valueOf(display_content));
