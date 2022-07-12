@@ -50,8 +50,8 @@ This is an app that allows you to see your friends' favourite restaurants nearby
 
 * User can see map screen with pointers to nearby favourited restaurants
 * User is suggested people to follow on entering app
-* User can also see globally liked restaurants via toggle
-* User can comment on a restaurant (pictures possible)
+* User can also see globally liked restaurants 
+* User can comment on a restaurant 
 * User can see restaurant comments 
 * User will receive push notifications when near liked restuarants
 
