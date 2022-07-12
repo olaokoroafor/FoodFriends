@@ -92,7 +92,7 @@ public class RestaurantServer {
             e.printStackTrace();
         }
         for (Friends friend: parse_friends){
-            friends.add(friend.getUser());
+            friends.add(friend.getRequested());
         }
     }
 
@@ -121,6 +121,7 @@ public class RestaurantServer {
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
         query.include(UserLike.RESTAURANT_KEY);
+        query.include(UserLike.USER_KEY);
         //TO DO MAKE DISTINCT
         query.addDescendingOrder("createdAt");
         query.setLimit(20);
@@ -135,6 +136,7 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserLike like : likes) {
+                    Log.i(TAG, like.getUser().getUsername()+": "+like.getRestaurant().getName());
                     observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
                 }
                 offset += likes.size();
@@ -158,6 +160,7 @@ public class RestaurantServer {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
+        query.include(UserLike.USER_KEY);
         query.include(UserLike.RESTAURANT_KEY);
         //TO DO MAKE DISTINCT
         query.addDescendingOrder("createdAt");
@@ -173,6 +176,7 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserToGo toGo : togos) {
+                    Log.i(TAG, toGo.getUser().getUsername()+": "+toGo.getRestaurant().getName());
                     observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
                 }
                 offset += togos.size();
