@@ -3,6 +3,7 @@ package com.example.foodfriends.misc;
 import android.text.style.AlignmentSpan;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.foodfriends.fragments.ExploreFragment;
@@ -25,8 +26,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -45,6 +50,7 @@ public class RestaurantServer {
     private int max_radius = 40000; //in kilometers
     private int offset;
     private List<RestaurantObservable> observed_restaurants;
+    private Set<String> displayed_restaurants;
     private UserObservable user;
     private int source;
     private List<ParseUser> friends;
@@ -59,6 +65,7 @@ public class RestaurantServer {
         this.observed_restaurants = restaurantList;
         this.user = new UserObservable(ParseUser.getCurrentUser());
         this.friends = new ArrayList<ParseUser>();
+        this.displayed_restaurants = new HashSet<String>();
         populate_friends();
     }
 
@@ -69,6 +76,7 @@ public class RestaurantServer {
     public void reset() {
         this.offset = 0;
         this.source = PARSE_LIKES;
+        displayed_restaurants.clear();
     }
 
 
@@ -136,8 +144,11 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserLike like : likes) {
-                    Log.i(TAG, like.getUser().getUsername()+": "+like.getRestaurant().getName());
-                    observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
+                    String r_name = like.getRestaurant().getName();
+                    if(!displayed_restaurants.contains(r_name)){
+                        observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
+                        displayed_restaurants.add(r_name);
+                    }
                 }
                 offset += likes.size();
                 if (likes.size() < 20) {
@@ -176,8 +187,11 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserToGo toGo : togos) {
-                    Log.i(TAG, toGo.getUser().getUsername()+": "+toGo.getRestaurant().getName());
-                    observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
+                    String r_name = toGo.getRestaurant().getName();
+                    if(!displayed_restaurants.contains(r_name)){
+                        observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
+                        displayed_restaurants.add(r_name);
+                    }
                 }
                 offset += togos.size();
                 if (togos.size() < 20) {
@@ -207,7 +221,6 @@ public class RestaurantServer {
             @Override
             public void done(List<Restaurant> restaurants, ParseException e) {
                 List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
-                Log.i(TAG, "Restaurant Size: " + String.valueOf(restaurants.size()));
                 // check for errors
                 if (e != null) {
                     Log.e(TAG, "Issue with getting posts", e);
@@ -215,7 +228,10 @@ public class RestaurantServer {
                 }
                 // for debugging purposes let's print every restaurant description to logcat
                 for (Restaurant r : restaurants) {
-                    observed_restaurants.add(new RestaurantObservable(r));
+                    if(!displayed_restaurants.contains(r.getName())){
+                        observed_restaurants.add(new RestaurantObservable(r));
+                        displayed_restaurants.add(r.getName());
+                    }
                 }
                 listener.dataChanged();
 
@@ -274,7 +290,12 @@ public class RestaurantServer {
                         if (res.size() == 0) {
                             yelpQuery(apiKey, listener);
                         } else {
-                            observed_restaurants.addAll(res);
+                            for (RestaurantObservable r: res){
+                                if(!displayed_restaurants.contains(r.getName())){
+                                    observed_restaurants.add(r);
+                                    displayed_restaurants.add(r.getName());
+                                }
+                            }
                             listener.dataChanged();
 
                         }

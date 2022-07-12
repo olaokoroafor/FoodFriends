@@ -9,6 +9,9 @@ import android.os.Bundle;
 import com.example.foodfriends.R;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -32,12 +35,14 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
     private List<RestaurantObservable> restaurantList;
     private UserObservable user;
+    private String TAG = "Map Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         restaurantList = getIntent().getParcelableArrayListExtra("restaurants");
+        Log.i(TAG,String.valueOf(restaurantList.size()));
         user = new UserObservable(ParseUser.getCurrentUser());
 
         // Get the SupportMapFragment and request notification when the map is ready to be used.
