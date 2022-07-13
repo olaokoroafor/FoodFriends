@@ -111,9 +111,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
+                            Log.i(TAG, "permissions granted");
                             ParseGeoPoint coordinates = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
                             user.setCoordinates(coordinates);
                             user.save_user();
+                        }
+                        else{
+                            Log.i(TAG, "Null Location");
                         }
                     }
                 });

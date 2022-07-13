@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.LogInActivity;
+import com.example.foodfriends.activities.MapActivity;
+import com.example.foodfriends.activities.SettingsActivity;
 import com.example.foodfriends.adapters.ProfileRestaurantsAdapter;
 import com.example.foodfriends.models.Friends;
 import com.example.foodfriends.models.UserLike;
@@ -67,7 +70,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private UserObservable currentUser;
     private UserObservable loggedInUser;
     private TabLayout tabLayout;
-    private Button btnLogOut;
+    private ImageView ivSettingsIcon;
     private ImageView ivFindFriends;
     private ImageView ivFollow;
     private ImageView ivLock;
@@ -109,21 +112,23 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivAddPfp = view.findViewById(R.id.ivAddPfp);
         tabLayout = view.findViewById(R.id.profileTab);
         ivFindFriends = view.findViewById(R.id.ivFindFriends);
-        btnLogOut = view.findViewById(R.id.btnLogOut);
+        ivSettingsIcon = view.findViewById(R.id.ivSettingsIcon);
         ivFollow = view.findViewById(R.id.ivFollow);
         ivLock = view.findViewById(R.id.ivLock);
 
 
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             ivAddPfp.setOnClickListener(this);
-            btnLogOut.setOnClickListener(this);
+            ivSettingsIcon.setOnClickListener(this);
+            //btnLogOut.setOnClickListener(this);
             ivFindFriends.setOnClickListener(this);
             ivFollow.setVisibility(View.GONE);
             ivLock.setVisibility(View.GONE);
             display_content = true;
         } else {
             ivAddPfp.setVisibility(View.GONE);
-            btnLogOut.setVisibility(View.GONE);
+            ivSettingsIcon.setVisibility(View.GONE);
+            //btnLogOut.setVisibility(View.GONE);
             ivFindFriends.setVisibility(View.GONE);
             follows = Friends.user_follows(currentUser.getUser());
             if (follows) {
@@ -204,8 +209,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             case R.id.ivAddPfp:
                 addPfp();
                 break;
-            case R.id.btnLogOut:
-                user_log_out();
+            case R.id.ivSettingsIcon://R.id.btnLogOut:
+                //user_log_out();
+                toSettingsActivity();
                 break;
             case R.id.ivFindFriends:
                 go_find_friends();
@@ -214,6 +220,14 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 toggle_follow();
                 break;
         }
+    }
+
+    private void toSettingsActivity() {
+        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", loggedInUser);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     /**
@@ -237,15 +251,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         fragmentTransaction.commit();
     }
 
-    /**
-     * Logs user out of account and sends them to login page
-     */
-    private void user_log_out() {
-        ParseUser.logOut();
-        Intent i = new Intent(getContext(), LogInActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-    }
+
 
     /**
      * Either follows or unfollows someone based on original state of user relationship
