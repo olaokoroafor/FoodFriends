@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.foodfriends.fragments.RestaurantDetailFragment;
+import com.example.foodfriends.misc.RestaurantListener;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
@@ -28,24 +29,29 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
     private List<RestaurantObservable> restaurantList;
     private UserObservable user;
     private String TAG = "Map Activity";
+    private int max_radius = 40000;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        restaurantList = getIntent().getParcelableArrayListExtra("restaurants");
-        Log.i(TAG,String.valueOf(restaurantList.size()));
+        //restaurantList = getIntent().getParcelableArrayListExtra("restaurants");
+        //
         user = new UserObservable(ParseUser.getCurrentUser());
-
+        restaurantList = new ArrayList<RestaurantObservable>();
         // Get the SupportMapFragment and request notification when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -64,7 +70,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         // Add a marker in Sydney, Australia,
         // and move the map's camera to the same location.
-
+        parseGeneral();
         for (int i = 0; i < restaurantList.size(); i++) {
             LatLng restaurant_coordinates = new LatLng(restaurantList.get(i).getCoordinates().getLatitude(), restaurantList.get(i).getCoordinates().getLongitude());
             Marker marker = googleMap.addMarker(new MarkerOptions()
@@ -89,5 +95,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return false;
             }
         });
+    }
+
+    private void parseGeneral() {
+        ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+        if (user.getCoordinates() != null) {
+            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius/1000);
+        } else {
+            query.whereEqualTo("city", user.getCity());
+            query.whereEqualTo("state", user.getState());
+        }
+        query.setLimit(20);
+        List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
+        try {
+            List<Restaurant> parse_restaurants = query.find();
+            // for debugging purposes let's print every restaurant description to logcat
+            for (Restaurant r : parse_restaurants) {
+                restaurantList.add(new RestaurantObservable(r));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
