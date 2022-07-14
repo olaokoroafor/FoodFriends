@@ -144,10 +144,10 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserLike like : likes) {
-                    String r_name = like.getRestaurant().getName();
-                    if(!displayed_restaurants.contains(r_name)){
+                    String r_id = like.getRestaurant().getObjectId();
+                    if(!displayed_restaurants.contains(r_id)){
                         observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
-                        displayed_restaurants.add(r_name);
+                        displayed_restaurants.add(r_id);
                     }
                 }
                 offset += likes.size();
@@ -187,10 +187,10 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserToGo toGo : togos) {
-                    String r_name = toGo.getRestaurant().getName();
-                    if(!displayed_restaurants.contains(r_name)){
+                    String r_id = toGo.getRestaurant().getObjectId();
+                    if(!displayed_restaurants.contains(r_id)){
                         observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
-                        displayed_restaurants.add(r_name);
+                        displayed_restaurants.add(r_id);
                     }
                 }
                 offset += togos.size();
@@ -228,9 +228,9 @@ public class RestaurantServer {
                 }
                 // for debugging purposes let's print every restaurant description to logcat
                 for (Restaurant r : restaurants) {
-                    if(!displayed_restaurants.contains(r.getName())){
+                    if(!displayed_restaurants.contains(r.getObjectId())){
                         observed_restaurants.add(new RestaurantObservable(r));
-                        displayed_restaurants.add(r.getName());
+                        displayed_restaurants.add(r.getObjectId());
                     }
                 }
                 listener.dataChanged();
@@ -291,9 +291,9 @@ public class RestaurantServer {
                             yelpQuery(apiKey, listener);
                         } else {
                             for (RestaurantObservable r: res){
-                                if(!displayed_restaurants.contains(r.getName())){
+                                if(!displayed_restaurants.contains(r.getObjectId())){
                                     observed_restaurants.add(r);
-                                    displayed_restaurants.add(r.getName());
+                                    displayed_restaurants.add(r.getObjectId());
                                 }
                             }
                             listener.dataChanged();
