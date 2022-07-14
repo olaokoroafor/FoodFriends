@@ -8,9 +8,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -29,12 +32,16 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
     private FusedLocationProviderClient fusedLocationClient;
-    BottomNavigationView bottomNavigationView;
+    private boolean from_map_activity;
+    private BottomNavigationView bottomNavigationView;
     private String fragment_tag;
-    UserObservable user;
+    private UserObservable user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +86,14 @@ public class MainActivity extends AppCompatActivity {
         };
 
         bottomNavigationView.setOnItemSelectedListener(reloaded_listener);
-        bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+        from_map_activity = getIntent().getBooleanExtra("from_map", false);
+        if (from_map_activity){
+            RestaurantObservable r = getIntent().getParcelableExtra("restaurant");
+            displayRestaurantDetailFragment(r);
+        }
+        else{
+            bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+        }
     }
 
 
@@ -124,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Displays restaurant detail fragment for user passed in
      * Done here because can not make this change from Adapter
-     *
      * @param restaurant
      **/
     public void displayRestaurantDetailFragment(RestaurantObservable restaurant) {
