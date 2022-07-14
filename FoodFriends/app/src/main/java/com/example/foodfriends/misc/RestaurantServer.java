@@ -143,27 +143,6 @@ public class RestaurantServer {
             query.setLimit(20);
             query.setSkip(offset);
             List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
-            /*
-            try {
-                List<Restaurant> restaurants = query.find();
-                for (Restaurant r : restaurants) {
-                    observed.add(new RestaurantObservable(r));
-                }
-                offset += restaurants.size();
-                if (restaurants.size() < 20) {
-                    Log.i(TAG, String.valueOf(restaurants.size()));
-                    offset = 0;
-                    parseSource = false;
-                }
-                if (restaurants.size() == 0) {
-                    yelpQuery(apiKey);
-                }
-                observed_restaurants.addAll(observed);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-             */
             query.findInBackground(new FindCallback<Restaurant>() {
                 @Override
                 public void done(List<Restaurant> restaurants, ParseException e) {

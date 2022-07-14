@@ -111,10 +111,7 @@ public class ExploreFragment extends Fragment implements Observer {
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
                 intent.putExtras(bundle);
-
-                //intent.putExtra("restaurants", (Parcelable) restaurantList);
                 startActivity(intent);
-                //((MainActivity) getContext()).mapToDetail(restaurantList);
             }
         });
         adapter = new ExploreAdapter(getContext(), restaurantList);
