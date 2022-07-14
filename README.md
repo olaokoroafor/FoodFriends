@@ -11,7 +11,7 @@ Original App Design Project - README
 
 ## Overview
 ### Description
-This is an app that allows you to see your friends' favourite restaurants nearby you, and the favourite restaurants of the people you follow. You will be able to follow your friends on the app and see what restaurants they like, as well as see restaurants they want/plan to go to. The app will also ping the user when they a restaurant liked by their friends.
+This is an app that allows you to see your friends' favourite restaurants nearby you, and the favourite restaurants of the people you follow. You will be able to follow your friends on the app and see what restaurants they like, as well as see restaurants they want/plan to go to.
 
 
 ### App Evaluation
@@ -53,7 +53,6 @@ This is an app that allows you to see your friends' favourite restaurants nearby
 * User can also see globally liked restaurants 
 * User can comment on a restaurant 
 * User can see restaurant comments 
-* User will receive push notifications when near liked restuarants
 
 
 ### 2. Screen Archetypes (Required)
@@ -90,7 +89,6 @@ OPTIONAL:
     * User can see restaurant comments 
 * Comment Creation
     * User can comment on a restaurant (pictures possible)
-* User will be able to accept or decline friend requests
 
 
 ### 3. Navigation (Required Features)
