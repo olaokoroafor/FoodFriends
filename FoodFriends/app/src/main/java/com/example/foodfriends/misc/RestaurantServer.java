@@ -209,7 +209,7 @@ public class RestaurantServer {
     private void parseGeneral(String apiKey, RestaurantListener listener) {
         ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
         if (user.getCoordinates() != null) {
-            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius);
+            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius/1000);
         } else {
             query.whereEqualTo("city", user.getCity());
             query.whereEqualTo("state", user.getState());
