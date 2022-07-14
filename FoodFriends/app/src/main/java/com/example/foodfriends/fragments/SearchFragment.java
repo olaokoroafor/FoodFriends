@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.adapters.FindFriendsAdapter;
@@ -35,6 +36,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView rvRestaurants;
     private SearchRestaurantsAdapter adapter;
     private List<RestaurantObservable> allRestaurants;
+    private ProgressBar search_progress_bar;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -59,12 +61,15 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         searchRestaurants = view.findViewById(R.id.searchRestaurants);
         rvRestaurants = view.findViewById(R.id.rvSearchRestaurants);
+        search_progress_bar = view.findViewById(R.id.pbSearchRestaurants);
+        search_progress_bar.setVisibility(View.GONE);
 
         searchRestaurants.setIconified(false);
         // perform set on query text listener event
         searchRestaurants.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                search_progress_bar.setVisibility(View.VISIBLE);
                 adapter.clear();
                 queryRestaurants(query);
                 return false;
@@ -102,6 +107,8 @@ public class SearchFragment extends Fragment {
                     allRestaurants.add(new RestaurantObservable(r));
                 }
                 adapter.notifyDataSetChanged();
+                rvRestaurants.setVisibility(View.VISIBLE);
+                search_progress_bar.setVisibility(View.GONE);
             }
         });
     }

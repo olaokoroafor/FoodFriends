@@ -13,6 +13,7 @@ import com.example.foodfriends.R;
 
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +47,7 @@ public class ExploreFragment extends Fragment implements Observer {
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;
     private RestaurantListener restaurantListener;
+    private ProgressBar explore_progress_bar;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -69,11 +71,14 @@ public class ExploreFragment extends Fragment implements Observer {
                 rvRestaurants.post(new Runnable() {
                     public void run() {
                         adapter.notifyDataSetChanged();
+                        rvRestaurants.setVisibility(View.VISIBLE);
+                        explore_progress_bar.setVisibility(View.GONE);
                     }
                 });
             }
         };
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        explore_progress_bar = view.findViewById(R.id.explore_progress_bar);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
