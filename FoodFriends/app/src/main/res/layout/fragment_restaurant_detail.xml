@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/margin_padding_size_small"
+    android:background="@color/white"
     tools:context=".fragments.RestaurantDetailFragment">
 
     <ImageView
@@ -74,6 +75,7 @@
         android:padding="@dimen/margin_padding_size_tiny"
         android:text="Address"
         android:textSize="@dimen/text_size_large"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,10 +94,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvComments"
-        android:layout_width="0dp"
-        android:layout_height="339dp"
-        android:layout_marginTop="@dimen/margin_padding_size_small"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="406dp"
+        android:layout_height="245dp"
+        android:layout_marginTop="@dimen/margin_padding_size_large"
+        android:layout_marginBottom="@dimen/margin_padding_size_medium"
+        app:layout_constraintBottom_toTopOf="@+id/etCommentBody"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDetailPrice" />
@@ -105,12 +108,34 @@
         android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="@dimen/margin_padding_size_small"
-        android:layout_marginTop="@dimen/margin_padding_size_small"
         android:text="Price"
         android:textColor="@color/amber"
         android:textSize="@dimen/text_size_large"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDetailAddress" />
+
+    <EditText
+        android:id="@+id/etCommentBody"
+        android:layout_width="325dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
+        android:layout_marginBottom="@dimen/margin_padding_size_large"
+        android:ems="10"
+        android:hint="Type comment"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivCommentSubmit"
+        android:layout_width="63dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="@dimen/margin_padding_size_large"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/etCommentBody"
+        app:srcCompat="@drawable/ic_baseline_add_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

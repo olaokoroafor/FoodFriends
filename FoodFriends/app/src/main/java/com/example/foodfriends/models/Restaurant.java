@@ -161,7 +161,7 @@ public class Restaurant extends ParseObject {
     /**
      * Checks to see if logged in user likes restaurant
      * */
-    public boolean user_like() {
+    public boolean userLike() {
         boolean liked = false;
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
@@ -233,7 +233,7 @@ public class Restaurant extends ParseObject {
     /**
      * Checks to see if logged in user wants to go to this restaurant
      * */
-    public boolean user_to_go() {
+    public boolean userToGo() {
         boolean going = false;
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);

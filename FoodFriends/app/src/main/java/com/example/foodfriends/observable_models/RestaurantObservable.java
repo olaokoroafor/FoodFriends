@@ -59,8 +59,8 @@ public class RestaurantObservable extends Observable implements Parcelable {
         this.coordinates = restaurant.getCoordinates();
         this.likes = restaurant.getLikes();
         this.togos = restaurant.getToGos();
-        this.liked = restaurant.user_like();
-        this.going = restaurant.user_to_go();
+        this.liked = restaurant.userLike();
+        this.going = restaurant.userToGo();
     }
 
     /**
@@ -199,7 +199,7 @@ public class RestaurantObservable extends Observable implements Parcelable {
         notifyObservers();
     }
 
-    public void save_restaurant() {
+    public void saveRestaurant() {
         this.restaurant.saveInBackground();
     }
 
@@ -296,7 +296,7 @@ public class RestaurantObservable extends Observable implements Parcelable {
                     address += ", ";
             }
             r.setAddress(address);
-            r.save_restaurant();
+            r.saveRestaurant();
             return r;
         } catch (Exception e) {
             return null;
