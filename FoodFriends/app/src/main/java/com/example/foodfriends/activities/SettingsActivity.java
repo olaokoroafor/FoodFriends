@@ -67,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
                 user.setCity(etCity.getText().toString());
                 user.setName(etName.getText().toString());
                 user.setPrivateAccount(switchPrivacy.isChecked());
-                user.save_user();
+                user.saveUser();
                 userLogOut();
             }
         });

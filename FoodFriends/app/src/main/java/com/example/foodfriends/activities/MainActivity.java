@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.i(TAG, "permissions granted");
                             ParseGeoPoint coordinates = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
                             user.setCoordinates(coordinates);
-                            user.save_user();
+                            user.saveUser();
                         }
                         else{
                             Log.i(TAG, "Null Location");

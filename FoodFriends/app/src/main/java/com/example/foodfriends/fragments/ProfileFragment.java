@@ -94,18 +94,6 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         currentUser = this.getArguments().getParcelable("user");
         profileProgressBar = view.findViewById(R.id.pbProfileRestaurants);
-        return view;
-    }
-
-    /**
-     * Sets the values of the xml elements to restaurant data
-     * Also sets the on click listener for necessary objects
-     * Connects the recycler view of restaurants to the adapter
-     * Populates the list of restaurants for the adapter to display
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         currentUser.addObserver(this);
         loggedInUser = new UserObservable(ParseUser.getCurrentUser());
         rvRestaurants = view.findViewById(R.id.rvProfilePosts);
@@ -118,52 +106,68 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivFollow = view.findViewById(R.id.ivFollow);
         ivLock = view.findViewById(R.id.ivLock);
 
+        return view;
+    }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * Connects the recycler view of restaurants to the adapter
+     * Populates the list of restaurants for the adapter to display
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
-            ivAddPfp.setOnClickListener(this);
-            ivSettingsIcon.setOnClickListener(this);
-            ivFindFriends.setOnClickListener(this);
-            ivFollow.setVisibility(View.GONE);
-            ivLock.setVisibility(View.GONE);
-            displayContent = true;
+            displayPersonalProfile();
         } else {
-            ivAddPfp.setVisibility(View.GONE);
-            ivSettingsIcon.setVisibility(View.GONE);
-            ivFindFriends.setVisibility(View.GONE);
-            follows = Friends.userFollows(currentUser.getUser());
-            if (follows) {
-                Glide.with(getContext())
-                        .load(R.drawable.ic_baseline_person_remove_24)
-                        .into(ivFollow);
-            } else {
-                Glide.with(getContext())
-                        .load(R.drawable.ic_baseline_person_add_24)
-                        .into(ivFollow);
-            }
-            ivFollow.setOnClickListener(this);
-            displayContent = loggedInUser.displayContent(currentUser);
-            if (displayContent) {
-                ivLock.setVisibility(View.GONE);
-            } else {
-                rvRestaurants.setVisibility(View.GONE);
-            }
+            displayOtherProfile();
         }
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-        ParseFile pfp = currentUser.getProfilePhoto();
-        if (pfp != null) {
-            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
-        } else {
-            Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
-        }
+        displayProfilePic();
         tvUsername.setText("@" + currentUser.getUsername());
         allRestaurants = new ArrayList<RestaurantObservable>();
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
         rvRestaurants.setAdapter(adapter);
-        int selectedTab = tabLayout.getSelectedTabPosition();
-        if (selectedTab == 0) {
-            if(displayContent) {
+        handleTab();
+    }
+
+    private void displayOtherProfile() {
+        ivAddPfp.setVisibility(View.GONE);
+        ivSettingsIcon.setVisibility(View.GONE);
+        ivFindFriends.setVisibility(View.GONE);
+        follows = Friends.user_follows(currentUser.getUser());
+        if (follows) {
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_remove_24)
+                    .into(ivFollow);
+        } else {
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_add_24)
+                    .into(ivFollow);
+        }
+        ivFollow.setOnClickListener(this);
+        display_content = loggedInUser.display_content(currentUser);
+        if (display_content) {
+            ivLock.setVisibility(View.GONE);
+        } else {
+            rvRestaurants.setVisibility(View.GONE);
+        }
+    }
+
+    private void displayPersonalProfile() {
+        ivAddPfp.setOnClickListener(this);
+        ivSettingsIcon.setOnClickListener(this);
+        ivFindFriends.setOnClickListener(this);
+        ivFollow.setVisibility(View.GONE);
+        ivLock.setVisibility(View.GONE);
+        display_content = true;
+    }
+
+    private void handleTab() {
+        int selected_tab = tabLayout.getSelectedTabPosition();
+        if (selected_tab == 0) {
+            if(display_content) {
                 queryUserLikes();
             }
         } else {
@@ -200,6 +204,17 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
 
     }
 
+    private void displayProfilePic() {
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
+        ParseFile pfp = currentUser.getProfilePhoto();
+        if (pfp != null) {
+            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
+        } else {
+            Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
+        }
+    }
+
 
     /**
      * Specifies what needs to be done for each UI element click
@@ -211,8 +226,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             case R.id.ivAddPfp:
                 addPfp();
                 break;
-            case R.id.ivSettingsIcon://R.id.btnLogOut:
-                //user_log_out();
+            case R.id.ivSettingsIcon:
                 toSettingsActivity();
                 break;
             case R.id.ivFindFriends:
@@ -252,8 +266,6 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
-
-
 
     /**
      * Either follows or unfollows someone based on original state of user relationship
