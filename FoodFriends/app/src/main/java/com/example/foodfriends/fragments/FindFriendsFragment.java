@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.adapters.FindFriendsAdapter;
@@ -31,6 +32,7 @@ public class FindFriendsFragment extends Fragment {
     private RecyclerView rvUsers;
     private FindFriendsAdapter adapter;
     private List<FriendObservable> allUsers;
+    private ProgressBar searchProgressBar;
 
     public FindFriendsFragment() {
         // Required empty public constructor
@@ -55,12 +57,15 @@ public class FindFriendsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         searchFriends = view.findViewById(R.id.searchFriends);
         rvUsers = view.findViewById(R.id.rvUsers);
+        searchProgressBar = view.findViewById(R.id.pbSearchFriends);
+        searchProgressBar.setVisibility(View.GONE);
 
         searchFriends.setIconified(false);
         // perform set on query text listener event
         searchFriends.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchProgressBar.setVisibility(View.VISIBLE);
                 adapter.clear();
                 queryUsers(query);
                 return false;
@@ -96,6 +101,8 @@ public class FindFriendsFragment extends Fragment {
                     allUsers.add(new FriendObservable(user));
                 }
                 adapter.notifyDataSetChanged();
+                rvUsers.setVisibility(View.VISIBLE);
+                searchProgressBar.setVisibility(View.GONE);
             }
         });
     }

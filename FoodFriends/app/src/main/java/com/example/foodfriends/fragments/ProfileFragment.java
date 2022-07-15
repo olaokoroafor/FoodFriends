@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +75,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private ImageView ivFindFriends;
     private ImageView ivFollow;
     private ImageView ivLock;
-    private boolean display_content;
+    private ProgressBar profileProgressBar;
+    private boolean displayContent;
     private boolean follows;
 
     public ProfileFragment() {
@@ -91,6 +93,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         currentUser = this.getArguments().getParcelable("user");
+        profileProgressBar = view.findViewById(R.id.pbProfileRestaurants);
         currentUser.addObserver(this);
         loggedInUser = new UserObservable(ParseUser.getCurrentUser());
         rvRestaurants = view.findViewById(R.id.rvProfilePosts);
@@ -133,7 +136,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivAddPfp.setVisibility(View.GONE);
         ivSettingsIcon.setVisibility(View.GONE);
         ivFindFriends.setVisibility(View.GONE);
-        follows = Friends.user_follows(currentUser.getUser());
+        follows = Friends.userFollows(currentUser.getUser());
         if (follows) {
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_person_remove_24)
@@ -144,8 +147,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     .into(ivFollow);
         }
         ivFollow.setOnClickListener(this);
-        display_content = loggedInUser.display_content(currentUser);
-        if (display_content) {
+        displayContent = loggedInUser.displayContent(currentUser);
+        if (displayContent) {
             ivLock.setVisibility(View.GONE);
         } else {
             rvRestaurants.setVisibility(View.GONE);
@@ -158,31 +161,33 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivFindFriends.setOnClickListener(this);
         ivFollow.setVisibility(View.GONE);
         ivLock.setVisibility(View.GONE);
-        display_content = true;
+        displayContent = true;
     }
 
     private void handleTab() {
         int selected_tab = tabLayout.getSelectedTabPosition();
         if (selected_tab == 0) {
-            if(display_content) {
+            if(displayContent) {
                 queryUserLikes();
             }
         } else {
-            if(display_content) {
+            if(displayContent) {
                 queryUserToGos();
             }
         }
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (display_content){
+                if (displayContent){
                     if (tab.getPosition() == 0) {
                         adapter.clear();
-                        Log.i(TAG, "Likes Tab selected");
+                        rvRestaurants.setVisibility(View.GONE);
+                        profileProgressBar.setVisibility(View.VISIBLE);
                         queryUserLikes();
                     } else {
                         adapter.clear();
-                        Log.i(TAG, "To Go tab selected");
+                        rvRestaurants.setVisibility(View.GONE);
+                        profileProgressBar.setVisibility(View.VISIBLE);
                         queryUserToGos();
                     }
                 }
@@ -228,7 +233,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 goFindFriends();
                 break;
             case R.id.ivFollow:
-                toggle_follow();
+                toggleFollow();
                 break;
         }
     }
@@ -265,15 +270,15 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     /**
      * Either follows or unfollows someone based on original state of user relationship
      */
-    private void toggle_follow() {
-        if (Friends.user_follows(currentUser.getUser())) {
+    private void toggleFollow() {
+        if (Friends.userFollows(currentUser.getUser())) {
             Friends.unfollow(currentUser.getUser());
             follows = false;
-            display_content = loggedInUser.display_content(currentUser);
+            displayContent = loggedInUser.displayContent(currentUser);
         } else {
             Friends.follow(currentUser.getUser());
             follows = true;
-            display_content = loggedInUser.display_content(currentUser);
+            displayContent = loggedInUser.displayContent(currentUser);
         }
         currentUser.triggerObserver();
     }
@@ -303,6 +308,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 }
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
+                rvRestaurants.setVisibility(View.VISIBLE);
+                profileProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -335,6 +342,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
 
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
+                rvRestaurants.setVisibility(View.VISIBLE);
+                profileProgressBar.setVisibility(View.GONE);
+
             }
         });
     }
@@ -411,13 +421,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     .load(R.drawable.ic_baseline_person_add_24)
                     .into(ivFollow);
         }
-        Log.i(TAG, "DISPLAY CONTENT: " + String.valueOf(display_content));
-        if(display_content){
+        Log.i(TAG, "DISPLAY CONTENT: " + String.valueOf(displayContent));
+        if(displayContent){
             rvRestaurants.setVisibility(View.VISIBLE);
             ivLock.setVisibility(View.GONE);
-            int selected_tab = tabLayout.getSelectedTabPosition();
+            int selectedTab = tabLayout.getSelectedTabPosition();
             allRestaurants.clear();
-            if (selected_tab == 0) {
+            if (selectedTab == 0) {
                 queryUserLikes();
             } else {
                 queryUserToGos();

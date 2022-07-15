@@ -13,6 +13,7 @@ import com.example.foodfriends.R;
 
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,13 +40,14 @@ public class ExploreFragment extends Fragment implements Observer {
     private RecyclerView rvRestaurants;
     private int REQUEST_CODE = 0;
     private ImageView ivMap;
-    private static final String TAG = "Explore Fragment";
+    private static final String TAG = "ExploreFragment";
     private ExploreAdapter adapter;
     private List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;
     private RestaurantListener restaurantListener;
+    private ProgressBar exploreProgressBar;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -58,7 +60,6 @@ public class ExploreFragment extends Fragment implements Observer {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         restaurantList = new ArrayList<RestaurantObservable>();
         restaurantServer = new RestaurantServer(restaurantList);
@@ -69,11 +70,14 @@ public class ExploreFragment extends Fragment implements Observer {
                 rvRestaurants.post(new Runnable() {
                     public void run() {
                         adapter.notifyDataSetChanged();
+                        rvRestaurants.setVisibility(View.VISIBLE);
+                        exploreProgressBar.setVisibility(View.GONE);
                     }
                 });
             }
         };
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        exploreProgressBar = view.findViewById(R.id.exploreProgressBar);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -107,14 +111,7 @@ public class ExploreFragment extends Fragment implements Observer {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MapActivity.class);
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("restaurants", (ArrayList<? extends Parcelable>) restaurantList);
-                intent.putExtras(bundle);
-
-                //intent.putExtra("restaurants", (Parcelable) restaurantList);
                 startActivity(intent);
-                //((MainActivity) getContext()).mapToDetail(restaurantList);
             }
         });
         adapter = new ExploreAdapter(getContext(), restaurantList);
@@ -141,8 +138,5 @@ public class ExploreFragment extends Fragment implements Observer {
         restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
     }
 }
-
-//create a call back class/ listener interface that has on data changed
-//
 
 
