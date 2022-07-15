@@ -35,7 +35,7 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
     private List<RestaurantObservable> restaurantList;
     private UserObservable user;
-    private String TAG = "Map Activity";
+    private String TAG = "MapActivity";
 
 
     @Override
