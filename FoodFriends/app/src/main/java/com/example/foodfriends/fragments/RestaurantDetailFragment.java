@@ -43,7 +43,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class RestaurantDetailFragment extends Fragment implements Observer, View.OnClickListener{
-    private static final String TAG = "Restaurant Detail Fragment";
+    private static final String TAG = "RestaurantDetailFragment";
     private TextView tvRName;
     private TextView tvLikeCount;
     private TextView tvToGoCount;
@@ -102,9 +102,9 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         tvAddress.setText(restaurant.getAddress());
         tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
         tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
-        RequestOptions rPicOptions = new RequestOptions();
-        rPicOptions = rPicOptions.transforms(new CenterCrop(), new RoundedCorners(15));
-        Glide.with(getContext()).applyDefaultRequestOptions(rPicOptions).load(restaurant.getImageUrl()).into(ivRPic);
+        RequestOptions picOptions = new RequestOptions();
+        picOptions = picOptions.transforms(new CenterCrop(), new RoundedCorners(15));
+        Glide.with(getContext()).applyDefaultRequestOptions(picOptions).load(restaurant.getImageUrl()).into(ivRPic);
         if(restaurant.isLiked()){
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_red_heart_24)
@@ -158,17 +158,17 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 helper.goToGmaps();
                 break;
             case R.id.ivCommentSubmit:
-                add_comment();
+                addComment();
         }
 
     }
 
-    private void add_comment() {
-        Comment new_comment = new Comment();
-        new_comment.setText(etCommentBody.getText().toString());
-        new_comment.setUser(user.getUser());
-        new_comment.setRestaurant(restaurant.getRestaurant());
-        new_comment.saveInBackground(new SaveCallback() {
+    private void addComment() {
+        Comment newComment = new Comment();
+        newComment.setText(etCommentBody.getText().toString());
+        newComment.setUser(user.getUser());
+        newComment.setRestaurant(restaurant.getRestaurant());
+        newComment.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null){
@@ -178,7 +178,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 else{
                     Log.i(TAG, "Post save was successful!");
                     int len = comments.size();
-                    comments.add(new_comment);
+                    comments.add(newComment);
                     adapter.notifyDataSetChanged();
                     etCommentBody.setText("");
                 }
@@ -231,7 +231,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         // start an asynchronous call for posts
         query.findInBackground(new FindCallback<Comment>() {
             @Override
-            public void done(List<Comment> db_comments, ParseException e) {
+            public void done(List<Comment> dbComments, ParseException e) {
                 // check for errors
                 if (e != null) {
                     Log.e(TAG, "Issue with getting comments", e);
@@ -239,12 +239,12 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 }
 
                 // for debugging purposes let's print every post description to logcat
-                for (Comment comment : db_comments) {
+                for (Comment comment : dbComments) {
                     Log.i(TAG, "Comment: " + comment.getText() + ", username: " + comment.getUser().getUsername());
                 }
 
                 // save received posts to list and notify adapter of new data
-                comments.addAll(db_comments);
+                comments.addAll(dbComments);
                 adapter.notifyDataSetChanged();
             }
         });
