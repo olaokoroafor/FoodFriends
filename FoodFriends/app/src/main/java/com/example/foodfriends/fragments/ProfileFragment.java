@@ -120,7 +120,6 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             ivAddPfp.setOnClickListener(this);
             ivSettingsIcon.setOnClickListener(this);
-            //btnLogOut.setOnClickListener(this);
             ivFindFriends.setOnClickListener(this);
             ivFollow.setVisibility(View.GONE);
             ivLock.setVisibility(View.GONE);
@@ -128,7 +127,6 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         } else {
             ivAddPfp.setVisibility(View.GONE);
             ivSettingsIcon.setVisibility(View.GONE);
-            //btnLogOut.setVisibility(View.GONE);
             ivFindFriends.setVisibility(View.GONE);
             follows = Friends.user_follows(currentUser.getUser());
             if (follows) {
@@ -209,8 +207,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             case R.id.ivAddPfp:
                 addPfp();
                 break;
-            case R.id.ivSettingsIcon://R.id.btnLogOut:
-                //user_log_out();
+            case R.id.ivSettingsIcon:
                 toSettingsActivity();
                 break;
             case R.id.ivFindFriends:
@@ -236,7 +233,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private void addPfp() {
         launchCamera();
         currentUser.setProfilePhoto(new ParseFile(photoFile));
-        currentUser.save_user();
+        currentUser.saveUser();
     }
 
     /**
