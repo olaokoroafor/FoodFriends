@@ -126,6 +126,7 @@ public class RestaurantServer {
      */
     private void parseLikes(String apiKey, RestaurantListener listener) {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        final boolean[] updating = {true};
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
         query.include(UserLike.RESTAURANT_KEY);
@@ -144,7 +145,7 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserLike like : likes) {
-                    String r_id = like.getRestaurant().getObjectId();
+                    String r_id = like.getRestaurant().getYelpID();
                     if(!displayed_restaurants.contains(r_id)){
                         observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
                         displayed_restaurants.add(r_id);
@@ -156,9 +157,13 @@ public class RestaurantServer {
                     source = PARSE_TOGOS;
                 }
                 if (likes.size() == 0) {
+                    updating[0] = false;
                     parseTogos(apiKey, listener);
                 }
-                listener.dataChanged();
+
+                if (updating[0]){
+                    listener.dataChanged();
+                }
             }
         });
 
@@ -169,6 +174,7 @@ public class RestaurantServer {
      */
     private void parseTogos(String apiKey, RestaurantListener listener) {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        final boolean[] updating = {true};
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
         query.include(UserLike.USER_KEY);
@@ -187,7 +193,7 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserToGo toGo : togos) {
-                    String r_id = toGo.getRestaurant().getObjectId();
+                    String r_id = toGo.getRestaurant().getYelpID();
                     if(!displayed_restaurants.contains(r_id)){
                         observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
                         displayed_restaurants.add(r_id);
@@ -199,15 +205,20 @@ public class RestaurantServer {
                     source = PARSE_GENERAL;
                 }
                 if (togos.size() == 0) {
+                    updating[0] = false;
                     parseGeneral(apiKey, listener);
                 }
-                listener.dataChanged();
+
+                if (updating[0]){
+                    listener.dataChanged();
+                }
             }
         });
     }
 
     private void parseGeneral(String apiKey, RestaurantListener listener) {
         ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+        final boolean[] updating = {true};
         if (user.getCoordinates() != null) {
             query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius/1000);
         } else {
@@ -227,13 +238,13 @@ public class RestaurantServer {
                     return;
                 }
                 // for debugging purposes let's print every restaurant description to logcat
+                Log.i(TAG, "Parse general list" + String.valueOf(restaurants.size()));
                 for (Restaurant r : restaurants) {
-                    if(!displayed_restaurants.contains(r.getObjectId())){
+                    if(!displayed_restaurants.contains(r.getYelpID())){
                         observed_restaurants.add(new RestaurantObservable(r));
-                        displayed_restaurants.add(r.getObjectId());
+                        displayed_restaurants.add(r.getYelpID());
                     }
                 }
-                listener.dataChanged();
 
                 offset += restaurants.size();
                 if (restaurants.size() < 20) {
@@ -241,7 +252,11 @@ public class RestaurantServer {
                     source = YELP;
                 }
                 if (restaurants.size() == 0) {
+                    updating[0] = false;
                     yelpQuery(apiKey, listener);
+                }
+                if (updating[0]){
+                    listener.dataChanged();
                 }
             }
         });
@@ -291,11 +306,13 @@ public class RestaurantServer {
                             yelpQuery(apiKey, listener);
                         } else {
                             for (RestaurantObservable r: res){
-                                if(!displayed_restaurants.contains(r.getObjectId())){
+                                if(!displayed_restaurants.contains(r.getYelpId())){
                                     observed_restaurants.add(r);
-                                    displayed_restaurants.add(r.getObjectId());
+                                    displayed_restaurants.add(r.getYelpId());
                                 }
                             }
+
+                            Log.i(TAG, "Size: " + String.valueOf(observed_restaurants.size()));
                             listener.dataChanged();
 
                         }

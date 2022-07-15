@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +75,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private ImageView ivFindFriends;
     private ImageView ivFollow;
     private ImageView ivLock;
+    private ProgressBar profile_progress_bar;
     private boolean display_content;
     private boolean follows;
 
@@ -89,10 +91,12 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
         // Inflate the layout for this fragment
         currentUser = this.getArguments().getParcelable("user");
+        profile_progress_bar = view.findViewById(R.id.pbProfileRestaurants);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return view;
     }
 
     /**
@@ -177,11 +181,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 if (display_content){
                     if (tab.getPosition() == 0) {
                         adapter.clear();
-                        Log.i(TAG, "Likes Tab selected");
+                        rvRestaurants.setVisibility(View.GONE);
+                        profile_progress_bar.setVisibility(View.VISIBLE);
                         queryUserLikes();
                     } else {
                         adapter.clear();
-                        Log.i(TAG, "To Go tab selected");
+                        rvRestaurants.setVisibility(View.GONE);
+                        profile_progress_bar.setVisibility(View.VISIBLE);
                         queryUserToGos();
                     }
                 }
@@ -294,6 +300,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 }
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
+                rvRestaurants.setVisibility(View.VISIBLE);
+                profile_progress_bar.setVisibility(View.GONE);
             }
         });
     }
@@ -326,6 +334,9 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
 
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
+                rvRestaurants.setVisibility(View.VISIBLE);
+                profile_progress_bar.setVisibility(View.GONE);
+
             }
         });
     }
