@@ -47,12 +47,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-        user = new UserObservable(ParseUser.getCurrentUser());
-        restaurantList = new ArrayList<RestaurantObservable>();
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (savedInstanceState == null){
+            setContentView(R.layout.activity_map);
+            user = new UserObservable(ParseUser.getCurrentUser());
+            restaurantList = new ArrayList<RestaurantObservable>();
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
     }
 
     /**
@@ -65,8 +67,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // Add a marker in Sydney, Australia,
-        // and move the map's camera to the same location.
         parseGeneral();
         for (int i = 0; i < restaurantList.size(); i++) {
             LatLng restaurant_coordinates = new LatLng(restaurantList.get(i).getCoordinates().getLatitude(), restaurantList.get(i).getCoordinates().getLongitude());
@@ -85,10 +85,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public boolean onMarkerClick(Marker marker) {
                 int position = (int)(marker.getTag());
                 RestaurantObservable restaurantObservable = restaurantList.get(position);
-                Intent returnIntent = new Intent(MapActivity.this, MainActivity.class);
-                returnIntent.putExtra("from_map", true);
-                returnIntent.putExtra("restaurant", restaurantObservable);
-                startActivity(returnIntent);
+                displayRestaurantDetailFragment(restaurantObservable);
                 return false;
             }
         });
@@ -113,5 +110,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public void displayRestaurantDetailFragment(RestaurantObservable restaurant) {
+        Fragment detail_fragment = new RestaurantDetailFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("restaurant", restaurant);
+        detail_fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.map, detail_fragment);
+        transaction.addToBackStack(null).commit();
     }
 }

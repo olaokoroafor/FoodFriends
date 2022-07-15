@@ -60,7 +60,6 @@ public class ExploreFragment extends Fragment implements Observer {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         restaurantList = new ArrayList<RestaurantObservable>();
         restaurantServer = new RestaurantServer(restaurantList);
@@ -139,8 +138,5 @@ public class ExploreFragment extends Fragment implements Observer {
         restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
     }
 }
-
-//create a call back class/ listener interface that has on data changed
-//
 
 

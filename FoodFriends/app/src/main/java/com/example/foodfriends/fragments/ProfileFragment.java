@@ -136,7 +136,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivAddPfp.setVisibility(View.GONE);
         ivSettingsIcon.setVisibility(View.GONE);
         ivFindFriends.setVisibility(View.GONE);
-        follows = Friends.user_follows(currentUser.getUser());
+        follows = Friends.userFollows(currentUser.getUser());
         if (follows) {
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_person_remove_24)
@@ -147,8 +147,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     .into(ivFollow);
         }
         ivFollow.setOnClickListener(this);
-        display_content = loggedInUser.display_content(currentUser);
-        if (display_content) {
+        displayContent = loggedInUser.displayContent(currentUser);
+        if (displayContent) {
             ivLock.setVisibility(View.GONE);
         } else {
             rvRestaurants.setVisibility(View.GONE);
@@ -161,13 +161,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivFindFriends.setOnClickListener(this);
         ivFollow.setVisibility(View.GONE);
         ivLock.setVisibility(View.GONE);
-        display_content = true;
+        displayContent = true;
     }
 
     private void handleTab() {
         int selected_tab = tabLayout.getSelectedTabPosition();
         if (selected_tab == 0) {
-            if(display_content) {
+            if(displayContent) {
                 queryUserLikes();
             }
         } else {
