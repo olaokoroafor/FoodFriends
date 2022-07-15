@@ -47,10 +47,10 @@ public class RestaurantServer {
     private static final int PARSE_TOGOS = 1;
     private static final int PARSE_GENERAL = 2;
     private static final int YELP = 3;
-    private int max_radius = 40000; //in kilometers
+    private int maxRadiuskm = 40; //in kilometers
     private int offset;
-    private List<RestaurantObservable> observed_restaurants;
-    private Set<String> displayed_restaurants;
+    private List<RestaurantObservable> observedRestaurants;
+    private Set<String> displayedRestaurants;
     private UserObservable user;
     private int source;
     private List<ParseUser> friends;
@@ -62,11 +62,11 @@ public class RestaurantServer {
     public RestaurantServer(List<RestaurantObservable> restaurantList) {
         this.source = PARSE_LIKES;
         this.offset = 0;
-        this.observed_restaurants = restaurantList;
+        this.observedRestaurants = restaurantList;
         this.user = new UserObservable(ParseUser.getCurrentUser());
         this.friends = new ArrayList<ParseUser>();
-        this.displayed_restaurants = new HashSet<String>();
-        populate_friends();
+        this.displayedRestaurants = new HashSet<String>();
+        populateFriends();
     }
 
 
@@ -76,7 +76,7 @@ public class RestaurantServer {
     public void reset() {
         this.offset = 0;
         this.source = PARSE_LIKES;
-        displayed_restaurants.clear();
+        displayedRestaurants.clear();
     }
 
 
@@ -89,17 +89,17 @@ public class RestaurantServer {
     }
 
 
-    private void populate_friends(){
+    private void populateFriends(){
         ParseQuery<Friends> query = ParseQuery.getQuery(Friends.class);
         query.include(Friends.REQUESTED_KEY);
         query.whereEqualTo(Friends.USER_KEY, user.getUser());
-        List<Friends> parse_friends = new ArrayList<Friends>();
+        List<Friends> parseFriends = new ArrayList<Friends>();
         try {
-            parse_friends = query.find();
+            parseFriends = query.find();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        for (Friends friend: parse_friends){
+        for (Friends friend: parseFriends){
             friends.add(friend.getRequested());
         }
     }
@@ -126,6 +126,7 @@ public class RestaurantServer {
      */
     private void parseLikes(String apiKey, RestaurantListener listener) {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
+        final boolean[] updating = {true};
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
         query.include(UserLike.RESTAURANT_KEY);
@@ -144,10 +145,10 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserLike like : likes) {
-                    String r_name = like.getRestaurant().getName();
-                    if(!displayed_restaurants.contains(r_name)){
-                        observed_restaurants.add(new RestaurantObservable(like.getRestaurant()));
-                        displayed_restaurants.add(r_name);
+                    String r_id = like.getRestaurant().getYelpID();
+                    if(!displayedRestaurants.contains(r_id)){
+                        observedRestaurants.add(new RestaurantObservable(like.getRestaurant()));
+                        displayedRestaurants.add(r_id);
                     }
                 }
                 offset += likes.size();
@@ -156,9 +157,13 @@ public class RestaurantServer {
                     source = PARSE_TOGOS;
                 }
                 if (likes.size() == 0) {
+                    updating[0] = false;
                     parseTogos(apiKey, listener);
                 }
-                listener.dataChanged();
+
+                if (updating[0]){
+                    listener.dataChanged();
+                }
             }
         });
 
@@ -169,6 +174,7 @@ public class RestaurantServer {
      */
     private void parseTogos(String apiKey, RestaurantListener listener) {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
+        final boolean[] updating = {true};
         // include data referred by restaurant key
         query.whereContainedIn("user", friends);
         query.include(UserLike.USER_KEY);
@@ -187,10 +193,10 @@ public class RestaurantServer {
                     return;
                 }
                 for (UserToGo toGo : togos) {
-                    String r_name = toGo.getRestaurant().getName();
-                    if(!displayed_restaurants.contains(r_name)){
-                        observed_restaurants.add(new RestaurantObservable(toGo.getRestaurant()));
-                        displayed_restaurants.add(r_name);
+                    String r_id = toGo.getRestaurant().getYelpID();
+                    if(!displayedRestaurants.contains(r_id)){
+                        observedRestaurants.add(new RestaurantObservable(toGo.getRestaurant()));
+                        displayedRestaurants.add(r_id);
                     }
                 }
                 offset += togos.size();
@@ -199,17 +205,22 @@ public class RestaurantServer {
                     source = PARSE_GENERAL;
                 }
                 if (togos.size() == 0) {
+                    updating[0] = false;
                     parseGeneral(apiKey, listener);
                 }
-                listener.dataChanged();
+
+                if (updating[0]){
+                    listener.dataChanged();
+                }
             }
         });
     }
 
     private void parseGeneral(String apiKey, RestaurantListener listener) {
         ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
+        final boolean[] updating = {true};
         if (user.getCoordinates() != null) {
-            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius);
+            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), maxRadiuskm);
         } else {
             query.whereEqualTo("city", user.getCity());
             query.whereEqualTo("state", user.getState());
@@ -227,13 +238,13 @@ public class RestaurantServer {
                     return;
                 }
                 // for debugging purposes let's print every restaurant description to logcat
+                Log.i(TAG, "Parse general list" + String.valueOf(restaurants.size()));
                 for (Restaurant r : restaurants) {
-                    if(!displayed_restaurants.contains(r.getName())){
-                        observed_restaurants.add(new RestaurantObservable(r));
-                        displayed_restaurants.add(r.getName());
+                    if(!displayedRestaurants.contains(r.getYelpID())){
+                        observedRestaurants.add(new RestaurantObservable(r));
+                        displayedRestaurants.add(r.getYelpID());
                     }
                 }
-                listener.dataChanged();
 
                 offset += restaurants.size();
                 if (restaurants.size() < 20) {
@@ -241,7 +252,11 @@ public class RestaurantServer {
                     source = YELP;
                 }
                 if (restaurants.size() == 0) {
+                    updating[0] = false;
                     yelpQuery(apiKey, listener);
+                }
+                if (updating[0]){
+                    listener.dataChanged();
                 }
             }
         });
@@ -260,7 +275,7 @@ public class RestaurantServer {
         if (user.getCoordinates() != null) {
             urlBuilder.addQueryParameter("latitude", String.valueOf(user.getCoordinates().getLatitude()));
             urlBuilder.addQueryParameter("longitude", String.valueOf(user.getCoordinates().getLongitude()));
-            urlBuilder.addQueryParameter("radius", String.valueOf(max_radius));
+            urlBuilder.addQueryParameter("radius", String.valueOf(maxRadiuskm*1000));
         } else {
             urlBuilder.addQueryParameter("location", user.getCity() + "," + user.getState());
         }
@@ -291,11 +306,13 @@ public class RestaurantServer {
                             yelpQuery(apiKey, listener);
                         } else {
                             for (RestaurantObservable r: res){
-                                if(!displayed_restaurants.contains(r.getName())){
-                                    observed_restaurants.add(r);
-                                    displayed_restaurants.add(r.getName());
+                                if(!displayedRestaurants.contains(r.getYelpId())){
+                                    observedRestaurants.add(r);
+                                    displayedRestaurants.add(r.getYelpId());
                                 }
                             }
+
+                            Log.i(TAG, "Size: " + String.valueOf(observedRestaurants.size()));
                             listener.dataChanged();
 
                         }
