@@ -44,7 +44,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
-        android:id="@+id/explore_progress_bar"
+        android:id="@+id/exploreProgressBar"
         style="?android:progressBarStyle"
         android:layout_width="127dp"
         android:layout_height="137dp"

@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private boolean from_map_activity;
     private BottomNavigationView bottomNavigationView;
-    private String fragment_tag;
+    private String fragmentTag;
     private UserObservable user;
 
     @Override
@@ -65,21 +65,21 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = exploreFragment;
                 if (item.getItemId() == R.id.menu_explore) {
                     fragment = exploreFragment;
-                    fragment_tag = "explore";
+                    fragmentTag = "explore";
                 }
                 if (item.getItemId() == R.id.menu_search) {
                     fragment = searchFragment;
-                    fragment_tag = "search";
+                    fragmentTag = "search";
                 }
                 if (item.getItemId() == R.id.menu_profile) {
                     fragment = profileFragment;
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("user", user);
                     fragment.setArguments(bundle);
-                    fragment_tag = "profile";
+                    fragmentTag = "profile";
                 }
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.tvPlaceholder, fragment, fragment_tag);
+                transaction.replace(R.id.tvPlaceholder, fragment, fragmentTag);
                 transaction.addToBackStack(null).commit();
                 return true;
             }

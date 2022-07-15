@@ -32,7 +32,7 @@ public class FindFriendsFragment extends Fragment {
     private RecyclerView rvUsers;
     private FindFriendsAdapter adapter;
     private List<FriendObservable> allUsers;
-    private ProgressBar search_progress_bar;
+    private ProgressBar searchProgressBar;
 
     public FindFriendsFragment() {
         // Required empty public constructor
@@ -57,15 +57,15 @@ public class FindFriendsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         searchFriends = view.findViewById(R.id.searchFriends);
         rvUsers = view.findViewById(R.id.rvUsers);
-        search_progress_bar = view.findViewById(R.id.pbSearchFriends);
-        search_progress_bar.setVisibility(View.GONE);
+        searchProgressBar = view.findViewById(R.id.pbSearchFriends);
+        searchProgressBar.setVisibility(View.GONE);
 
         searchFriends.setIconified(false);
         // perform set on query text listener event
         searchFriends.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                search_progress_bar.setVisibility(View.VISIBLE);
+                searchProgressBar.setVisibility(View.VISIBLE);
                 adapter.clear();
                 queryUsers(query);
                 return false;
@@ -102,7 +102,7 @@ public class FindFriendsFragment extends Fragment {
                 }
                 adapter.notifyDataSetChanged();
                 rvUsers.setVisibility(View.VISIBLE);
-                search_progress_bar.setVisibility(View.GONE);
+                searchProgressBar.setVisibility(View.GONE);
             }
         });
     }

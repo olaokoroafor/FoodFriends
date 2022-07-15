@@ -42,7 +42,7 @@ public class FriendObservable extends Observable{
         this.profilePhoto = user.getParseFile(PROFILE_PHOTO_KEY);
         this.city = user.getString(CITY_KEY);
         this.state = user.getString(STATE_KEY);
-        this.follows = Friends.user_follows(user);
+        this.follows = Friends.userFollows(user);
     }
 
 
@@ -89,14 +89,14 @@ public class FriendObservable extends Observable{
     /**
      * Checks to see if logged in user follows this friend
      * */
-    public boolean user_follows() {
+    public boolean userFollows() {
         return follows;
     }
 
     /**
      * Makes logged in user follow this friend
      * */
-    public void toggle_follow() {
+    public void toggleFollow() {
         if (this.follows) {
             Friends.unfollow(this.user);
             follows = false;

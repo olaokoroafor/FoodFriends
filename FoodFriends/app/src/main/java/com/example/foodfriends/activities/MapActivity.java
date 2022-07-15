@@ -41,18 +41,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private List<RestaurantObservable> restaurantList;
     private UserObservable user;
     private String TAG = "Map Activity";
-    private int max_radius = 40000;
+    private int maxRadiuskm = 40; //in kilometers
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        //restaurantList = getIntent().getParcelableArrayListExtra("restaurants");
-        //
         user = new UserObservable(ParseUser.getCurrentUser());
         restaurantList = new ArrayList<RestaurantObservable>();
-        // Get the SupportMapFragment and request notification when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -100,7 +97,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void parseGeneral() {
         ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
         if (user.getCoordinates() != null) {
-            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), max_radius/1000);
+            query.whereWithinKilometers("location_coordinates", user.getCoordinates(), maxRadiuskm);
         } else {
             query.whereEqualTo("city", user.getCity());
             query.whereEqualTo("state", user.getState());
@@ -108,9 +105,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         query.setLimit(20);
         List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
         try {
-            List<Restaurant> parse_restaurants = query.find();
+            List<Restaurant> parseRestaurants = query.find();
             // for debugging purposes let's print every restaurant description to logcat
-            for (Restaurant r : parse_restaurants) {
+            for (Restaurant r : parseRestaurants) {
                 restaurantList.add(new RestaurantObservable(r));
             }
         } catch (ParseException e) {

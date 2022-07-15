@@ -187,7 +187,7 @@ public class UserObservable extends Observable implements Parcelable {
     /**
      * Saves user with said attributes to database
      * */
-    public void save_user(){
+    public void saveUser(){
         this.user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -213,7 +213,7 @@ public class UserObservable extends Observable implements Parcelable {
         notifyObservers();
     }
 
-    public boolean display_content(UserObservable friend){
+    public boolean displayContent(UserObservable friend){
         boolean follows = false;
         boolean followed = false;
         ParseQuery<Friends> query1 = ParseQuery.getQuery(Friends.class);

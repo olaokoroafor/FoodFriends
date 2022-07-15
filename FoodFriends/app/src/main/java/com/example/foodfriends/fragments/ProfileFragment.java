@@ -62,7 +62,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private String photoFileName = "profile_photo.jpg";
     private File photoFile;
     private RecyclerView rvRestaurants;
-    private static final String TAG = "Profile Fragment";
+    private static final String TAG = "ProfileFragment";
     private ProfileRestaurantsAdapter adapter;
     private List<RestaurantObservable> allRestaurants;
     private ImageView ivPfp;
@@ -75,8 +75,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private ImageView ivFindFriends;
     private ImageView ivFollow;
     private ImageView ivLock;
-    private ProgressBar profile_progress_bar;
-    private boolean display_content;
+    private ProgressBar profileProgressBar;
+    private boolean displayContent;
     private boolean follows;
 
     public ProfileFragment() {
@@ -92,10 +92,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        // Inflate the layout for this fragment
         currentUser = this.getArguments().getParcelable("user");
-        profile_progress_bar = view.findViewById(R.id.pbProfileRestaurants);
-        // Inflate the layout for this fragment
+        profileProgressBar = view.findViewById(R.id.pbProfileRestaurants);
         return view;
     }
 
@@ -124,17 +122,15 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             ivAddPfp.setOnClickListener(this);
             ivSettingsIcon.setOnClickListener(this);
-            //btnLogOut.setOnClickListener(this);
             ivFindFriends.setOnClickListener(this);
             ivFollow.setVisibility(View.GONE);
             ivLock.setVisibility(View.GONE);
-            display_content = true;
+            displayContent = true;
         } else {
             ivAddPfp.setVisibility(View.GONE);
             ivSettingsIcon.setVisibility(View.GONE);
-            //btnLogOut.setVisibility(View.GONE);
             ivFindFriends.setVisibility(View.GONE);
-            follows = Friends.user_follows(currentUser.getUser());
+            follows = Friends.userFollows(currentUser.getUser());
             if (follows) {
                 Glide.with(getContext())
                         .load(R.drawable.ic_baseline_person_remove_24)
@@ -145,8 +141,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                         .into(ivFollow);
             }
             ivFollow.setOnClickListener(this);
-            display_content = loggedInUser.display_content(currentUser);
-            if (display_content) {
+            displayContent = loggedInUser.displayContent(currentUser);
+            if (displayContent) {
                 ivLock.setVisibility(View.GONE);
             } else {
                 rvRestaurants.setVisibility(View.GONE);
@@ -165,29 +161,29 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
         rvRestaurants.setAdapter(adapter);
-        int selected_tab = tabLayout.getSelectedTabPosition();
-        if (selected_tab == 0) {
-            if(display_content) {
+        int selectedTab = tabLayout.getSelectedTabPosition();
+        if (selectedTab == 0) {
+            if(displayContent) {
                 queryUserLikes();
             }
         } else {
-            if(display_content) {
+            if(displayContent) {
                 queryUserToGos();
             }
         }
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (display_content){
+                if (displayContent){
                     if (tab.getPosition() == 0) {
                         adapter.clear();
                         rvRestaurants.setVisibility(View.GONE);
-                        profile_progress_bar.setVisibility(View.VISIBLE);
+                        profileProgressBar.setVisibility(View.VISIBLE);
                         queryUserLikes();
                     } else {
                         adapter.clear();
                         rvRestaurants.setVisibility(View.GONE);
-                        profile_progress_bar.setVisibility(View.VISIBLE);
+                        profileProgressBar.setVisibility(View.VISIBLE);
                         queryUserToGos();
                     }
                 }
@@ -220,10 +216,10 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 toSettingsActivity();
                 break;
             case R.id.ivFindFriends:
-                go_find_friends();
+                goFindFriends();
                 break;
             case R.id.ivFollow:
-                toggle_follow();
+                toggleFollow();
                 break;
         }
     }
@@ -242,13 +238,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private void addPfp() {
         launchCamera();
         currentUser.setProfilePhoto(new ParseFile(photoFile));
-        currentUser.save_user();
+        currentUser.saveUser();
     }
 
     /**
      * Takes user to the find friends fragment
      */
-    private void go_find_friends() {
+    private void goFindFriends() {
         Fragment fragment = new FindFriendsFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -262,15 +258,15 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     /**
      * Either follows or unfollows someone based on original state of user relationship
      */
-    private void toggle_follow() {
-        if (Friends.user_follows(currentUser.getUser())) {
+    private void toggleFollow() {
+        if (Friends.userFollows(currentUser.getUser())) {
             Friends.unfollow(currentUser.getUser());
             follows = false;
-            display_content = loggedInUser.display_content(currentUser);
+            displayContent = loggedInUser.displayContent(currentUser);
         } else {
             Friends.follow(currentUser.getUser());
             follows = true;
-            display_content = loggedInUser.display_content(currentUser);
+            displayContent = loggedInUser.displayContent(currentUser);
         }
         currentUser.triggerObserver();
     }
@@ -301,7 +297,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
                 rvRestaurants.setVisibility(View.VISIBLE);
-                profile_progress_bar.setVisibility(View.GONE);
+                profileProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -335,7 +331,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 allRestaurants.addAll(rs);
                 adapter.notifyDataSetChanged();
                 rvRestaurants.setVisibility(View.VISIBLE);
-                profile_progress_bar.setVisibility(View.GONE);
+                profileProgressBar.setVisibility(View.GONE);
 
             }
         });
@@ -413,13 +409,13 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                     .load(R.drawable.ic_baseline_person_add_24)
                     .into(ivFollow);
         }
-        Log.i(TAG, "DISPLAY CONTENT: " + String.valueOf(display_content));
-        if(display_content){
+        Log.i(TAG, "DISPLAY CONTENT: " + String.valueOf(displayContent));
+        if(displayContent){
             rvRestaurants.setVisibility(View.VISIBLE);
             ivLock.setVisibility(View.GONE);
-            int selected_tab = tabLayout.getSelectedTabPosition();
+            int selectedTab = tabLayout.getSelectedTabPosition();
             allRestaurants.clear();
-            if (selected_tab == 0) {
+            if (selectedTab == 0) {
                 queryUserLikes();
             } else {
                 queryUserToGos();

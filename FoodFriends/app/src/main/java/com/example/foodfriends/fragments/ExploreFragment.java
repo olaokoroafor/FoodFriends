@@ -40,14 +40,14 @@ public class ExploreFragment extends Fragment implements Observer {
     private RecyclerView rvRestaurants;
     private int REQUEST_CODE = 0;
     private ImageView ivMap;
-    private static final String TAG = "Explore Fragment";
+    private static final String TAG = "ExploreFragment";
     private ExploreAdapter adapter;
     private List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private RestaurantServer restaurantServer;
     private RestaurantListener restaurantListener;
-    private ProgressBar explore_progress_bar;
+    private ProgressBar exploreProgressBar;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -72,13 +72,13 @@ public class ExploreFragment extends Fragment implements Observer {
                     public void run() {
                         adapter.notifyDataSetChanged();
                         rvRestaurants.setVisibility(View.VISIBLE);
-                        explore_progress_bar.setVisibility(View.GONE);
+                        exploreProgressBar.setVisibility(View.GONE);
                     }
                 });
             }
         };
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        explore_progress_bar = view.findViewById(R.id.explore_progress_bar);
+        exploreProgressBar = view.findViewById(R.id.exploreProgressBar);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

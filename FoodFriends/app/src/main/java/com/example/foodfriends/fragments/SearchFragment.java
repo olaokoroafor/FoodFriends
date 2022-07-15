@@ -36,7 +36,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView rvRestaurants;
     private SearchRestaurantsAdapter adapter;
     private List<RestaurantObservable> allRestaurants;
-    private ProgressBar search_progress_bar;
+    private ProgressBar searchProgressBar;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -61,15 +61,15 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         searchRestaurants = view.findViewById(R.id.searchRestaurants);
         rvRestaurants = view.findViewById(R.id.rvSearchRestaurants);
-        search_progress_bar = view.findViewById(R.id.pbSearchRestaurants);
-        search_progress_bar.setVisibility(View.GONE);
+        searchProgressBar = view.findViewById(R.id.pbSearchRestaurants);
+        searchProgressBar.setVisibility(View.GONE);
 
         searchRestaurants.setIconified(false);
         // perform set on query text listener event
         searchRestaurants.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                search_progress_bar.setVisibility(View.VISIBLE);
+                searchProgressBar.setVisibility(View.VISIBLE);
                 adapter.clear();
                 queryRestaurants(query);
                 return false;
@@ -108,7 +108,7 @@ public class SearchFragment extends Fragment {
                 }
                 adapter.notifyDataSetChanged();
                 rvRestaurants.setVisibility(View.VISIBLE);
-                search_progress_bar.setVisibility(View.GONE);
+                searchProgressBar.setVisibility(View.GONE);
             }
         });
     }
