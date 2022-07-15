@@ -58,7 +58,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     private String photoFileName = "profile_photo.jpg";
     private File photoFile;
     private RecyclerView rvRestaurants;
-    private static final String TAG = "Profile Fragment";
+    private static final String TAG = "ProfileFragment";
     private ProfileRestaurantsAdapter adapter;
     private List<RestaurantObservable> allRestaurants;
     private ImageView ivPfp;
@@ -86,21 +86,8 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
         currentUser = this.getArguments().getParcelable("user");
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
-    }
-
-    /**
-     * Sets the values of the xml elements to restaurant data
-     * Also sets the on click listener for necessary objects
-     * Connects the recycler view of restaurants to the adapter
-     * Populates the list of restaurants for the adapter to display
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         currentUser.addObserver(this);
         loggedInUser = new UserObservable(ParseUser.getCurrentUser());
         rvRestaurants = view.findViewById(R.id.rvProfilePosts);
@@ -113,49 +100,65 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
         ivFollow = view.findViewById(R.id.ivFollow);
         ivLock = view.findViewById(R.id.ivLock);
 
+        return view;
+    }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * Connects the recycler view of restaurants to the adapter
+     * Populates the list of restaurants for the adapter to display
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
-            ivAddPfp.setOnClickListener(this);
-            btnLogOut.setOnClickListener(this);
-            ivFindFriends.setOnClickListener(this);
-            ivFollow.setVisibility(View.GONE);
-            ivLock.setVisibility(View.GONE);
-            display_content = true;
+            displayPersonalProfile();
         } else {
-            ivAddPfp.setVisibility(View.GONE);
-            btnLogOut.setVisibility(View.GONE);
-            ivFindFriends.setVisibility(View.GONE);
-            follows = Friends.user_follows(currentUser.getUser());
-            if (follows) {
-                Glide.with(getContext())
-                        .load(R.drawable.ic_baseline_person_remove_24)
-                        .into(ivFollow);
-            } else {
-                Glide.with(getContext())
-                        .load(R.drawable.ic_baseline_person_add_24)
-                        .into(ivFollow);
-            }
-            ivFollow.setOnClickListener(this);
-            display_content = loggedInUser.display_content(currentUser);
-            if (display_content) {
-                ivLock.setVisibility(View.GONE);
-            } else {
-                rvRestaurants.setVisibility(View.GONE);
-            }
+            displayOtherProfile();
         }
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-        ParseFile pfp = currentUser.getProfilePhoto();
-        if (pfp != null) {
-            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
-        } else {
-            Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
-        }
+        displayProfilePic();
         tvUsername.setText("@" + currentUser.getUsername());
         allRestaurants = new ArrayList<RestaurantObservable>();
         rvRestaurants.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ProfileRestaurantsAdapter(getContext(), allRestaurants);
         rvRestaurants.setAdapter(adapter);
+        handleTab();
+    }
+
+    private void displayOtherProfile() {
+        ivAddPfp.setVisibility(View.GONE);
+        btnLogOut.setVisibility(View.GONE);
+        ivFindFriends.setVisibility(View.GONE);
+        follows = Friends.user_follows(currentUser.getUser());
+        if (follows) {
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_remove_24)
+                    .into(ivFollow);
+        } else {
+            Glide.with(getContext())
+                    .load(R.drawable.ic_baseline_person_add_24)
+                    .into(ivFollow);
+        }
+        ivFollow.setOnClickListener(this);
+        display_content = loggedInUser.display_content(currentUser);
+        if (display_content) {
+            ivLock.setVisibility(View.GONE);
+        } else {
+            rvRestaurants.setVisibility(View.GONE);
+        }
+    }
+
+    private void displayPersonalProfile() {
+        ivAddPfp.setOnClickListener(this);
+        btnLogOut.setOnClickListener(this);
+        ivFindFriends.setOnClickListener(this);
+        ivFollow.setVisibility(View.GONE);
+        ivLock.setVisibility(View.GONE);
+        display_content = true;
+    }
+
+    private void handleTab() {
         int selected_tab = tabLayout.getSelectedTabPosition();
         if (selected_tab == 0) {
             if(display_content) {
@@ -193,6 +196,17 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
 
     }
 
+    private void displayProfilePic() {
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
+        ParseFile pfp = currentUser.getProfilePhoto();
+        if (pfp != null) {
+            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp.getUrl()).into(ivPfp);
+        } else {
+            Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
+        }
+    }
+
 
     /**
      * Specifies what needs to be done for each UI element click
@@ -205,10 +219,10 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
                 addPfp();
                 break;
             case R.id.btnLogOut:
-                user_log_out();
+                userLogOut();
                 break;
             case R.id.ivFindFriends:
-                go_find_friends();
+                goFindFriends();
                 break;
             case R.id.ivFollow:
                 toggle_follow();
@@ -228,7 +242,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     /**
      * Takes user to the find friends fragment
      */
-    private void go_find_friends() {
+    private void goFindFriends() {
         Fragment fragment = new FindFriendsFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -240,7 +254,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
     /**
      * Logs user out of account and sends them to login page
      */
-    private void user_log_out() {
+    private void userLogOut() {
         ParseUser.logOut();
         Intent i = new Intent(getContext(), LogInActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
