@@ -7,12 +7,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,11 +24,23 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.MainActivity;
+import com.example.foodfriends.adapters.CommentsAdapter;
+import com.example.foodfriends.misc.CommentFetchHelper;
+import com.example.foodfriends.misc.CommentListener;
 import com.example.foodfriends.misc.GoogleMapsHelper;
+import com.example.foodfriends.models.Comment;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
+import com.example.foodfriends.observable_models.UserObservable;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -41,7 +55,13 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
     private ImageView ivLike;
     private ImageView ivToGo;
     private RestaurantObservable restaurant;
+    private UserObservable user;
+    private ImageView ivCommentSubmit;
+    private EditText etCommentBody;
     private RecyclerView rvComments;
+    private List<Comment> comments;
+    private CommentsAdapter adapter;
+    private CommentFetchHelper commentHelper;
 
     public RestaurantDetailFragment() {
         // Required empty public constructor
@@ -53,11 +73,25 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        View view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
         restaurant = this.getArguments().getParcelable("restaurant");
         restaurant.addObserver(this);
+        user = new UserObservable(ParseUser.getCurrentUser());
+        comments = new ArrayList<Comment>();
+        commentHelper = new CommentFetchHelper(comments);
+        tvRName = view.findViewById(R.id.tvDetailName);
+        tvLikeCount = view.findViewById(R.id.tvDetailLikeCount);
+        tvToGoCount = view.findViewById(R.id.tvDetailToGoCount);
+        tvAddress = view.findViewById(R.id.tvDetailAddress);
+        ivRPic = view.findViewById(R.id.ivDetailPic);
+        ivLike = view.findViewById(R.id.ivDetailLike);
+        ivToGo = view.findViewById(R.id.ivDetailToGo);
+        tvPrice = view.findViewById(R.id.tvDetailPrice);
+        rvComments = view.findViewById(R.id.rvComments);
+        etCommentBody = view.findViewById(R.id.etCommentBody);
+        ivCommentSubmit = view.findViewById(R.id.ivCommentSubmit);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
+        return view;
     }
 
     /**
@@ -67,23 +101,12 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tvRName = view.findViewById(R.id.tvDetailName);
-        tvLikeCount = view.findViewById(R.id.tvDetailLikeCount);
-        tvToGoCount = view.findViewById(R.id.tvDetailToGoCount);
-        tvAddress = view.findViewById(R.id.tvDetailAddress);
-        ivRPic = view.findViewById(R.id.ivDetailPic);
-        ivLike = view.findViewById(R.id.ivDetailLike);
-        ivToGo = view.findViewById(R.id.ivDetailToGo);
-        tvPrice = view.findViewById(R.id.tvDetailPrice);
-
         tvPrice.setText("PRICE: " + restaurant.getPrice());
         tvRName.setText(restaurant.getName());
         tvAddress.setText(restaurant.getAddress());
         tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
         tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(15));
-        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(restaurant.getImageUrl()).into(ivRPic);
+        displayResPic(ivRPic);
         if(restaurant.isLiked()){
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_red_heart_24)
@@ -107,6 +130,26 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         ivLike.setOnClickListener(this);
         ivToGo.setOnClickListener(this);
         tvAddress.setOnClickListener(this);
+        adapter = new CommentsAdapter(getContext(), comments);
+
+        // recycler view set up: layout manage and the adapter
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvComments.setLayoutManager(linearLayoutManager);
+        rvComments.setAdapter(adapter);
+        ivCommentSubmit.setOnClickListener(this);
+
+        commentHelper.fetchComments(restaurant, new CommentListener(){
+            @Override
+            public void dataChanged() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void displayResPic(ImageView ivRPic) {
+        RequestOptions picOptions = new RequestOptions();
+        picOptions = picOptions.transforms(new CenterCrop(), new RoundedCorners(15));
+        Glide.with(getContext()).applyDefaultRequestOptions(picOptions).load(restaurant.getImageUrl()).into(ivRPic);
     }
 
     /**
@@ -126,6 +169,14 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 GoogleMapsHelper helper = new GoogleMapsHelper(restaurant, getContext());
                 helper.goToGmaps();
                 break;
+            case R.id.ivCommentSubmit:
+                commentHelper.addComment(etCommentBody.getText().toString(), user, restaurant, new CommentListener(){
+                    @Override
+                    public void dataChanged() {
+                        adapter.notifyDataSetChanged();
+                        etCommentBody.setText("");
+                    }
+                });
         }
 
     }

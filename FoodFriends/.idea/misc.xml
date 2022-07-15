@@ -33,6 +33,7 @@
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_restaurant_detail.xml" value="0.213768115942029" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.17980072463768115" />
+        <entry key="app/src/main/res/layout/item_comment.xml" value="0.20208333333333334" />
         <entry key="app/src/main/res/layout/item_restaurant.xml" value="0.18427581787109382" />
         <entry key="app/src/main/res/layout/profile_restaurant.xml" value="0.1" />
         <entry key="app/src/main/res/layout/search_restaurant_item.xml" value="0.2265625" />
