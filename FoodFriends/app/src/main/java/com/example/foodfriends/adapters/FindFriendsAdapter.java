@@ -144,12 +144,12 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         public void update(Observable o, Object arg) {
             if (current_user.user_follows()){
                 Glide.with(context)
-                        .load(R.drawable.ic_baseline_person_add_24)
+                        .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivAddFriend);
             }
             else{
                 Glide.with(context)
-                        .load(R.drawable.ic_baseline_person_remove_24)
+                        .load(R.drawable.ic_baseline_person_add_24)
                         .into(ivAddFriend);
             }
         }
