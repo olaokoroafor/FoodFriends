@@ -78,9 +78,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             tvCommentBody.setText(comment.getText());
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(65));
-            ParseFile pfp_url = new UserObservable(comment.getUser()).getProfilePhoto();
-            if (pfp_url != null){
-                Glide.with(context).applyDefaultRequestOptions(requestOptions).load(pfp_url.getUrl()).into(ivProfilePic);
+            ParseFile pfpUrl = new UserObservable(comment.getUser()).getProfilePhoto();
+            if (pfpUrl != null){
+                Glide.with(context).applyDefaultRequestOptions(requestOptions).load(pfpUrl.getUrl()).into(ivProfilePic);
             }
             else{
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivProfilePic);

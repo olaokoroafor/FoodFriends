@@ -25,6 +25,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.foodfriends.R;
 import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.adapters.CommentsAdapter;
+import com.example.foodfriends.misc.CommentFetchHelper;
+import com.example.foodfriends.misc.CommentListener;
 import com.example.foodfriends.misc.GoogleMapsHelper;
 import com.example.foodfriends.models.Comment;
 import com.example.foodfriends.models.Restaurant;
@@ -59,6 +61,7 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
     private RecyclerView rvComments;
     private List<Comment> comments;
     private CommentsAdapter adapter;
+    private CommentFetchHelper commentHelper;
 
     public RestaurantDetailFragment() {
         // Required empty public constructor
@@ -70,21 +73,12 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        View view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
         restaurant = this.getArguments().getParcelable("restaurant");
         restaurant.addObserver(this);
         user = new UserObservable(ParseUser.getCurrentUser());
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_restaurant_detail, container, false);
-    }
-
-    /**
-     * Sets the values of the xml elements to restaurant data
-     * Also sets the on click listener for necessary objects
-     * */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        comments = new ArrayList<Comment>();
+        commentHelper = new CommentFetchHelper(comments);
         tvRName = view.findViewById(R.id.tvDetailName);
         tvLikeCount = view.findViewById(R.id.tvDetailLikeCount);
         tvToGoCount = view.findViewById(R.id.tvDetailToGoCount);
@@ -96,15 +90,23 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         rvComments = view.findViewById(R.id.rvComments);
         etCommentBody = view.findViewById(R.id.etCommentBody);
         ivCommentSubmit = view.findViewById(R.id.ivCommentSubmit);
+        // Inflate the layout for this fragment
+        return view;
+    }
 
+    /**
+     * Sets the values of the xml elements to restaurant data
+     * Also sets the on click listener for necessary objects
+     * */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         tvPrice.setText("PRICE: " + restaurant.getPrice());
         tvRName.setText(restaurant.getName());
         tvAddress.setText(restaurant.getAddress());
         tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
         tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
-        RequestOptions picOptions = new RequestOptions();
-        picOptions = picOptions.transforms(new CenterCrop(), new RoundedCorners(15));
-        Glide.with(getContext()).applyDefaultRequestOptions(picOptions).load(restaurant.getImageUrl()).into(ivRPic);
+        displayResPic(ivRPic);
         if(restaurant.isLiked()){
             Glide.with(getContext())
                     .load(R.drawable.ic_baseline_red_heart_24)
@@ -128,7 +130,6 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         ivLike.setOnClickListener(this);
         ivToGo.setOnClickListener(this);
         tvAddress.setOnClickListener(this);
-        comments = new ArrayList<Comment>();
         adapter = new CommentsAdapter(getContext(), comments);
 
         // recycler view set up: layout manage and the adapter
@@ -137,7 +138,18 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
         rvComments.setAdapter(adapter);
         ivCommentSubmit.setOnClickListener(this);
 
-        queryComments();
+        commentHelper.fetchComments(restaurant, new CommentListener(){
+            @Override
+            public void dataChanged() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void displayResPic(ImageView ivRPic) {
+        RequestOptions picOptions = new RequestOptions();
+        picOptions = picOptions.transforms(new CenterCrop(), new RoundedCorners(15));
+        Glide.with(getContext()).applyDefaultRequestOptions(picOptions).load(restaurant.getImageUrl()).into(ivRPic);
     }
 
     /**
@@ -158,32 +170,15 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                 helper.goToGmaps();
                 break;
             case R.id.ivCommentSubmit:
-                addComment();
+                commentHelper.addComment(etCommentBody.getText().toString(), user, restaurant, new CommentListener(){
+                    @Override
+                    public void dataChanged() {
+                        adapter.notifyDataSetChanged();
+                        etCommentBody.setText("");
+                    }
+                });
         }
 
-    }
-
-    private void addComment() {
-        Comment newComment = new Comment();
-        newComment.setText(etCommentBody.getText().toString());
-        newComment.setUser(user.getUser());
-        newComment.setRestaurant(restaurant.getRestaurant());
-        newComment.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null){
-                    Log.e(TAG, "Error saving post: " + e);
-                    //Toast.makeText(this, "Error while saving", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Log.i(TAG, "Post save was successful!");
-                    int len = comments.size();
-                    comments.add(newComment);
-                    adapter.notifyDataSetChanged();
-                    etCommentBody.setText("");
-                }
-            }
-        });
     }
 
     /**
@@ -213,40 +208,5 @@ public class RestaurantDetailFragment extends Fragment implements Observer, View
                     .load(R.drawable.ic_baseline_call_missed_outgoing_24)
                     .into(ivToGo);
         }
-    }
-
-    /**
-     * Adds all the restaurant's comments to the list
-     * */
-    private void queryComments() {
-        // specify what type of data we want to query - Post.class
-        ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);
-
-        query.whereEqualTo("restaurant", restaurant.getRestaurant());
-        // include data referred by user key
-        query.include(Comment.USER_KEY);
-        query.include(Comment.RESTAURANT_KEY);
-        // order posts by creation date (newest first)
-        query.addAscendingOrder("createdAt");
-        // start an asynchronous call for posts
-        query.findInBackground(new FindCallback<Comment>() {
-            @Override
-            public void done(List<Comment> dbComments, ParseException e) {
-                // check for errors
-                if (e != null) {
-                    Log.e(TAG, "Issue with getting comments", e);
-                    return;
-                }
-
-                // for debugging purposes let's print every post description to logcat
-                for (Comment comment : dbComments) {
-                    Log.i(TAG, "Comment: " + comment.getText() + ", username: " + comment.getUser().getUsername());
-                }
-
-                // save received posts to list and notify adapter of new data
-                comments.addAll(dbComments);
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 }
