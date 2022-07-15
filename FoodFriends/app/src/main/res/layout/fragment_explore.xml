@@ -43,6 +43,17 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ProgressBar
+        android:id="@+id/exploreProgressBar"
+        style="?android:progressBarStyle"
+        android:layout_width="127dp"
+        android:layout_height="137dp"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/ivMapIndicator"
+        app:layout_constraintTop_toTopOf="@+id/swipeContainer" />
+
     <ImageView
         android:id="@+id/ivMapIndicator"
         android:layout_width="60dp"

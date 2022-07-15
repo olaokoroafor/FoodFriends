@@ -5,12 +5,15 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.foodfriends.models.Friends;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.List;
 import java.util.Observable;
 
 public class UserObservable extends Observable implements Parcelable {
@@ -23,6 +26,7 @@ public class UserObservable extends Observable implements Parcelable {
     private String city;
     private String state;
     private ParseGeoPoint coordinates;
+    private Boolean privateAccount;
     private static final String USERNAME_KEY = "username";
     private static final String PASSWORD_KEY = "password";
     private static final String NAME_KEY = "name";
@@ -30,11 +34,13 @@ public class UserObservable extends Observable implements Parcelable {
     private static final String CITY_KEY = "city";
     private static final String STATE_KEY = "state";
     private static final String LOCATION_COORDINATES_KEY = "location_coordinates";
+    private static final String PRIVATE_KEY = "private";
     private static final String TAG = "USER OBSERVABLE MODEL";
 
     public UserObservable(){
         this.user = new ParseUser();
         this.objectId = user.getObjectId();
+        this.privateAccount = false;
     }
 
     public UserObservable(ParseUser user){
@@ -46,6 +52,7 @@ public class UserObservable extends Observable implements Parcelable {
         this.city = user.getString(CITY_KEY);
         this.state = user.getString(STATE_KEY);
         this.coordinates = user.getParseGeoPoint(LOCATION_COORDINATES_KEY);
+        this.privateAccount = user.getBoolean(PRIVATE_KEY);
     }
 
 
@@ -62,6 +69,7 @@ public class UserObservable extends Observable implements Parcelable {
         city = in.readString();
         state = in.readString();
         coordinates = in.readParcelable(ParseGeoPoint.class.getClassLoader());
+        privateAccount = in.readBoolean();
     }
 
     /**
@@ -179,7 +187,7 @@ public class UserObservable extends Observable implements Parcelable {
     /**
      * Saves user with said attributes to database
      * */
-    public void save_user(){
+    public void saveUser(){
         this.user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -193,6 +201,52 @@ public class UserObservable extends Observable implements Parcelable {
         });
     }
 
+
+    public Boolean getPrivateAccount() {
+        return privateAccount;
+    }
+
+    public void setPrivateAccount(Boolean privateAccount) {
+        this.privateAccount = privateAccount;
+        this.user.put(PRIVATE_KEY, privateAccount);
+        setChanged();
+        notifyObservers();
+    }
+
+    public boolean displayContent(UserObservable friend){
+        boolean follows = false;
+        boolean followed = false;
+        ParseQuery<Friends> query1 = ParseQuery.getQuery(Friends.class);
+        query1.whereEqualTo(Friends.USER_KEY, user);
+        query1.whereEqualTo(Friends.REQUESTED_KEY, friend.getUser());
+        try {
+            List<Friends> requests = query1.find();
+            if (requests.size() > 0) {
+                follows = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        ParseQuery<Friends> query2 = ParseQuery.getQuery(Friends.class);
+        query2.whereEqualTo(Friends.USER_KEY, friend.getUser());
+        query2.whereEqualTo(Friends.REQUESTED_KEY, user);
+        try {
+            List<Friends> requests = query2.find();
+            if (requests.size() > 0) {
+                followed = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (friend.getPrivateAccount()){
+            return follows & followed;
+        }
+        else{
+            return true;
+        }
+    }
 
     /**
      * Does validation on user object fields
@@ -232,6 +286,7 @@ public class UserObservable extends Observable implements Parcelable {
         dest.writeString(city);
         dest.writeString(state);
         dest.writeParcelable(coordinates, flags);
+        dest.writeBoolean(privateAccount);
     }
 
 }

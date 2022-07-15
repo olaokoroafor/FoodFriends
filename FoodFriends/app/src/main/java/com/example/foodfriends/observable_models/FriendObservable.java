@@ -27,7 +27,7 @@ public class FriendObservable extends Observable{
     private static final String PROFILE_PHOTO_KEY = "profilePhoto";
     private static final String CITY_KEY = "city";
     private static final String STATE_KEY = "state";
-    private static final String TAG = "USER OBSERVABLE MODEL";
+    private static final String TAG = "FRIEND OBSERVABLE MODEL";
 
     public FriendObservable() {
         this.user = new ParseUser();
@@ -42,7 +42,7 @@ public class FriendObservable extends Observable{
         this.profilePhoto = user.getParseFile(PROFILE_PHOTO_KEY);
         this.city = user.getString(CITY_KEY);
         this.state = user.getString(STATE_KEY);
-        this.follows = Friends.user_follows(user);
+        this.follows = Friends.userFollows(user);
     }
 
 
@@ -89,19 +89,19 @@ public class FriendObservable extends Observable{
     /**
      * Checks to see if logged in user follows this friend
      * */
-    public boolean user_follows() {
+    public boolean userFollows() {
         return follows;
     }
 
     /**
      * Makes logged in user follow this friend
      * */
-    public void toggle_follow() {
+    public void toggleFollow() {
         if (this.follows) {
-            Friends.follow(this.user);
+            Friends.unfollow(this.user);
             follows = false;
         } else {
-            Friends.unfollow(this.user);
+            Friends.follow(this.user);
             follows = true;
         }
         setChanged();

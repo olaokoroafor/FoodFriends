@@ -17,7 +17,7 @@ import java.util.List;
 public class Friends extends ParseObject {
     public static final String USER_KEY = "user";
     public static final String REQUESTED_KEY = "requested";
-    private static final String TAG = "FRIENDS MODEL";
+    private static final String TAG = "FriendsModel";
 
     public ParseUser getUser(){
         return getParseUser(USER_KEY);
@@ -36,7 +36,7 @@ public class Friends extends ParseObject {
     /**
      * Checks to see if user passed in is followed by user logged in
      * */
-    public static boolean user_follows(ParseUser requested) {
+    public static boolean userFollows(ParseUser requested) {
         ParseUser user = ParseUser.getCurrentUser();
         boolean follows = false;
         ParseQuery<Friends> query = ParseQuery.getQuery(Friends.class);
@@ -60,13 +60,11 @@ public class Friends extends ParseObject {
         Friends friend = new Friends();
         friend.setUser(ParseUser.getCurrentUser());
         friend.setRequested(requested);
-        friend.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null)
-                    Log.i(TAG, e.toString());
-            }
-        });
+        try {
+            friend.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -76,15 +74,10 @@ public class Friends extends ParseObject {
         ParseQuery<Friends> query = ParseQuery.getQuery(Friends.class);
         query.whereEqualTo(USER_KEY, ParseUser.getCurrentUser());
         query.whereEqualTo(REQUESTED_KEY, requested);
-        query.findInBackground(new FindCallback<Friends>() {
-            public void done(List<Friends> friends, ParseException e) {
-                ParseObject.deleteAllInBackground(friends, new DeleteCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        Log.d(TAG, "deleted successfully");
-                    }
-                });
-            }
-        });
+        try {
+            ParseObject.deleteAll(query.find());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

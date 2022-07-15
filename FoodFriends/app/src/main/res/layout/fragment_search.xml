@@ -6,6 +6,19 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".fragments.SearchFragment">
 
+    <ProgressBar
+        android:id="@+id/pbSearchRestaurants"
+        style="?android:progressBarStyle"
+        android:layout_width="127dp"
+        android:layout_height="137dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="260dp"
+        android:layout_marginEnd="156dp"
+        app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/ivMapIndicator"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchRestaurants"
         android:layout_width="fill_parent"
@@ -28,6 +41,7 @@ tools:context=".fragments.SearchFragment">
         android:layout_below="@+id/searchRestaurants"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchRestaurants" />
 
