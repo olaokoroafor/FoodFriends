@@ -37,6 +37,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private UserObservable user;
     private String TAG = "MapActivity";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +74,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         float zoomLevel = 12.0f;
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(user.getCoordinates().getLatitude(), user.getCoordinates().getLongitude()), zoomLevel));
+        if (user.getCoordinates() != null)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(user.getCoordinates().getLatitude(), user.getCoordinates().getLongitude()), zoomLevel));
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
