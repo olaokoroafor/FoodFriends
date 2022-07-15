@@ -78,7 +78,7 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         private ImageView ivAddFriend;
         private TextView tvUsername;
         private TextView tvLocation;
-        private FriendObservable current_user;
+        private FriendObservable currentUser;
 
         /**
          * Constructor
@@ -95,7 +95,7 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
          * Binds the xml elements to user data
          * */
         public void bind(FriendObservable user) {
-            current_user = user;
+            currentUser = user;
             user.addObserver(this);
             tvUsername.setText(user.getUsername());
             tvLocation.setText(user.getCity() + ", " + user.getState());
@@ -109,7 +109,7 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivPfp);
             }
             ivPfp.setOnClickListener(this);
-            if (user.user_follows()){
+            if (user.userFollows()){
                 Glide.with(context)
                         .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivAddFriend);
@@ -129,10 +129,10 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
         public void onClick(View v) {
             switch(v.getId()){
                 case R.id.ivSearchPfp:
-                    ((MainActivity) context).displayOtherProfileFragment(current_user.getUser());
+                    ((MainActivity) context).displayOtherProfileFragment(currentUser.getUser());
                     break;
                 case R.id.ivAddFriend:
-                    current_user.toggle_follow();
+                    currentUser.toggleFollow();
                     break;
             }
         }
@@ -142,7 +142,7 @@ public class FindFriendsAdapter extends RecyclerView.Adapter<FindFriendsAdapter.
          * */
         @Override
         public void update(Observable o, Object arg) {
-            if (current_user.user_follows()){
+            if (currentUser.userFollows()){
                 Glide.with(context)
                         .load(R.drawable.ic_baseline_person_remove_24)
                         .into(ivAddFriend);

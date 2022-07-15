@@ -213,7 +213,7 @@ public class UserObservable extends Observable implements Parcelable {
         notifyObservers();
     }
 
-    public boolean display_content(UserObservable friend){
+    public boolean displayContent(UserObservable friend){
         boolean follows = false;
         boolean followed = false;
         ParseQuery<Friends> query1 = ParseQuery.getQuery(Friends.class);
