@@ -12,8 +12,11 @@ import android.view.ViewGroup;
 import com.example.foodfriends.R;
 
 import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,13 +24,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.foodfriends.activities.LogInActivity;
-import com.example.foodfriends.activities.MainActivity;
 import com.example.foodfriends.activities.MapActivity;
 import com.example.foodfriends.adapters.ExploreAdapter;
+import com.example.foodfriends.misc.DistanceRestaurantServer;
 import com.example.foodfriends.misc.EndlessRecyclerViewScrollListener;
+import com.example.foodfriends.misc.PopularityRestaurantServer;
+import com.example.foodfriends.misc.RelevanceRestaurantServer;
 import com.example.foodfriends.misc.RestaurantListener;
-import com.example.foodfriends.misc.RestaurantServer;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +38,24 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-public class ExploreFragment extends Fragment implements Observer {
+public class ExploreFragment extends Fragment implements Observer, AdapterView.OnItemSelectedListener {
 
     private RecyclerView rvRestaurants;
-    private int REQUEST_CODE = 0;
+    private int RELEVANCE_SORT = 0;
+    private int DISTANCE_SORT = 1;
+    private int POPULARITY_SORT = 2;
     private ImageView ivMap;
     private static final String TAG = "ExploreFragment";
     private ExploreAdapter adapter;
     private List<RestaurantObservable> restaurantList;
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private RestaurantServer restaurantServer;
+    private RelevanceRestaurantServer relevanceRestaurantServer;
+    private PopularityRestaurantServer popularityRestaurantServer;
+    private DistanceRestaurantServer distanceRestaurantServer;
     private RestaurantListener restaurantListener;
     private ProgressBar exploreProgressBar;
+    private Spinner exploreSpinner;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -62,8 +70,15 @@ public class ExploreFragment extends Fragment implements Observer {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         restaurantList = new ArrayList<RestaurantObservable>();
-        restaurantServer = new RestaurantServer(restaurantList);
-        restaurantServer.getUser().addObserver(this);
+        relevanceRestaurantServer = new RelevanceRestaurantServer(restaurantList);
+        relevanceRestaurantServer.getUser().addObserver(this);
+
+        popularityRestaurantServer = new PopularityRestaurantServer(restaurantList);
+        popularityRestaurantServer.getUser().addObserver(this);
+
+        distanceRestaurantServer = new DistanceRestaurantServer(restaurantList);
+        distanceRestaurantServer.getUser().addObserver(this);
+
         restaurantListener = new RestaurantListener(){
             @Override
             public void dataChanged() {
@@ -78,14 +93,30 @@ public class ExploreFragment extends Fragment implements Observer {
         };
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         exploreProgressBar = view.findViewById(R.id.exploreProgressBar);
+        rvRestaurants = view.findViewById(R.id.rvRestaurants);
+        ivMap = view.findViewById(R.id.ivMapIndicator);
+        exploreSpinner = view.findViewById(R.id.spinnerExplore);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 restaurantList.clear();
                 scrollListener.resetState();
-                restaurantServer.reset();
-                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
-                swipeContainer.setRefreshing(false);
+
+                relevanceRestaurantServer.reset();
+                distanceRestaurantServer.reset();
+                popularityRestaurantServer.reset();
+                if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
+                    relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+                    swipeContainer.setRefreshing(false);
+                }
+                else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
+                    distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+                    swipeContainer.setRefreshing(false);
+                }
+                else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
+                    popularityRestaurantServer.findRestaurants(restaurantListener);
+                    swipeContainer.setRefreshing(false);
+                }
             }
         });
         // Configure the refreshing colors
@@ -105,8 +136,15 @@ public class ExploreFragment extends Fragment implements Observer {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rvRestaurants = view.findViewById(R.id.rvRestaurants);
-        ivMap = view.findViewById(R.id.ivMapIndicator);
+
+        String[] items = new String[]{"Relevance", "Distance", "Popularity"};
+        ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, items);
+        exploreSpinner.setAdapter(spinner_adapter);
+        spinner_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        exploreSpinner.setAdapter(spinner_adapter);
+        exploreSpinner.setOnItemSelectedListener(this);
+        exploreSpinner.setSelection(RELEVANCE_SORT);
+
         ivMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,28 +152,87 @@ public class ExploreFragment extends Fragment implements Observer {
                 startActivity(intent);
             }
         });
+
+
         adapter = new ExploreAdapter(getContext(), restaurantList);
         rvRestaurants.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-
         rvRestaurants.setLayoutManager(linearLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
-                Log.i(TAG, String.valueOf(adapter.size()));
+                if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
+                    relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+                }
+                else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
+                    distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+                }
+                else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
+                    popularityRestaurantServer.findRestaurants(restaurantListener);
+                }
             }
         };
         rvRestaurants.addOnScrollListener(scrollListener);
 
-        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
+            Log.i(TAG, "RELEVANCE SORT");
+            relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
+            Log.i(TAG, "DISTANCE SORT");
+            distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
+            Log.i(TAG, "POPULARITY SORT");
+            popularityRestaurantServer.findRestaurants(restaurantListener);
+        }
     }
 
     @Override
     public void update(Observable o, Object arg) {
         restaurantList.clear();
-        restaurantServer.reset();
-        restaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+
+        relevanceRestaurantServer.reset();
+        distanceRestaurantServer.reset();
+        popularityRestaurantServer.reset();
+
+        if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
+            relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
+            distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
+            popularityRestaurantServer.findRestaurants(restaurantListener);
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        restaurantList.clear();
+
+        relevanceRestaurantServer.reset();
+        distanceRestaurantServer.reset();
+        popularityRestaurantServer.reset();
+
+        if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
+            Log.i(TAG, "RELEVANCE SORT");
+            relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
+            Log.i(TAG, "DISTANCE SORT");
+            distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
+        }
+        else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
+            Log.i(TAG, "POPULARITY SORT");
+            popularityRestaurantServer.findRestaurants(restaurantListener);
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
 

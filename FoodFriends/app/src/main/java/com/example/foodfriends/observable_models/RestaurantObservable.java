@@ -225,14 +225,15 @@ public class RestaurantObservable extends Observable implements Parcelable {
      */
     public void toggleLike() {
         if (isLiked()) {
-            restaurant.decrementLikes();
+            restaurant.decrementLikes(likes);
             likes -= 1;
             liked = false;
         } else {
-            restaurant.incrementLikes();
+            restaurant.incrementLikes(likes);
             likes += 1;
             liked = true;
         }
+        restaurant.saveInBackground();
         setChanged();
         notifyObservers();
     }
@@ -242,14 +243,15 @@ public class RestaurantObservable extends Observable implements Parcelable {
      */
     public void toggleTogo() {
         if (isGoing()) {
-            restaurant.decrementToGos();
+            restaurant.decrementToGos(togos);
             togos -= 1;
             going = false;
         } else {
-            restaurant.incrementToGos();
+            restaurant.incrementToGos(togos);
             togos += 1;
             going = true;
         }
+        restaurant.saveInBackground();
         setChanged();
         notifyObservers();
     }
