@@ -3,7 +3,10 @@ package com.example.foodfriends.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 
 import com.example.foodfriends.R;
@@ -18,6 +21,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.foodfriends.fragments.RestaurantDetailFragment;
+import com.example.foodfriends.misc.DistanceRestaurantServer;
+import com.example.foodfriends.misc.GeoCoder;
 import com.example.foodfriends.misc.RestaurantListener;
 import com.example.foodfriends.models.Restaurant;
 import com.example.foodfriends.observable_models.RestaurantObservable;
@@ -31,6 +36,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -42,6 +48,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private UserObservable user;
     private int maxRadiuskm = 40; //in kilometers
     private String TAG = "MapActivity";
+    private DistanceRestaurantServer distanceRestaurantServer;
 
 
     @Override
@@ -51,6 +58,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             setContentView(R.layout.activity_map);
             user = new UserObservable(ParseUser.getCurrentUser());
             restaurantList = new ArrayList<RestaurantObservable>();
+            distanceRestaurantServer = new DistanceRestaurantServer(restaurantList);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
@@ -68,6 +76,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         parseGeneral();
+        //distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), new RestaurantListener(){});
         for (int i = 0; i < restaurantList.size(); i++) {
             LatLng restaurant_coordinates = new LatLng(restaurantList.get(i).getCoordinates().getLatitude(), restaurantList.get(i).getCoordinates().getLongitude());
             Marker marker = googleMap.addMarker(new MarkerOptions()
@@ -96,8 +105,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (user.getCoordinates() != null) {
             query.whereWithinKilometers("location_coordinates", user.getCoordinates(), maxRadiuskm);
         } else {
-            query.whereEqualTo("city", user.getCity());
-            query.whereEqualTo("state", user.getState());
+            LatLng coordinates = GeoCoder.getLocationFromAddress(this, user.getCity() + ", " + user.getState());
+            ParseGeoPoint geoPoint = new ParseGeoPoint(coordinates.latitude, coordinates.longitude);
+            user.setCoordinates(geoPoint);
+            query.whereWithinKilometers("location_coordinates", geoPoint, maxRadiuskm);
+
         }
         query.setLimit(20);
         List<RestaurantObservable> observed = new ArrayList<RestaurantObservable>();
@@ -121,4 +133,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         transaction.replace(R.id.map, detail_fragment);
         transaction.addToBackStack(null).commit();
     }
+
 }

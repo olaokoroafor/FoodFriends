@@ -1,5 +1,6 @@
 package com.example.foodfriends.misc;
 
+import android.content.Context;
 import android.text.style.AlignmentSpan;
 import android.util.Log;
 
@@ -14,9 +15,11 @@ import com.example.foodfriends.models.UserLike;
 import com.example.foodfriends.models.UserToGo;
 import com.example.foodfriends.observable_models.RestaurantObservable;
 import com.example.foodfriends.observable_models.UserObservable;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -54,18 +57,20 @@ public class RelevanceRestaurantServer {
     private UserObservable user;
     private int source;
     private List<ParseUser> friends;
+    private Context context;
 
 
     /**
      * Constructor
      */
-    public RelevanceRestaurantServer(List<RestaurantObservable> restaurantList) {
+    public RelevanceRestaurantServer(List<RestaurantObservable> restaurantList, Context context) {
         this.source = PARSE_LIKES;
         this.offset = 0;
         this.observedRestaurants = restaurantList;
         this.user = new UserObservable(ParseUser.getCurrentUser());
         this.friends = new ArrayList<ParseUser>();
         this.displayedRestaurants = new HashSet<String>();
+        this.context = context;
         populateFriends();
     }
 
@@ -222,8 +227,10 @@ public class RelevanceRestaurantServer {
         if (user.getCoordinates() != null) {
             query.whereWithinKilometers("location_coordinates", user.getCoordinates(), maxRadiuskm);
         } else {
-            query.whereEqualTo("city", user.getCity());
-            query.whereEqualTo("state", user.getState());
+            LatLng coordinates = GeoCoder.getLocationFromAddress(context, user.getCity() + ", " + user.getState());
+            ParseGeoPoint geoPoint = new ParseGeoPoint(coordinates.latitude, coordinates.longitude);
+            user.setCoordinates(geoPoint);
+            query.whereWithinKilometers("location_coordinates", geoPoint, maxRadiuskm);
         }
         query.setLimit(20);
         query.setSkip(offset);

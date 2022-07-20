@@ -70,7 +70,7 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
         restaurantList = new ArrayList<RestaurantObservable>();
-        relevanceRestaurantServer = new RelevanceRestaurantServer(restaurantList);
+        relevanceRestaurantServer = new RelevanceRestaurantServer(restaurantList, getContext());
         relevanceRestaurantServer.getUser().addObserver(this);
 
         popularityRestaurantServer = new PopularityRestaurantServer(restaurantList);
@@ -233,6 +233,11 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }
 

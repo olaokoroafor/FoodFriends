@@ -276,8 +276,9 @@ public class RestaurantObservable extends Observable implements Parcelable {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo("yelp_id", yelp_id);
-            if (query.find().size() > 0)
-                return null;
+            List<Restaurant> restaurants = query.find();
+            if (restaurants.size() > 0)
+                return new RestaurantObservable(restaurants.get(0));
             RestaurantObservable r = new RestaurantObservable();
             r.setYelpId(jsonObject.getString("id"));
             r.setName(jsonObject.getString("name"));

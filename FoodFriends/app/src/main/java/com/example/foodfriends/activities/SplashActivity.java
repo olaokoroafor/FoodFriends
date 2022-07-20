@@ -31,8 +31,6 @@ import com.parse.ParseUser;
 public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
-    private double latitude;
-    private double longitude;
     /** Duration of wait **/
     private final int SPLASH_DISPLAY_LENGTH = 1000;
 
