@@ -225,14 +225,15 @@ public class RestaurantObservable extends Observable implements Parcelable {
      */
     public void toggleLike() {
         if (isLiked()) {
-            restaurant.decrementLikes();
+            restaurant.decrementLikes(likes);
             likes -= 1;
             liked = false;
         } else {
-            restaurant.incrementLikes();
+            restaurant.incrementLikes(likes);
             likes += 1;
             liked = true;
         }
+        restaurant.saveInBackground();
         setChanged();
         notifyObservers();
     }
@@ -242,14 +243,15 @@ public class RestaurantObservable extends Observable implements Parcelable {
      */
     public void toggleTogo() {
         if (isGoing()) {
-            restaurant.decrementToGos();
+            restaurant.decrementToGos(togos);
             togos -= 1;
             going = false;
         } else {
-            restaurant.incrementToGos();
+            restaurant.incrementToGos(togos);
             togos += 1;
             going = true;
         }
+        restaurant.saveInBackground();
         setChanged();
         notifyObservers();
     }
@@ -274,8 +276,9 @@ public class RestaurantObservable extends Observable implements Parcelable {
             String yelp_id = jsonObject.getString("id");
             ParseQuery<Restaurant> query = ParseQuery.getQuery(Restaurant.class);
             query.whereEqualTo("yelp_id", yelp_id);
-            if (query.find().size() > 0)
-                return null;
+            List<Restaurant> restaurants = query.find();
+            if (restaurants.size() > 0)
+                return new RestaurantObservable(restaurants.get(0));
             RestaurantObservable r = new RestaurantObservable();
             r.setYelpId(jsonObject.getString("id"));
             r.setName(jsonObject.getString("name"));

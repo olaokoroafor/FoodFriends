@@ -152,6 +152,7 @@ public class ProfileFragment extends Fragment implements Observer, View.OnClickL
             ivLock.setVisibility(View.GONE);
         } else {
             rvRestaurants.setVisibility(View.GONE);
+            profileProgressBar.setVisibility(View.GONE);
         }
     }
 
