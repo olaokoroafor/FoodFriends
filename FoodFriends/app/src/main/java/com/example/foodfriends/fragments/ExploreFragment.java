@@ -96,6 +96,7 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
         rvRestaurants = view.findViewById(R.id.rvRestaurants);
         ivMap = view.findViewById(R.id.ivMapIndicator);
         exploreSpinner = view.findViewById(R.id.spinnerExplore);
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -173,19 +174,6 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
             }
         };
         rvRestaurants.addOnScrollListener(scrollListener);
-
-        if(exploreSpinner.getSelectedItemPosition() == RELEVANCE_SORT){
-            Log.i(TAG, "RELEVANCE SORT");
-            relevanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
-        }
-        else if(exploreSpinner.getSelectedItemPosition() == DISTANCE_SORT){
-            Log.i(TAG, "DISTANCE SORT");
-            distanceRestaurantServer.findRestaurants(getResources().getString(R.string.yelp_api_key), restaurantListener);
-        }
-        else if(exploreSpinner.getSelectedItemPosition() == POPULARITY_SORT){
-            Log.i(TAG, "POPULARITY SORT");
-            popularityRestaurantServer.findRestaurants(restaurantListener);
-        }
     }
 
     @Override
@@ -233,11 +221,6 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 }
 

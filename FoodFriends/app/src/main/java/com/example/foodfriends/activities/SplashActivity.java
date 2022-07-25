@@ -16,6 +16,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.foodfriends.R;
@@ -29,7 +34,7 @@ import com.google.android.gms.tasks.Task;
 import com.parse.ParseUser;
 
 public class SplashActivity extends AppCompatActivity {
-
+    private ImageView ivSplashPic;
     private static final String TAG = "SplashActivity";
     /** Duration of wait **/
     private final int SPLASH_DISPLAY_LENGTH = 1000;
@@ -39,8 +44,8 @@ public class SplashActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_splash);
+            ivSplashPic = findViewById(R.id.ivSplashPic);
 
-            // method to get the lo
             new Handler().postDelayed(new Runnable(){
                 @Override
                 public void run() {
@@ -49,12 +54,10 @@ public class SplashActivity extends AppCompatActivity {
                         startActivity(i);
                     }
                     else{
-                        Log.i(TAG, "intent");
                         Intent i = new Intent(SplashActivity.this, LogInActivity.class);
                         startActivity(i);
                     }
 
-                    Log.i(TAG, "remove activity");
                     SplashActivity.this.finish();
                 }
             }, SPLASH_DISPLAY_LENGTH);
