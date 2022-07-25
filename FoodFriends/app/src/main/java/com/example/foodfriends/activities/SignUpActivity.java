@@ -8,18 +8,35 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.foodfriends.R;
 import com.example.foodfriends.observable_models.UserObservable;
+import com.google.gson.JsonArray;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
@@ -34,8 +51,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText etName;
     private EditText etUsername;
     private EditText etPassword;
-    private EditText etState;
-    private EditText etCity;
+    private Spinner spinnerState;
+    private Spinner spinnerCity;
     private Button btnSignUp;
 
     @Override
@@ -46,10 +63,46 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         etName = findViewById(R.id.etSignUpName);
         etUsername = findViewById(R.id.etSignUpUsername);
         etPassword = findViewById(R.id.etSignUpPassword);
-        etState = findViewById(R.id.etStateEntry);
-        etCity = findViewById(R.id.etCityEntry);
+        spinnerState = findViewById(R.id.spinnerStateEntry);
+        spinnerCity = findViewById(R.id.spinnerCityEntry);
         btnSignUp = findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(this);
+
+        String[] state_list = new String[]{"Select State", "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+                "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
+                "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM",
+                "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+                "UT", "VA", "VT", "WA", "WI", "WV", "WY"};
+        ArrayAdapter<String> stateSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, state_list);
+        spinnerState.setAdapter(stateSpinnerAdapter);
+        stateSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerState.setAdapter(stateSpinnerAdapter);
+
+        JsonElement root = null;
+        try {
+            root = new JsonParser().parse(new FileReader("../misc/CitiesByState.json"));
+            Log.i(TAG, "Found file");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        //Get the content of the first map
+        JsonObject states = root.getAsJsonObject();
+
+        spinnerState.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                JsonArray arr = states.getAsJsonArray(spinnerState.getSelectedItem().toString());
+                List<String> list = new ArrayList<String>();
+                for(int i = 0; i < arr.size(); i++){
+                    list.add(arr.get(i).getAsString());
+                }
+                String[] city_list = list.toArray(new String[list.size()]);
+                ArrayAdapter<String> citySpinnerAdapter = new ArrayAdapter<String>(SignUpActivity.this, android.R.layout.simple_spinner_dropdown_item, city_list);
+                spinnerCity.setAdapter(citySpinnerAdapter);
+                citySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCity.setAdapter(citySpinnerAdapter);
+            }
+        });
     }
 
 
@@ -72,8 +125,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         // Set the user's username and password, which can be obtained by a forms
         user.setUsername(etUsername.getText().toString());
         user.setPassword(etPassword.getText().toString());
-        user.setState(etState.getText().toString());
-        user.setCity(etCity.getText().toString());
+        user.setState(spinnerState.getSelectedItem().toString());
+        user.setCity(spinnerCity.getSelectedItem().toString());
         user.setName(etName.getText().toString());
         if (user.isValid() == OK_RESULT_CODE) {
             user.getUser().signUpInBackground(new SignUpCallback() {

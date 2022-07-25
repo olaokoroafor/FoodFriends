@@ -67,31 +67,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etCityEntry" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerCityEntry" />
 
-    <EditText
-        android:id="@+id/etStateEntry"
+    <Spinner
+        android:id="@+id/spinnerStateEntry"
         android:layout_width="332dp"
         android:layout_height="48dp"
         android:layout_marginTop="@dimen/margin_padding_size_medium"
         android:ems="10"
-        android:hint="Type State"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:spinnerMode="dropdown"
         app:layout_constraintTop_toBottomOf="@+id/etSignUpPassword" />
 
-    <EditText
-        android:id="@+id/etCityEntry"
+    <Spinner
+        android:id="@+id/spinnerCityEntry"
         android:layout_width="332dp"
         android:layout_height="48dp"
         android:layout_marginTop="@dimen/margin_padding_size_medium"
         android:ems="10"
-        android:hint="Type City"
         android:inputType="textPersonName"
+        android:spinnerMode="dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etStateEntry" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerStateEntry" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
