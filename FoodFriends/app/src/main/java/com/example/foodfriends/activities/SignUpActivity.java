@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,28 +29,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "Sign Up Activity";
-    private final int EMPTY_USER_NAME_RESULT_CODE = 0;
-    private final int EMPTY_PASSWORD_RESULT_CODE = 1;
-    private final int SHORT_PASSWORD_RESULT_CODE = 2;
-    private final int EMPTY_NAME_RESULT_CODE = 3;
-    private final int OK_RESULT_CODE = -1;
-    private final Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
-    private final String[] stateList = new String[]{"Select State", "Alaska", "Alabama", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"};
-    private final Map<String, String> stateAbbreviations = Map.ofEntries(entry("Alaska", "AK"), entry("Alabama", "AL"), entry("Arkansas", "AR"), entry("Arizona", "AZ"), entry("California", "CA"), entry("Colorado", "CO"), entry("Connecticut", "CT"), entry("District of Columbia", "DC"), entry("Delaware", "DE"), entry("Florida", "FL"), entry("Georgia", "GA"), entry("Hawaii", "HI"), entry("Iowa", "IA"), entry("Idaho", "ID"), entry("Illinois", "IL"), entry("Indiana", "IN"), entry("Kansas", "KS"), entry("Kentucky", "KY"), entry("Louisiana", "LA"), entry("Massachusetts", "MA"), entry("Maryland", "MD"), entry("Maine", "ME"), entry("Michigan", "MI"), entry("Minnesota", "MN"), entry("Missouri", "MO"), entry("Mississippi", "MS"), entry("Montana", "MT"), entry("North Carolina", "NC"), entry("North Dakota", "ND"), entry("Nebraska", "NE"), entry("New Hampshire", "NH"), entry("New Jersey", "NJ"), entry("New Mexico", "NM"), entry("Nevada", "NV"), entry("New York", "NY"), entry("Ohio", "OH"), entry("Oklahoma", "OK"), entry("Oregon", "OR"), entry("Pennsylvania", "PA"), entry("Rhode Island", "RI"), entry("South Carolina", "SC"), entry("South Dakota", "SD"), entry("Tennessee", "TN"), entry("Texas", "TX"), entry("Utah", "UT"), entry("Virginia", "VA"), entry("Vermont", "VT"), entry("Washington", "WA"), entry("Wisconsin", "WI"), entry("West Virginia", "WV"), entry("Wyoming", "WY"));
+    private final static String TAG = "Sign Up Activity";
+    private final static int EMPTY_USER_NAME_RESULT_CODE = 0;
+    private final static int EMPTY_PASSWORD_RESULT_CODE = 1;
+    private final static int SHORT_PASSWORD_RESULT_CODE = 2;
+    private final static int EMPTY_NAME_RESULT_CODE = 3;
+    private final static int OK_RESULT_CODE = -1;
+    private static JSONObject finalStates;
+    private final static Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
+    private final static String[] stateList = new String[]{"Select State", "Alaska", "Alabama", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"};
+    private final static Map<String, String> stateAbbreviations = Map.ofEntries(entry("Alaska", "AK"), entry("Alabama", "AL"), entry("Arkansas", "AR"), entry("Arizona", "AZ"), entry("California", "CA"), entry("Colorado", "CO"), entry("Connecticut", "CT"), entry("District of Columbia", "DC"), entry("Delaware", "DE"), entry("Florida", "FL"), entry("Georgia", "GA"), entry("Hawaii", "HI"), entry("Iowa", "IA"), entry("Idaho", "ID"), entry("Illinois", "IL"), entry("Indiana", "IN"), entry("Kansas", "KS"), entry("Kentucky", "KY"), entry("Louisiana", "LA"), entry("Massachusetts", "MA"), entry("Maryland", "MD"), entry("Maine", "ME"), entry("Michigan", "MI"), entry("Minnesota", "MN"), entry("Missouri", "MO"), entry("Mississippi", "MS"), entry("Montana", "MT"), entry("North Carolina", "NC"), entry("North Dakota", "ND"), entry("Nebraska", "NE"), entry("New Hampshire", "NH"), entry("New Jersey", "NJ"), entry("New Mexico", "NM"), entry("Nevada", "NV"), entry("New York", "NY"), entry("Ohio", "OH"), entry("Oklahoma", "OK"), entry("Oregon", "OR"), entry("Pennsylvania", "PA"), entry("Rhode Island", "RI"), entry("South Carolina", "SC"), entry("South Dakota", "SD"), entry("Tennessee", "TN"), entry("Texas", "TX"), entry("Utah", "UT"), entry("Virginia", "VA"), entry("Vermont", "VT"), entry("Washington", "WA"), entry("Wisconsin", "WI"), entry("West Virginia", "WV"), entry("Wyoming", "WY"));
     private EditText etName;
     private EditText etUsername;
     private EditText etPassword;
@@ -76,27 +72,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         spinnerState.setAdapter(stateSpinnerAdapter);
         stateSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerState.setAdapter(stateSpinnerAdapter);
+        finalStates = populateStates();
 
-        InputStream inputStream = getResources().openRawResource(R.raw.cities_by_state);
-        JSONParser parser = new JSONParser();
-        String objString = null;
-        try {
-            objString = parser.parse(new InputStreamReader(inputStream)).toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (org.json.simple.parser.ParseException e) {
-            e.printStackTrace();
-        }
-        JSONObject states = null;
-        try {
-            states = new JSONObject(objString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject finalStates = states;
         spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 JSONArray arr = null;
@@ -122,7 +100,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     }
                     cityList = list.toArray(new String[list.size()]);
                 }
-
                 ArrayAdapter<String> citySpinnerAdapter = new ArrayAdapter<String>(SignUpActivity.this, android.R.layout.simple_spinner_dropdown_item, cityList);
                 spinnerCity.setAdapter(citySpinnerAdapter);
                 citySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -134,6 +111,24 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
+    }
+
+    private JSONObject populateStates() {
+        InputStream inputStream = getResources().openRawResource(R.raw.cities_by_state);
+        JSONParser parser = new JSONParser();
+        String objString = null;
+        try {
+            objString = parser.parse(new InputStreamReader(inputStream)).toString();
+        } catch (IOException | org.json.simple.parser.ParseException e) {
+            Log.e(TAG, "Error message", e);
+        }
+        JSONObject states = null;
+        try {
+            states = new JSONObject(objString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error message", e);
+        }
+        return states;
     }
 
 
