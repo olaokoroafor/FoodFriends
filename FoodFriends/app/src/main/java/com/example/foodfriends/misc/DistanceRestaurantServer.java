@@ -39,8 +39,6 @@ public class DistanceRestaurantServer {
     private List<RestaurantObservable> observedRestaurants;
     private UserObservable user;
 
-
-
     /**
      * Constructor
      */
@@ -79,7 +77,7 @@ public class DistanceRestaurantServer {
     /**
      * Adds restaurants returned from Yelp Query to the list that the explore adapter uses
      */
-    public void yelpQuery(String apiKey,  @Nullable RestaurantListener listener) {
+    private void yelpQuery(String apiKey,  @Nullable RestaurantListener listener) {
         // Use OkHttpClient singleton
         OkHttpClient client = new OkHttpClient();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(YELP_URL).newBuilder();
