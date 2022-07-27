@@ -38,7 +38,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity";
     private FusedLocationProviderClient fusedLocationClient;
-    private boolean from_map_activity;
     private BottomNavigationView bottomNavigationView;
     private String fragmentTag;
     private UserObservable user;
@@ -86,14 +85,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         bottomNavigationView.setOnItemSelectedListener(reloaded_listener);
-        from_map_activity = getIntent().getBooleanExtra("from_map", false);
-        if (from_map_activity){
-            RestaurantObservable r = getIntent().getParcelableExtra("restaurant");
-            displayRestaurantDetailFragment(r);
-        }
-        else{
-            bottomNavigationView.setSelectedItemId(R.id.menu_profile);
-        }
+        bottomNavigationView.setSelectedItemId(R.id.menu_profile);
+
     }
 
 

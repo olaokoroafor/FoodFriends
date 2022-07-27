@@ -15,7 +15,9 @@
         <entry key="app/src/main/res/drawable/ic_baseline_map_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.1025" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_add_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_person_pin_24.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/ic_baseline_person_remove_24.xml" value="0.134" />
+        <entry key="app/src/main/res/drawable/ic_baseline_person_search_24.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/ic_baseline_red_heart_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_restaurant_24.xml" value="0.2105" />
         <entry key="app/src/main/res/drawable/ic_baseline_restaurant_menu_24.xml" value="0.1025" />
@@ -28,9 +30,9 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12409420289855072" />
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.22760416666666666" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.2611495971679688" />
-        <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
+        <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.21822916666666667" />
-        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.2785217285156251" />
         <entry key="app/src/main/res/layout/fragment_find_friends.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_restaurant_detail.xml" value="0.213768115942029" />

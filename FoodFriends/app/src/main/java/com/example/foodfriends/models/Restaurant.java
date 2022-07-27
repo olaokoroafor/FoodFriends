@@ -33,6 +33,8 @@ public class Restaurant extends ParseObject {
     private static final String ADDRESS_KEY = "address";
     private static final String YELP_ID_KEY = "yelp_id";
     private static final String LOCATION_COORDINATES_KEY = "location_coordinates";
+    private static final String LIKES_KEY = "likes";
+    private static final String TOGOS_KEY = "togos";
     private static final String TAG = "Restaurant Model";
 
     public String getName() {
@@ -110,23 +112,20 @@ public class Restaurant extends ParseObject {
     /**
      * Returns the number of likes for this particular restaurant
      * */
-    public int getLikes() {
-        int likesCount = 0;
-        ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
-        query.whereEqualTo("restaurant", this);
-        try {
-            List<UserLike> likes = query.find();
-            likesCount = likes.size();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return likesCount;
+    public int getLikes() {return getInt(LIKES_KEY);}
+
+    /**
+     * Sets the number of likes for this particular restaurant
+     * */
+    public void setLikes(int likes) {
+        put(LIKES_KEY,likes);
+
     }
 
     /**
      * Adds a like entry for the logged in user and restaurant into Userlike table
      * */
-    public void incrementLikes() {
+    public void incrementLikes(int likes) {
         UserLike like = new UserLike();
         like.setRestaurant(this);
         like.setUser(ParseUser.getCurrentUser());
@@ -137,12 +136,13 @@ public class Restaurant extends ParseObject {
                     Log.i(TAG, e.toString());
             }
         });
+        setLikes(likes+1);
     }
 
     /**
      * Removes a like entry for the logged in user and restaurant into Userlike table
      * */
-    public void decrementLikes() {
+    public void decrementLikes(int likes) {
         ParseQuery<UserLike> query = ParseQuery.getQuery(UserLike.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -156,6 +156,7 @@ public class Restaurant extends ParseObject {
                 });
             }
         });
+        setLikes(likes-1);
     }
 
     /**
@@ -180,25 +181,20 @@ public class Restaurant extends ParseObject {
     /**
      * Returns the number of togos for this particular restaurant
      * */
-    public int getToGos() {
-        int toGoCount = 0;
-        ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
-        query.whereEqualTo("restaurant", this);
-        try {
-            List<UserToGo> togos = query.find();
-            toGoCount = togos.size();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    public int getToGos() {return getInt(TOGOS_KEY);}
 
-        return toGoCount;
+    /**
+     * Sets the number of togos for this particular restaurant
+     * */
+    public void setToGos(int togos) {
+        put(TOGOS_KEY, togos);
+
     }
-
 
     /**
      * Adds a togo entry for the logged in user and restaurant into UserTogo table
      * */
-    public void incrementToGos() {
+    public void incrementToGos(int togos) {
         UserToGo togo = new UserToGo();
         togo.setRestaurant(this);
         togo.setUser(ParseUser.getCurrentUser());
@@ -209,12 +205,13 @@ public class Restaurant extends ParseObject {
                     Log.i(TAG, e.toString());
             }
         });
+        setToGos(togos+1);
     }
 
     /**
      * Removes a togo entry for the logged in user and restaurant into UserTogo table
      * */
-    public void decrementToGos() {
+    public void decrementToGos(int togos) {
         ParseQuery<UserToGo> query = ParseQuery.getQuery(UserToGo.class);
         query.whereEqualTo("restaurant", this);
         query.whereEqualTo("user", ParseUser.getCurrentUser());
@@ -228,6 +225,7 @@ public class Restaurant extends ParseObject {
                 });
             }
         });
+        setToGos(togos-1);
     }
 
     /**

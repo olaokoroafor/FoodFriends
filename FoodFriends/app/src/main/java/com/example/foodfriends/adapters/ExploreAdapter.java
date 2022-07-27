@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +39,7 @@ import java.util.Observer;
 public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHolder>{
     private Context context;
     private List<RestaurantObservable> restaurants;
+    Animation pulse;
 
     public ExploreAdapter(Context context, List<RestaurantObservable> restaurants) {
         this.context = context;
@@ -93,6 +98,7 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
             ivRPic = itemView.findViewById(R.id.ivExplorePic);
             ivLike = itemView.findViewById(R.id.ivExploreLike);
             ivToGo = itemView.findViewById(R.id.ivExploreToGo);
+            pulse = AnimationUtils.loadAnimation(context, R.anim.pulse);
         }
 
         /**
@@ -102,6 +108,24 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
             restaurantObservable = restaurant;
             restaurant.addObserver(this);
             tvRName.setText(restaurant.getName());
+            tvRName.setOnTouchListener(new View.OnTouchListener() {
+                private GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        Log.d("TEST", "onDoubleTap");
+                        restaurantObservable.toggleLike();
+                        ivLike.startAnimation(pulse);
+                        return super.onDoubleTap(e);
+                    }
+                });
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.d("TEST", "Raw event: " + event.getAction() + ", (" + event.getRawX() + ", " + event.getRawY() + ")");
+                    gestureDetector.onTouchEvent(event);
+                    return true;
+                }
+            });
             tvAddress.setText(restaurant.getAddress());
             tvLikeCount.setText(String.valueOf(restaurant.getLikes()));
             tvToGoCount.setText(String.valueOf(restaurant.getTogos()));
@@ -173,9 +197,11 @@ public class ExploreAdapter extends RecyclerView.Adapter <ExploreAdapter.ViewHol
 
                 case R.id.ivExploreLike:
                     restaurantObservable.toggleLike();
+                    ivLike.startAnimation(pulse);
                     break;
                 case R.id.ivExploreToGo:
                     restaurantObservable.toggleTogo();
+                    ivToGo.startAnimation(pulse);
                     break;
                 case R.id.tvExploreAddress:
                     GoogleMapsHelper helper = new GoogleMapsHelper(restaurantObservable, context);
