@@ -80,6 +80,7 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
         rvRestaurants = view.findViewById(R.id.rvRestaurants);
         ivMap = view.findViewById(R.id.ivMapIndicator);
         exploreSpinner = view.findViewById(R.id.spinnerExplore);
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -160,11 +161,6 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 }
 
