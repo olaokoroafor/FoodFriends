@@ -81,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 try {
                     arr = finalStates.getJSONArray(spinnerState.getSelectedItem().toString());
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error message", e);
                 }
                 List<String> list = new ArrayList<String>();
 
@@ -95,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         try {
                             list.add(arr.get(i).toString());
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "Error message", e);
                         }
                     }
                     cityList = list.toArray(new String[list.size()]);

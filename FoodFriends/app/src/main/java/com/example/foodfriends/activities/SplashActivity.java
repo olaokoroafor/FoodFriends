@@ -36,6 +36,28 @@ import com.parse.ParseUser;
 public class SplashActivity extends AppCompatActivity {
     private ImageView ivSplashPic;
     private static final String TAG = "SplashActivity";
+    private Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            if (ParseUser.getCurrentUser() != null){
+                Intent i = new Intent(SplashActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+            else{
+                Intent i = new Intent(SplashActivity.this, LogInActivity.class);
+                startActivity(i);
+            }
+            SplashActivity.this.finish();
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+        }
+    };
 
         /** Called when the activity is first created. */
         @Override
@@ -44,28 +66,7 @@ public class SplashActivity extends AppCompatActivity {
             setContentView(R.layout.activity_splash);
             ivSplashPic = findViewById(R.id.ivSplashPic);
             Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    if (ParseUser.getCurrentUser() != null){
-                        Intent i = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(i);
-                    }
-                    else{
-                        Intent i = new Intent(SplashActivity.this, LogInActivity.class);
-                        startActivity(i);
-                    }
-                    SplashActivity.this.finish();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
+            anim.setAnimationListener(animationListener);
             ivSplashPic.startAnimation(anim);
 
         }
