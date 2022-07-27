@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,14 +47,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private final static int OK_RESULT_CODE = -1;
     private static JSONObject finalStates;
     private final static Map<Integer, String> userValidityStates = Map.ofEntries(entry(EMPTY_USER_NAME_RESULT_CODE, "Username must not be empty"), entry(EMPTY_NAME_RESULT_CODE, "Name must not be empty"), entry(EMPTY_PASSWORD_RESULT_CODE, "Password must not be empty"), entry(SHORT_PASSWORD_RESULT_CODE, "Password must be over 5 characters"));
-    private final static String[] stateList = new String[]{"Select State", "Alaska", "Alabama", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"};
     private final static Map<String, String> stateAbbreviations = Map.ofEntries(entry("Alaska", "AK"), entry("Alabama", "AL"), entry("Arkansas", "AR"), entry("Arizona", "AZ"), entry("California", "CA"), entry("Colorado", "CO"), entry("Connecticut", "CT"), entry("District of Columbia", "DC"), entry("Delaware", "DE"), entry("Florida", "FL"), entry("Georgia", "GA"), entry("Hawaii", "HI"), entry("Iowa", "IA"), entry("Idaho", "ID"), entry("Illinois", "IL"), entry("Indiana", "IN"), entry("Kansas", "KS"), entry("Kentucky", "KY"), entry("Louisiana", "LA"), entry("Massachusetts", "MA"), entry("Maryland", "MD"), entry("Maine", "ME"), entry("Michigan", "MI"), entry("Minnesota", "MN"), entry("Missouri", "MO"), entry("Mississippi", "MS"), entry("Montana", "MT"), entry("North Carolina", "NC"), entry("North Dakota", "ND"), entry("Nebraska", "NE"), entry("New Hampshire", "NH"), entry("New Jersey", "NJ"), entry("New Mexico", "NM"), entry("Nevada", "NV"), entry("New York", "NY"), entry("Ohio", "OH"), entry("Oklahoma", "OK"), entry("Oregon", "OR"), entry("Pennsylvania", "PA"), entry("Rhode Island", "RI"), entry("South Carolina", "SC"), entry("South Dakota", "SD"), entry("Tennessee", "TN"), entry("Texas", "TX"), entry("Utah", "UT"), entry("Virginia", "VA"), entry("Vermont", "VT"), entry("Washington", "WA"), entry("Wisconsin", "WI"), entry("West Virginia", "WV"), entry("Wyoming", "WY"));
+    private static String[] stateList= new String[stateAbbreviations.size()];
     private EditText etName;
     private EditText etUsername;
     private EditText etPassword;
     private Spinner spinnerState;
     private Spinner spinnerCity;
     private Button btnSignUp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         spinnerCity = findViewById(R.id.spinnerCityEntry);
         btnSignUp = findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(this);
-        
+
+
+        stateList = stateAbbreviations.keySet().toArray(stateList);
+        Arrays.sort(stateList);
         ArrayAdapter<String> stateSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, stateList);
         spinnerState.setAdapter(stateSpinnerAdapter);
         stateSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
