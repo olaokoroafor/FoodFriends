@@ -151,6 +151,8 @@ public class ExploreFragment extends Fragment implements Observer, AdapterView.O
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         restaurantList.clear();
         restaurantServer.reset();
+        rvRestaurants.setVisibility(View.GONE);
+        exploreProgressBar.setVisibility(View.VISIBLE);
         restaurantServer.findRestaurants(exploreSpinner.getSelectedItemPosition(), getResources().getString(R.string.yelp_api_key), restaurantListener);
 
     }
