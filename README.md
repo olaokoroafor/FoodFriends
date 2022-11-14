@@ -1,7 +1,5 @@
-Original App Design Project - README
+Food Friends
 ===
-
-# Food Friends
 
 ## Table of Contents
 1. [Overview](#Overview)
@@ -15,7 +13,6 @@ This is an app that allows you to see your friends' favourite restaurants nearby
 
 
 ### App Evaluation
-[Evaluation of your app across the following attributes]
 - **Category:**
     - Lifestyle, Social
 - **Mobile:**
