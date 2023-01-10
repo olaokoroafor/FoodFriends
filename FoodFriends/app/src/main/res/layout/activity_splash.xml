@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/coral"
+    android:backgroundTint="@color/coral"
     tools:context=".activities.MainActivity">
 
     <TextView
@@ -12,6 +14,7 @@
         android:layout_height="63dp"
         android:layout_marginBottom="@dimen/margin_padding_size_large"
         android:text="FoodFriends"
+        android:textColor="@color/white"
         android:textSize="@dimen/text_size_xxlarge"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/ivSplashPic"
